@@ -52,7 +52,7 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.1">
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.1">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=7.1.1">
 
 
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.1">
@@ -74,7 +74,7 @@
     version: '7.1.1',
     sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
     back2top: true,
-    back2top_sidebar: false,
+    back2top_sidebar: true,
     fancybox: false,
     fastclick: false,
     lazyload: false,
@@ -97,14 +97,14 @@
 
 
   <meta name="description" content="重点： Class 常量池 是编译期生成的 Class 文件中的常量池 运行时常量池 是 Class 常量池 在运行时的表示形式 字符串常量池 是缓存字符串的，全局共享，它保存的是 String 实例对象的引用  Class 常量池常量池中主要存放两大类常量：字面量（Literal） 和 符号引用（Symbolic Reference），字面量比较接近于 Java 语言层面的常量概念，如文本字符串">
-<meta name="keywords" content="java, string">
+<meta name="keywords" content="java,string">
 <meta property="og:type" content="article">
 <meta property="og:title" content="字符串池、常量池（运行时常量池、Class常量池）、intern">
 <meta property="og:url" content="https://chansonchan.cn/2019/05/30/字符串池、常量池（运行时常量池、Class常量池）、intern/index.html">
 <meta property="og:site_name" content="Chanson&#39;s blog">
 <meta property="og:description" content="重点： Class 常量池 是编译期生成的 Class 文件中的常量池 运行时常量池 是 Class 常量池 在运行时的表示形式 字符串常量池 是缓存字符串的，全局共享，它保存的是 String 实例对象的引用  Class 常量池常量池中主要存放两大类常量：字面量（Literal） 和 符号引用（Symbolic Reference），字面量比较接近于 Java 语言层面的常量概念，如文本字符串">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-05-30T12:35:25.795Z">
+<meta property="og:updated_time" content="2019-05-30T13:10:31.702Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="字符串池、常量池（运行时常量池、Class常量池）、intern">
 <meta name="twitter:description" content="重点： Class 常量池 是编译期生成的 Class 文件中的常量池 运行时常量池 是 Class 常量池 在运行时的表示形式 字符串常量池 是缓存字符串的，全局共享，它保存的是 String 实例对象的引用  Class 常量池常量池中主要存放两大类常量：字面量（Literal） 和 符号引用（Symbolic Reference），字面量比较接近于 Java 语言层面的常量概念，如文本字符串">
@@ -295,7 +295,7 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Chaosn Chan">
       <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.jpg">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -333,7 +333,7 @@
                 
               
 
-              <time title="Created: 2019-05-30 20:31:25 / Modified: 20:35:25" itemprop="dateCreated datePublished" datetime="2019-05-30T20:31:25+08:00">2019-05-30</time>
+              <time title="Created: 2019-05-30 20:31:25 / Modified: 21:10:31" itemprop="dateCreated datePublished" datetime="2019-05-30T20:31:25+08:00">2019-05-30</time>
             
 
             
@@ -348,11 +348,31 @@
           
             
             
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">Comments: </span>
+                <a href="/2019/05/30/字符串池、常量池（运行时常量池、Class常量池）、intern/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/05/30/字符串池、常量池（运行时常量池、Class常量池）、intern/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
           
 
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             Views:  
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
           
 
           
@@ -413,7 +433,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/java-string/" rel="tag"># java, string</a>
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/string/" rel="tag"># string</a>
           
         </div>
       
@@ -457,6 +479,10 @@
           
 
   
+    <div class="comments" id="comments">
+    </div>
+
+  
 
 
 
@@ -492,6 +518,8 @@
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="Chaosn Chan">
+            
               <p class="site-author-name" itemprop="name">Chaosn Chan</p>
               <div class="site-description motion-element" itemprop="description"></div>
           </div>
@@ -522,7 +550,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">2</span>
+                      
+                    
+                    <span class="site-state-item-count">3</span>
                     <span class="site-state-item-name">tags</span>
                   
                 </div>
@@ -534,6 +564,32 @@
 
           
 
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/chenchensheng" title="GitHub &rarr; https://github.com/chenchensheng" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:330266801@qq.com" title="E-Mail &rarr; mailto:330266801@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
           
 
           
@@ -569,6 +625,13 @@
       
 
       
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
 
     </div>
   </aside>
@@ -593,20 +656,47 @@
 </div>
 
 
-  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.8.0</div>
-
-
-
-  <span class="post-meta-divider">|</span>
-
-
-
-  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.1.1</div>
 
 
 
 
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count"> 全站共 1.5k 字</span>
+</div>
         
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="Total Visitors">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="Total Views">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
 
 
 
@@ -619,11 +709,6 @@
       </div>
     </footer>
 
-    
-      <div class="back-to-top">
-        <i class="fa fa-arrow-up"></i>
-        
-      </div>
     
 
     
@@ -653,6 +738,12 @@
 
 
 
+
+  
+    
+    
+  
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
 
 
 
@@ -712,6 +803,36 @@
   
 
   
+  
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: true,
+    appId: 'qzpdkcRbrQkmSUskAW5ApGjf-gzGzoHsz',
+    appKey: 'urRmgdtPd2rXBX5cm552mOAr',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: false,
+    lang: '' || 'zh-cn'
+  });
+</script>
+
+
 
 
   
@@ -750,5 +871,8 @@
 
   
 
+  
+    <script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
 </body>
 </html>

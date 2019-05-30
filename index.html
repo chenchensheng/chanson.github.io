@@ -52,7 +52,7 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.1">
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.1">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=7.1.1">
 
 
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.1">
@@ -74,7 +74,7 @@
     version: '7.1.1',
     sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
     back2top: true,
-    back2top_sidebar: false,
+    back2top_sidebar: true,
     fancybox: false,
     fastclick: false,
     lazyload: false,
@@ -291,7 +291,7 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Chaosn Chan">
       <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.jpg">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -331,7 +331,7 @@
                 
               
 
-              <time title="Created: 2019-05-30 20:31:25 / Modified: 20:35:25" itemprop="dateCreated datePublished" datetime="2019-05-30T20:31:25+08:00">2019-05-30</time>
+              <time title="Created: 2019-05-30 20:31:25 / Modified: 21:10:31" itemprop="dateCreated datePublished" datetime="2019-05-30T20:31:25+08:00">2019-05-30</time>
             
 
             
@@ -345,6 +345,19 @@
 
           
             
+            
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">Comments: </span>
+                <a href="/2019/05/30/字符串池、常量池（运行时常量池、Class常量池）、intern/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/05/30/字符串池、常量池（运行时常量池、Class常量池）、intern/" itemprop="commentCount"></span>
+                </a>
+              </span>
             
           
 
@@ -372,26 +385,24 @@
       
         
           
-            <h2 id="重点："><a href="#重点：" class="headerlink" title="重点："></a>重点：</h2><ul>
-<li>Class 常量池 是编译期生成的 Class 文件中的常量池</li>
-<li>运行时常量池 是 Class 常量池 在运行时的表示形式</li>
-<li>字符串常量池 是缓存字符串的，全局共享，它保存的是 String 实例对象的引用</li>
-</ul>
-<h2 id="Class-常量池"><a href="#Class-常量池" class="headerlink" title="Class 常量池"></a><strong>Class 常量池</strong></h2><p>常量池中主要存放两大类常量：字面量（Literal） 和 符号引用（Symbolic Reference），字面量比较接近于 Java 语言层面的常量概念，如文本字符串 、声明为 final 的常量值等。而符号引用则属于编译原理方面的概念，包括了下面三类常量： </p>
-<ul>
-<li>类和接口的全限定名（Fully Qualified Name） </li>
-<li>字段的名称和描述符（Descriptor） </li>
-<li>方法的名称和描述符 </li>
-</ul>
-<p>通过 javap 命令可以看到 Class 文件的常量池部分。 </p>
-<h2 id="运行时常量池"><a href="#运行时常量池" class="headerlink" title="运行时常量池"></a><strong>运行时常量池</strong></h2><p>运行时常量池（Runtime Constant Pool）是方法区的一部分，它是 Class 文件中每一个类或接口的常量池表的运行时表示形式。Class 常量池中存放的编译期生成的各种字面量和符号引用，将在类加载后进入方法区的运行时常量池中存放。</p>
-<p>方法区与 Java 堆一样，是各个线程共享的内存区域，它用于存储已被虚拟机加载的类信息、常量、静态常量、即时编译器编译后的代码等数据。虽然 Java 虚拟机规范把方法区描述为堆的一个逻辑部分，但是它却有一个别名叫 Non-Heap（非堆）。目的应该是与 Java 堆区分开来。 </p>
-<h2 id="字符串常量池"><a href="#字符串常量池" class="headerlink" title="字符串常量池"></a><strong>字符串常量池</strong></h2><p>字符串常量池是用来缓存字符串的。对于需要重复使用的字符串，每次都去 new 一个 String 实例，无疑是在浪费资源，降低效率。所以，JVM 一般会维护一个字符串常量池，它是全局共享的，你可是把它看成是一个 HashSet<string>。需要注意的是，它保存的是堆中字符串实例的引用，并不存储实例本身。 </string></p>
-<h2 id="String-intern"><a href="#String-intern" class="headerlink" title="String.intern()"></a><strong>String.intern()</strong></h2><p>查找当前字符串常量池是否存在该字符串的引用，如果存在直接返回引用；如果不存在，则在堆中创建该字符串实例，并返回其引用。</p>
-<p>在 JDK 1.6，常量池是在永久代中的，和 Java 堆是完全分开来的区域</p>
-<p>在 JDK 1.7, 常量池在堆中</p>
+            <p>
+              重点：
+Class 常量池 是编译期生成的 Class 文件中的常量池
+运行时常量池 是 Class 常量池 在运行时的表示形式
+字符串常量池 是缓存字符串的，全局共享，它保存的是 String 实例对象的引用
 
+Class 常量池常量池中主要存放两大类常量：字面量（Literal） 和 符号引用（
+              ...
+            </p>
+          <!--noindex-->
           
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/05/30/字符串池、常量池（运行时常量池、Class常量池）、intern/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
         
       
     </div>
@@ -451,7 +462,7 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Chaosn Chan">
       <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.jpg">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -506,6 +517,19 @@
           
             
             
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">Comments: </span>
+                <a href="/2019/05/30/k8s-安装-Ubuntu-国内环境/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/05/30/k8s-安装-Ubuntu-国内环境/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
@@ -532,97 +556,28 @@
       
         
           
-            <ul>
-<li>参考:<blockquote>
-<p><a href="https://zhuanlan.zhihu.com/p/46341911" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/46341911</a></p>
-<p><a href="https://juejin.im/post/5ca6ff3a51882543e10ecb36" target="_blank" rel="noopener">https://juejin.im/post/5ca6ff3a51882543e10ecb36</a></p>
-</blockquote>
-</li>
-</ul>
-<ol>
-<li><p>添加相应的源 由于需要下载Kubeadm，Kubelet和Kubernetes-cni，多以需要添加源。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cat &lt;&lt;EOF &gt; /etc/apt/sources.list.d/kubernetes.list</span><br><span class="line">deb https://mirrors.aliyun.com/kubernetes/apt kubernetes-xenial main</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>下载Docker &amp; Kubeadm &amp; Kubelet &amp; Kubernetes-cni</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get update &amp;&amp; apt-get install -y docker.io kubelet kubernetes-cni=0.7.5-00 kubeadm</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<ul>
-<li>添加源之后，使用 apt-get update 命令会出现错误，原因是缺少相应的key，可以通过下面命令添加(E084DAB9 为上面报错的key后8位)：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">gpg --keyserver keyserver.ubuntu.com --recv-keys E084DAB9</span><br><span class="line">gpg --<span class="built_in">export</span> --armor E084DAB9 | sudo apt-key add -</span><br><span class="line"></span><br><span class="line">apt-get update &amp;&amp; apt-get install -y docker.io kubelet kubernetes-cni=0.7.5-00 kubeadm</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<ol start="3">
-<li><p>关闭swap</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo swapoff -a <span class="comment">#暂时关闭，永久关闭可以上网查询</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>获取镜像列表</p>
-<ul>
-<li>由于官方镜像地址被墙，所以我们需要首先获取所需镜像以及它们的版本。然后从国内镜像站获取。<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubeadm config images list</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-</ol>
-<ul>
-<li>获取镜像列表后可以通过下面的脚本从阿里云获取：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">images=(  <span class="comment"># 下面的镜像应该去除"k8s.gcr.io/"的前缀，版本换成上面获取到的版本</span></span><br><span class="line">    kube-apiserver:v1.14.2</span><br><span class="line">    kube-controller-manager:v1.14.2</span><br><span class="line">    kube-scheduler:v1.14.2</span><br><span class="line">    kube-proxy:v1.14.2</span><br><span class="line">    pause:3.1</span><br><span class="line">    etcd:3.3.10</span><br><span class="line">    coredns:1.3.1</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> imageName <span class="keyword">in</span> <span class="variable">$&#123;images[@]&#125;</span> ; <span class="keyword">do</span></span><br><span class="line">    docker pull registry.cn-hangzhou.aliyuncs.com/google_containers/<span class="variable">$imageName</span></span><br><span class="line">    docker tag registry.cn-hangzhou.aliyuncs.com/google_containers/<span class="variable">$imageName</span> k8s.gcr.io/<span class="variable">$imageName</span></span><br><span class="line">    docker rmi registry.cn-hangzhou.aliyuncs.com/google_containers/<span class="variable">$imageName</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+            <p>
+              
+参考:
+https://zhuanlan.zhihu.com/p/46341911
+https://juejin.im/post/5ca6ff3a51882543e10ecb36
 
-</li>
-</ul>
-<h3 id="master"><a href="#master" class="headerlink" title="master"></a>master</h3><ol>
-<li><p>初始化环境</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubeadm init --kubernetes-version=v1.14.2 --pod-network-cidr=10.244.0.0/16</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>配置授权信息</p>
-</li>
-</ol>
-<ul>
-<li>所需的命令在init成功后也会有提示，主要是为了保存相关的配置信息在用户目录下，这样不用每次都输入相关的认证信息。<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p <span class="variable">$HOME</span>/.kube</span><br><span class="line">sudo cp -i /etc/kubernetes/admin.conf <span class="variable">$HOME</span>/.kube/config</span><br><span class="line">sudo chown $(id -u):$(id -g) <span class="variable">$HOME</span>/.kube/config</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<ol start="3">
-<li>添加网络插件 ( flannel )</li>
-</ol>
-<ul>
-<li>上面安装成功后如果通过查询 kube-system 下 Pod 的运行情况，会发现和网络相关的 Pod 都处于 Pending 的状态，这是因为缺少相关的网络插件，而网络插件有很多个，可以选择自己需要的。<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<ol start="4">
-<li>查看是否安装成功<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods -n kube-system</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<ul>
-<li>如果出现类似下面的情况就说明安装完成了<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">NAME                              READY   STATUS              RESTARTS   AGE</span><br><span class="line">coredns-86c58d9df4-mmjls          1/1     Running             0          6h26m</span><br><span class="line">coredns-86c58d9df4-p7brk          1/1     Running             0          6h26m</span><br><span class="line">etcd-promote                      1/1     Running             1          6h26m</span><br><span class="line">kube-apiserver-promote            1/1     Running             1          6h26m</span><br><span class="line">kube-controller-manager-promote   1/1     Running             1          6h25m</span><br><span class="line">kube-proxy-6ml6w                  1/1     Running             1          6h26m</span><br><span class="line">kube-scheduler-promote            1/1     Running             1          6h25m</span><br></pre></td></tr></table></figure>
 
-</li>
-</ul>
-<h3 id="node-加入集群"><a href="#node-加入集群" class="headerlink" title="node 加入集群"></a>node 加入集群</h3><ol>
-<li><p>根据 master 节点 init 后提供的 join 命令加入集群</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubeadm join 192.168.14.177:6443 --token 3pkmi4.okabu6926c6pfett     --discovery-token-ca-cert-hash sha256:138262f072252dd81692cf02ed5cb0d090202a67db38962c6e64b1bb065b6014</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>在 master 节点确认</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get nodes</span><br></pre></td></tr></table></figure>
 
-</li>
-</ol>
-<p>节点都为 Ready 状态说明集群已经正确启动了。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">NAME    STATUS   ROLES    AGE     VERSION</span><br><span class="line">ndoe2   Ready    master   3h38m   v1.14.2</span><br><span class="line">node1   Ready    &lt;none&gt;   28s     v1.14.2</span><br><span class="line">node3   Ready    &lt;none&gt;   3h2m    v1.14.2</span><br></pre></td></tr></table></figure>
 
-<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><ul>
-<li><p>节点之间的 hostname 不能重复, 修改命令为</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo hostnamectl <span class="built_in">set</span>-hostname &#123;<span class="variable">$name</span>&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>默认情况下，通过 <code>kubeadm create token</code> 创建的 token ，过期时间是24小时，这就是为什么过了一天无法再次使用之前记录的 <code>kube join</code> 原生脚本的原因，也可以运行 <code>kubeadm token create --ttl 0</code> 生成一个永不过期的 token</p>
-</li>
-<li><p>查看 token</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubeadm token list</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>查看 CA证书 sha256</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl x509 -pubkey -<span class="keyword">in</span> /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2&gt;/dev/null | openssl dgst -sha256 -hex | sed <span class="string">'s/^.* //'</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>删除节点</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kubectl drain <span class="variable">$&#123;nodename&#125;</span> --delete-local-data</span><br><span class="line"></span><br><span class="line">kubectl delete node <span class="variable">$&#123;nodename&#125;</span></span><br></pre></td></tr></table></figure></li>
-</ul>
-
+添加相应的源 由于需要下载Kubeadm，Kubelet和Kubernetes-cni，多以需要添加源。
+ca
+              ...
+            </p>
+          <!--noindex-->
           
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/05/30/k8s-安装-Ubuntu-国内环境/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
         
       
     </div>
@@ -693,6 +648,8 @@
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="Chaosn Chan">
+            
               <p class="site-author-name" itemprop="name">Chaosn Chan</p>
               <div class="site-description motion-element" itemprop="description"></div>
           </div>
@@ -723,7 +680,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">2</span>
+                      
+                    
+                    <span class="site-state-item-count">3</span>
                     <span class="site-state-item-name">tags</span>
                   
                 </div>
@@ -735,6 +694,32 @@
 
           
 
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/chenchensheng" title="GitHub &rarr; https://github.com/chenchensheng" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:330266801@qq.com" title="E-Mail &rarr; mailto:330266801@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
           
 
           
@@ -752,6 +737,13 @@
 
       
 
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
       
 
     </div>
@@ -777,20 +769,47 @@
 </div>
 
 
-  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.8.0</div>
-
-
-
-  <span class="post-meta-divider">|</span>
-
-
-
-  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.1.1</div>
 
 
 
 
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count"> 全站共 1.5k 字</span>
+</div>
         
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="Total Visitors">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="Total Views">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
 
 
 
@@ -803,11 +822,6 @@
       </div>
     </footer>
 
-    
-      <div class="back-to-top">
-        <i class="fa fa-arrow-up"></i>
-        
-      </div>
     
 
     
@@ -837,6 +851,12 @@
 
 
 
+
+  
+    
+    
+  
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
 
 
 
@@ -892,6 +912,36 @@
   
 
   
+  
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: true,
+    appId: 'qzpdkcRbrQkmSUskAW5ApGjf-gzGzoHsz',
+    appKey: 'urRmgdtPd2rXBX5cm552mOAr',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: false,
+    lang: '' || 'zh-cn'
+  });
+</script>
+
+
 
 
 
@@ -928,5 +978,8 @@
 
   
 
+  
+    <script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
 </body>
 </html>
