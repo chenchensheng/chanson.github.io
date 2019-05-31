@@ -104,13 +104,13 @@
 <meta property="og:site_name" content="Chanson&#39;s blog">
 <meta property="og:description" content="volatile, synchronized1. 内存模型的相关概念 CPU 的高速缓存解决了内存读写数据慢的问题。但在多核 CPU 或多线程中, 会有缓存一致性问题: 如果一个变量在多个 CPU中 都存在缓存 ( 此变量称为共享变量 )，那么就可能存在缓存不一致的问题。     通常来说有以下 2 种解决方法 ( 硬件层面上提供的方式 )： 通过在总线加 LOCK# 锁的方式 在锁住总线期间，其">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="https://chansonchan.cn/2019/05/31/imgs/memory-model.jpg">
-<meta property="og:image" content="https://chansonchan.cn/2019/05/31/imgs/synchronized.jpg">
-<meta property="og:updated_time" content="2019-05-31T12:12:34.885Z">
+<meta property="og:image" content="https://chansonchan.cn/images/memory-model.jpg">
+<meta property="og:image" content="https://chansonchan.cn/images/synchronized.jpg">
+<meta property="og:updated_time" content="2019-05-31T12:22:55.666Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java 关键字 volatile、synchronized">
 <meta name="twitter:description" content="volatile, synchronized1. 内存模型的相关概念 CPU 的高速缓存解决了内存读写数据慢的问题。但在多核 CPU 或多线程中, 会有缓存一致性问题: 如果一个变量在多个 CPU中 都存在缓存 ( 此变量称为共享变量 )，那么就可能存在缓存不一致的问题。     通常来说有以下 2 种解决方法 ( 硬件层面上提供的方式 )： 通过在总线加 LOCK# 锁的方式 在锁住总线期间，其">
-<meta name="twitter:image" content="https://chansonchan.cn/2019/05/31/imgs/memory-model.jpg">
+<meta name="twitter:image" content="https://chansonchan.cn/images/memory-model.jpg">
 
 
 
@@ -370,7 +370,7 @@
                 
               
 
-              <time title="Created: 2019-05-31 14:38:33 / Modified: 20:12:34" itemprop="dateCreated datePublished" datetime="2019-05-31T14:38:33+08:00">2019-05-31</time>
+              <time title="Created: 2019-05-31 14:38:33 / Modified: 20:22:55" itemprop="dateCreated datePublished" datetime="2019-05-31T14:38:33+08:00">2019-05-31</time>
             
 
             
@@ -466,7 +466,7 @@
 </ol>
 </li>
 </ul>
-<p><img src="../imgs/memory-model.jpg" alt></p>
+<p><img src="/images/memory-model.jpg" alt></p>
 <h2 id="2-并发编程三大性质"><a href="#2-并发编程三大性质" class="headerlink" title="2. 并发编程三大性质"></a>2. 并发编程三大性质</h2><h3 id="1-原子性"><a href="#1-原子性" class="headerlink" title="1. 原子性"></a>1. 原子性</h3><ul>
 <li>一个操作或者多个操作, 要么全部执行并且执行的过程不会被任何因素打断, 要么就都不执行。</li>
 </ul>
@@ -565,7 +565,7 @@
 <ul>
 <li>加入 volatile 原因: 由于指令重排, <code>instance = new Singleton();</code> 语句的内部的实现可能会在完成对象初始化之前就已经将其赋值给 instance 引用，恰好另一个线程进入方法判断 instance 引用不为 null，然后就将其返回使用，导致出错。</li>
 </ul>
-<h2 id="5-synchronized-关键字"><a href="#5-synchronized-关键字" class="headerlink" title="5. synchronized 关键字"></a>5. synchronized 关键字</h2><h3 id="1-使用场景"><a href="#1-使用场景" class="headerlink" title="1. 使用场景"></a>1. 使用场景</h3><p><img src="../imgs/synchronized.jpg" alt></p>
+<h2 id="5-synchronized-关键字"><a href="#5-synchronized-关键字" class="headerlink" title="5. synchronized 关键字"></a>5. synchronized 关键字</h2><h3 id="1-使用场景"><a href="#1-使用场景" class="headerlink" title="1. 使用场景"></a>1. 使用场景</h3><p><img src="/images/synchronized.jpg" alt></p>
 <h3 id="2-对象锁（monitor）机制"><a href="#2-对象锁（monitor）机制" class="headerlink" title="2. 对象锁（monitor）机制"></a>2. 对象锁（monitor）机制</h3><ul>
 <li><p><strong>锁的重入性</strong>，即在同一锁程中，线程不需要再次获取同一把锁。Synchronized 先天具有重入性。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyClass</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">method1</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        method2();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">method2</span><span class="params">()</span> </span>&#123;</span><br><span class="line">         </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
