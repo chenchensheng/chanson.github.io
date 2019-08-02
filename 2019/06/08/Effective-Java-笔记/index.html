@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.1" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.1.1',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: true,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="1. 考虑使用静态工厂方法替代构造方法优点 通过方法名体现不同构造方式的差异 不需要每次调用时都创建一个新对象 ( 单例模式, 享元模式 ) 可以返回其返回类型的任何子类型的对象 在编写包含该方法的类时，返回的对象的类不需要存在  限制 没有公共或受保护构造方法的类不能被子类化 ( 因为大部分实现会将构造函数设为私有 ) 没有构造函数那么明显  2. 当构造方法参数过多时使用 builder 模式">
+<meta name="keywords" content="java,effective-java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Effective Java 笔记">
+<meta property="og:url" content="https://chansonchan.cn/2019/06/08/Effective-Java-笔记/index.html">
+<meta property="og:site_name" content="Chanson&#39;s blog">
+<meta property="og:description" content="1. 考虑使用静态工厂方法替代构造方法优点 通过方法名体现不同构造方式的差异 不需要每次调用时都创建一个新对象 ( 单例模式, 享元模式 ) 可以返回其返回类型的任何子类型的对象 在编写包含该方法的类时，返回的对象的类不需要存在  限制 没有公共或受保护构造方法的类不能被子类化 ( 因为大部分实现会将构造函数设为私有 ) 没有构造函数那么明显  2. 当构造方法参数过多时使用 builder 模式">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-07-30T05:38:20.249Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Effective Java 笔记">
+<meta name="twitter:description" content="1. 考虑使用静态工厂方法替代构造方法优点 通过方法名体现不同构造方式的差异 不需要每次调用时都创建一个新对象 ( 单例模式, 享元模式 ) 可以返回其返回类型的任何子类型的对象 在编写包含该方法的类时，返回的对象的类不需要存在  限制 没有公共或受保护构造方法的类不能被子类化 ( 因为大部分实现会将构造函数设为私有 ) 没有构造函数那么明显  2. 当构造方法参数过多时使用 builder 模式">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://chansonchan.cn/2019/06/08/Effective-Java-笔记/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Effective Java 笔记 | Chanson's blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Chanson's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://chansonchan.cn/2019/06/08/Effective-Java-笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Chaosn Chan">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chanson's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Effective Java 笔记
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-06-08 15:26:37" itemprop="dateCreated datePublished" datetime="2019-06-08T15:26:37+08:00">2019-06-08</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-07-30 13:38:20" itemprop="dateModified" datetime="2019-07-30T13:38:20+08:00">2019-07-30</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/programming/" itemprop="url" rel="index"><span itemprop="name">programming</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">Comments: </span>
+                <a href="/2019/06/08/Effective-Java-笔记/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/08/Effective-Java-笔记/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             Views:  
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="1-考虑使用静态工厂方法替代构造方法"><a href="#1-考虑使用静态工厂方法替代构造方法" class="headerlink" title="1. 考虑使用静态工厂方法替代构造方法"></a>1. 考虑使用静态工厂方法替代构造方法</h1><h2 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h2><ol>
+<li>通过方法名体现不同构造方式的差异</li>
+<li>不需要每次调用时都创建一个新对象 ( 单例模式, 享元模式 )</li>
+<li>可以返回其返回类型的任何子类型的对象</li>
+<li>在编写包含该方法的类时，返回的对象的类不需要存在</li>
+</ol>
+<h2 id="限制"><a href="#限制" class="headerlink" title="限制"></a>限制</h2><ol>
+<li>没有公共或受保护构造方法的类不能被子类化 ( 因为大部分实现会将构造函数设为私有 )</li>
+<li>没有构造函数那么明显</li>
+</ol>
+<h1 id="2-当构造方法参数过多时使用-builder-模式"><a href="#2-当构造方法参数过多时使用-builder-模式" class="headerlink" title="2. 当构造方法参数过多时使用 builder 模式"></a>2. 当构造方法参数过多时使用 builder 模式</h1><h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><ol>
+<li><p>可伸缩 (telescoping constructor) 构造方法模式, 多个不同参数数量的构造方法</p>
+<ul>
+<li>当有很多参数时，很难编写代码，而且很难读懂它</li>
+</ul>
+</li>
+<li><p>JavaBeans 模式, 调用 setter 方法来设置参数</p>
+<ul>
+<li>由于构造方法在多次调用中被分割，在过程中可能处于不一致的状态</li>
+</ul>
+</li>
+<li><p>Builder 模式, 构造方法为 private, 通过内嵌的 Builder 类调用 build() 返回本身</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">NutritionFacts cocaCola = <span class="keyword">new</span> NutritionFacts.Builder(<span class="number">240</span>, <span class="number">8</span>)</span><br><span class="line">   .calories(<span class="number">100</span>).sodium(<span class="number">35</span>).carbohydrate(<span class="number">27</span>).build();</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>可以在 build() 里加入参数检查</li>
+<li>编写简单, 易读</li>
+<li>能区分必须和可选字段</li>
+</ul>
+</li>
+<li><p>平行层次的 Builder, 抽象类有抽象的 builder, 具体的类有具体的 builder</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">NyPizza pizza = <span class="keyword">new</span> NyPizza.Builder(SMALL)</span><br><span class="line">        .addTopping(SAUSAGE).addTopping(ONION).build();</span><br><span class="line"></span><br><span class="line">Calzone calzone = <span class="keyword">new</span> Calzone.Builder()</span><br><span class="line">        .addTopping(HAM).sauceInside().build();</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h1 id="3-使用私有构造方法或枚类实现-Singleton-属性"><a href="#3-使用私有构造方法或枚类实现-Singleton-属性" class="headerlink" title="3. 使用私有构造方法或枚类实现 Singleton 属性"></a>3. 使用私有构造方法或枚类实现 Singleton 属性</h1><h2 id="私有构造方法"><a href="#私有构造方法" class="headerlink" title="私有构造方法"></a>私有构造方法</h2><ul>
+<li>通过公共静态成员提供访问</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Singleton with public final field</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Elvis</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Elvis INSTANCE = <span class="keyword">new</span> Elvis();</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Elvis</span><span class="params">()</span> </span>&#123; ... &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">leaveTheBuilding</span><span class="params">()</span> </span>&#123; ... &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>通过静态的工厂方法提供访问<ul>
+<li>优点: 可以灵活地改变你的想法</li>
+<li>优点: 可以编写一个泛型单例工厂</li>
+<li>优点: 方法引用可以用 <code>Supplier</code></li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">// Singleton with static factory</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Elvis</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Elvis INSTANCE = <span class="keyword">new</span> Elvis();</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Elvis</span><span class="params">()</span> </span>&#123; ... &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Elvis <span class="title">getInstance</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> INSTANCE; &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">leaveTheBuilding</span><span class="params">()</span> </span>&#123; ... &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>警告<ul>
+<li>可以使用 <code>AccessibleObject.setAccessible</code> 方法，以反射方式调用私有构造方法 </li>
+<li>为了维护单例的保证，声明所有的实例属性为 <code>transient</code>，并提供一个 <code>readResolve</code> 方法 </li>
+</ul>
+</li>
+</ul>
+<h2 id="枚举"><a href="#枚举" class="headerlink" title="枚举"></a>枚举</h2><ul>
+<li>声明单一元素的枚举类<ul>
+<li>简洁</li>
+<li>提供了免费的序列化机制</li>
+<li>提供了针对多个实例化的保证</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Enum singleton - the preferred approach</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> Elvis &#123;</span><br><span class="line">		INSTANCE;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">leaveTheBuilding</span><span class="params">()</span> </span>&#123; ... &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="4-使用私有构造方法执行非实例化"><a href="#4-使用私有构造方法执行非实例化" class="headerlink" title="4. 使用私有构造方法执行非实例化"></a>4. 使用私有构造方法执行非实例化</h1><ul>
+<li>如一些工具类, 只包含静态方法, 可以用来避免其实例化和被继承</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Noninstantiable utility class</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UtilityClass</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Suppress default constructor for noninstantiability</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">UtilityClass</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> AssertionError();</span><br><span class="line">    &#125;</span><br><span class="line">    ... <span class="comment">// Remainder omitted</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="5-使用依赖注入取代硬连接资源-hardwiring"><a href="#5-使用依赖注入取代硬连接资源-hardwiring" class="headerlink" title="5. 使用依赖注入取代硬连接资源(hardwiring"></a>5. 使用依赖注入取代硬连接资源(hardwiring</h1><p>resources)</p>
+<ul>
+<li>不要使用单例或静态的实用类来实现一个类，该类依赖于一个或多个底层资源，这些资源的行为会影响类<br>的行为，并且不让类直接创建这些资源。相反，将资源或工厂传递给构造方法 (或静态工厂或 builder 模式)。这种称为依赖注入的实践将极大地增强类的灵活性、可重用性和可测试性。</li>
+</ul>
+<h1 id="6-避免创建不必要的对象"><a href="#6-避免创建不必要的对象" class="headerlink" title="6. 避免创建不必要的对象"></a>6. 避免创建不必要的对象</h1><ul>
+<li><p>如果对象是不可变的，它总是可以被重用</p>
+</li>
+<li><p>注意无意识的自动装箱 (autoboxing)</p>
+</li>
+<li><p>在现代 JVM 实现上, 使用构造方法创建和回收小的对象其实是非常廉价的, 创建额外的对象以增强程序的清晰<br>度，简单性或功能性通常是件好事</p>
+</li>
+<li><p>除非池中的对象非常重量级，否则通过维护自己的对象池来避免对象创建是一个坏主意</p>
+</li>
+</ul>
+<h1 id="7-消除过期的对象引用"><a href="#7-消除过期的对象引用" class="headerlink" title="7. 消除过期的对象引用"></a>7. 消除过期的对象引用</h1><ul>
+<li>当一个类自己管理内存时，程序员应该警惕内存泄漏问题<ul>
+<li>每当一个元素被释放时，元素中包含的任何对象引用都应该被清除</li>
+</ul>
+</li>
+<li>另一个常见的内存泄漏来源是缓存<ul>
+<li>只要在缓存之外存在对某个项 (entry) 的键 (key) 引用，那么这项就是明确有关联的，就可以用 <code>WeakHashMap</code> 来表示缓存</li>
+<li>可以通过一个后台线程或将新的项添加到缓存时顺便清理</li>
+</ul>
+</li>
+<li>第三个常见的内存泄漏来源是监听器和其他回调<ul>
+<li>客户端注册回调, 仅将它们保存在 <code>WeakHashMap</code> 的键 (key) 中</li>
+</ul>
+</li>
+</ul>
+<h1 id="8-避免使用-Finalizer-和-Cleaner-机制"><a href="#8-避免使用-Finalizer-和-Cleaner-机制" class="headerlink" title="8. 避免使用 Finalizer 和 Cleaner 机制"></a>8. 避免使用 Finalizer 和 Cleaner 机制</h1><h2 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h2><ul>
+<li><p>不能保证他们能够及时执行</p>
+</li>
+<li><p>不要相信 <code>System.gc</code> 和 <code>System.runFinalization</code> 方法, 可能会增加被执行的几率，但不能保证一定会执行</p>
+</li>
+<li><p>在执行 Finalizer 机制过程中，未捕获的异常会被忽略</p>
+</li>
+<li><p>导致严重的性能损失</p>
+</li>
+<li><p>严重的安全问题: 它们会打开你的类来进行 Finalizer 机制攻击</p>
+</li>
+</ul>
+<h2 id="正确做法"><a href="#正确做法" class="headerlink" title="正确做法"></a>正确做法</h2><ul>
+<li>实现 <code>AutoCloseable</code> 接口，并要求客户在不再需要时调用每个实例 <code>close</code> 方法，通常使用 <code>try-with-resources</code> 确保终止</li>
+</ul>
+<h2 id="合法用途"><a href="#合法用途" class="headerlink" title="合法用途"></a>合法用途</h2><ul>
+<li>作为一个安全网 (safetynet)，以防资源的拥有者忽略了它的 <code>close</code> 方法</li>
+<li>与本地对等类(native peers)有关。本地对等类是一个由普通对象委托的本地 (非 Java) 对象。由于本地对等类不是普通的 Java 对象，所以垃圾收集器并不知道它，当它的 Java 对等对象被回收时，本地对等类也不会回收。</li>
+</ul>
+<h1 id="9-使用-try-with-resources-语句替代-try-finally-语句"><a href="#9-使用-try-with-resources-语句替代-try-finally-语句" class="headerlink" title="9. 使用 try-with-resources 语句替代 try-finally 语句"></a>9. 使用 try-with-resources 语句替代 try-finally 语句</h1><h2 id="对比"><a href="#对比" class="headerlink" title="对比"></a>对比</h2><ul>
+<li><code>try-finally</code></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// try-finally is ugly when used with more than one resource!</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">copy</span><span class="params">(String src, String dst)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    InputStream in = <span class="keyword">new</span> FileInputStream(src);</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        OutputStream out = <span class="keyword">new</span> FileOutputStream(dst);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">byte</span>[] buf = <span class="keyword">new</span> <span class="keyword">byte</span>[BUFFER_SIZE];</span><br><span class="line">            <span class="keyword">int</span> n;</span><br><span class="line">            <span class="keyword">while</span> ((n = in.read(buf)) &gt;= <span class="number">0</span>)</span><br><span class="line">                out.write(buf, <span class="number">0</span>, n);</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            out.close();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        in.close();</span><br><span class="line">&#125; &#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>try-with-resources</code></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// try-with-resources on multiple resources - short and sweet</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">copy</span><span class="params">(String src, String dst)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> (InputStream   in = <span class="keyword">new</span> FileInputStream(src);</span><br><span class="line">         OutputStream out = <span class="keyword">new</span> FileOutputStream(dst)) &#123;</span><br><span class="line">        <span class="keyword">byte</span>[] buf = <span class="keyword">new</span> <span class="keyword">byte</span>[BUFFER_SIZE];</span><br><span class="line">        <span class="keyword">int</span> n;</span><br><span class="line">        <span class="keyword">while</span> ((n = in.read(buf)) &gt;= <span class="number">0</span>)</span><br><span class="line">&#125; &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="分析-1"><a href="#分析-1" class="headerlink" title="分析"></a>分析</h2><ul>
+<li><p>用 <code>try-finally</code> 语句关闭资源, 有多个资源时容易犯错</p>
+</li>
+<li><p><code>try-with-resources</code> 块和 <code>finally</code> 块中的代码都可能抛出异常</p>
+<ul>
+<li><p><code>finally</code> 块中<code>close()</code>时抛出的异常会冲掉前面的异常</p>
+</li>
+<li><p><code>try-with-resources</code> 块中<code>close()</code>(不可见) 时抛出的异常会被抑制 (suppressed), 这些抑制的异常没 </p>
+<p>有被抛弃， 而是打印在堆栈跟踪中，并标注为被抑制了</p>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="10-重写-equals-方法时遵守通用约定"><a href="#10-重写-equals-方法时遵守通用约定" class="headerlink" title="10. 重写 equals 方法时遵守通用约定"></a>10. 重写 equals 方法时遵守通用约定</h1><h2 id="不覆盖-equals-方法的场景"><a href="#不覆盖-equals-方法的场景" class="headerlink" title="不覆盖 equals 方法的场景"></a>不覆盖 <code>equals</code> 方法的场景</h2><ul>
+<li>每个类的实例都是固有唯一的</li>
+<li>类不需要提供一个“逻辑相等(logical equality)”的测试功能</li>
+<li>父类已经重写了 equals 方法，则父类行为完全适合于该子类</li>
+<li>类是私有的或包级私有的</li>
+</ul>
+<h2 id="覆盖-equals-方法的场景"><a href="#覆盖-equals-方法的场景" class="headerlink" title="覆盖 equals 方法的场景"></a>覆盖 <code>equals</code> 方法的场景</h2><ul>
+<li>需要提供一个逻辑相等的判断, 且父类还没重写过<code>equals</code></li>
+</ul>
+<h2 id="通用约定"><a href="#通用约定" class="headerlink" title="通用约定"></a>通用约定</h2><ul>
+<li><strong>自反性 (Reflexivity)</strong>: 对于任何非空引用 <code>x</code>， <code>x.equals(x)</code> 必须返回 <code>true</code></li>
+<li><strong>对称性 (Symmetry)</strong>: 对于任何非空引用 <code>x</code> 和 <code>y</code>，如果且仅当 <code>y.equals(x) == true</code>, <code>x.equals(y)</code>必须为 <code>true</code></li>
+<li><strong>传递性 (Transitivity)</strong>: 对于任何非空引用 <code>x、y、z</code>，如果 <code>x.equals(y) == true</code>, <code>y.equals(z) == true</code>, 则<code>x.equals(z)</code>必须返回 <code>true</code></li>
+<li><strong>一致性 (Consistent)</strong>: 对于任何非空引用 <code>x</code> 和 <code>y</code>，如果在 equals 比较中使用的信息没有修改，则<code>x.equals(y)</code>的多次调用必须始终返回 <code>true</code> 或始终返回 <code>false</code></li>
+<li><strong>非空性 (Non-nullity)</strong>: 对于任何非空引用 <code>x</code>,  <code>x.equals(null)</code> 必须返回 <code>false</code></li>
+</ul>
+<h2 id="编写高质量-equals-方法"><a href="#编写高质量-equals-方法" class="headerlink" title="编写高质量 equals 方法"></a>编写高质量 equals 方法</h2><ul>
+<li><p>使用 <code>instanceof</code> 运算符来检查参数是否具有正确的类型, 再将参数转换为正确的类型</p>
+</li>
+<li><p>检查是否与类中的每个重要属性相匹配</p>
+</li>
+<li><p>不同类型的比较方式</p>
+<ul>
+<li>对于类型为非 <code>float</code> 或 <code>double</code> 的基本类型，使用 <code>==</code> 运算符进行比较</li>
+<li>对于对象引用属性，递归地调用 <code>equals</code> 方法</li>
+<li>对于 <code>float</code> 基本类型的属性，使用静态方法 <code>Float.compare(float, float)</code></li>
+<li>对于 <code>double</code> 基本类型的属性，使用静态方法 <code>Double.compare(double, double)</code></li>
+<li>对于数组属性，将这些准则应用于每个元素</li>
+</ul>
+</li>
+<li><p>某些对象引用的属性可能合法地包含 <code>null</code>。 为避免出现 <code>NullPointerException</code> 异常，请使用静态方法<br><code>Objects.equals(Object, Object)</code> 检查这些属性是否相等</p>
+</li>
+<li><p>性能优化</p>
+<ul>
+<li>用 <code>==</code> 运算符检查参数是否为该对象的引用, 如果是, 返回 <code>true</code></li>
+<li>首先比较最可能不同的属性, 开销比较小的属性</li>
+<li>不要比较不属于对象逻辑状态的属性</li>
+<li>不需要比较可以从“重要属性”计算出来的派生属性</li>
+</ul>
+</li>
+<li><p>注意</p>
+<ul>
+<li>当重写 <code>equals</code> 方法时，同时也要重写 <code>hashCode</code> 方法</li>
+<li>不要让 <code>equals</code> 方法试图太聪明, 例如<code>File</code> 类不应该试图将引用的符号链接等同于同一文件对象</li>
+<li>在 <code>equal</code> 时方法声明中，不要将参数 <code>Object</code> 替换成其他类型</li>
+</ul>
+</li>
+</ul>
+<h1 id="11-重写-equals-方法时同时也要重写-hashcode-方法"><a href="#11-重写-equals-方法时同时也要重写-hashcode-方法" class="headerlink" title="11. 重写 equals 方法时同时也要重写 hashcode 方法"></a>11. 重写 equals 方法时同时也要重写 hashcode 方法</h1><h2 id="Object-规范"><a href="#Object-规范" class="headerlink" title="Object 规范"></a>Object 规范</h2><ul>
+<li><p>当在一个应用程序执行过程中，如果在 equals 方法比较中没有修改任何信息，在一个对象上重复调用 hashCode 方法时，它必须始终返回相同的值。从一个应用程序到另一个应用程序的每一次执行返回的值可以是不一致的。 </p>
+</li>
+<li><p><strong>如果两个对象根据 equals(Object) 方法比较是相等的，那么在两个对象上调用 hashCode 就必须产生的结果是相同的整数。</strong> </p>
+</li>
+<li><p>如果两个对象根据 equals(Object) 方法比较并不相等，则不要求在每个对象上调用 hashCode 都必须产生不同的结果。 但是，程序员应该意识到，为不相等的对象生成不同的结果可能会提高散列表(hash tables)的性能。 </p>
+</li>
+</ul>
+<h2 id="一个简单的配方"><a href="#一个简单的配方" class="headerlink" title="一个简单的配方"></a>一个简单的配方</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Typical hashCode method</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> result = Short.hashCode(areaCode);</span><br><span class="line">    result = <span class="number">31</span> * result + Short.hashCode(prefix);</span><br><span class="line">    result = <span class="number">31</span> * result + Short.hashCode(lineNum);</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>基本类型，使用 <code>Type.hashCode(f)</code> 方法计算，其中 <code>Type</code> 类是对应属性 f 基本类型的包装类。 </p>
+</li>
+<li><p>如果该属性是一个对象引用，并且该类的 equals 方法通过递归调用 equals 来比较该属性，并递归地调用 hashCode 方法。 如果需要更复杂的比较，则计算此字段的“范式(“canonical representation)”，并在范式上调用 hashCode。 如果该字段的值为空，则使用 0(也可以使用其他常数，但通常来使用 0 表示)。 </p>
+</li>
+<li><p>如果属性 f 是一个数组，把它看作每个重要的元素都是一个独立的属性。 也就是说，通过递归地应用 这些规则计算每个重要元素的哈希码，并且将每个步骤的值合并。 如果数组没有重要的元素，则使用一个常量，最好不要为 0。如果所有元素都很重要，则使用 Arrays.hashCode 方法。 </p>
+</li>
+</ul>
+<h1 id="12-始终重写-toString-方法"><a href="#12-始终重写-toString-方法" class="headerlink" title="12. 始终重写 toString 方法"></a>12. 始终重写 toString 方法</h1><ul>
+<li>便于调试</li>
+</ul>
+<h1 id="13-谨慎地重写-clone-方法"><a href="#13-谨慎地重写-clone-方法" class="headerlink" title="13. 谨慎地重写 clone 方法"></a>13. 谨慎地重写 clone 方法</h1><h2 id="缺陷"><a href="#缺陷" class="headerlink" title="缺陷"></a>缺陷</h2><ul>
+<li>Cloneable 接口缺少 clone 方法, 而 Object 的 clone 方法是受保护的, 所以不能保证调用成功</li>
+</ul>
+<h2 id="clone-方法的通用规范-非绝对"><a href="#clone-方法的通用规范-非绝对" class="headerlink" title="clone 方法的通用规范 ( 非绝对 )"></a>clone 方法的通用规范 ( 非绝对 )</h2><ul>
+<li><code>x.clone() != x</code></li>
+<li><code>x.clone().getClass() == x.getClass()</code></li>
+<li><code>x.clone().equals(x) == true</code></li>
+<li>如果一个 final 类有一个不调用 <code>super.clone</code> 的 clone 方法, 那么这个类没有理由实现 Cloneable 接口，因为它不依赖于 Object 的 clone 实现的行为</li>
+</ul>
+<h2 id="复制构造方法及其静态工厂变体与-Cloneable-clone-相比有许多优点"><a href="#复制构造方法及其静态工厂变体与-Cloneable-clone-相比有许多优点" class="headerlink" title="复制构造方法及其静态工厂变体与 Cloneable/clone 相比有许多优点"></a>复制构造方法及其静态工厂变体与 Cloneable/clone 相比有许多优点</h2><ul>
+<li>不依赖风险很大的语言外的对象创建机制</li>
+<li>不要求遵守那些不太明确的惯例</li>
+<li>不会与 final 属性的正确使用相冲突</li>
+<li>不会抛出不必要的检查异常</li>
+<li>不需要类型转换</li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/effective-java/" rel="tag"># effective-java</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/31/Java-关键字-transient/" rel="next" title="Java 关键字 transient">
+                <i class="fa fa-chevron-left"></i> Java 关键字 transient
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/06/13/Gitlab-Devops-配置/" rel="prev" title="Gitlab Devops 配置">
+                Gitlab Devops 配置 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="Chaosn Chan">
+            
+              <p class="site-author-name" itemprop="name">Chaosn Chan</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                    <span class="site-state-item-count">1</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/chenchensheng" title="GitHub &rarr; https://github.com/chenchensheng" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:330266801@qq.com" title="E-Mail &rarr; mailto:330266801@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-考虑使用静态工厂方法替代构造方法"><span class="nav-number">1.</span> <span class="nav-text">1. 考虑使用静态工厂方法替代构造方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#优点"><span class="nav-number">1.1.</span> <span class="nav-text">优点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#限制"><span class="nav-number">1.2.</span> <span class="nav-text">限制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-当构造方法参数过多时使用-builder-模式"><span class="nav-number">2.</span> <span class="nav-text">2. 当构造方法参数过多时使用 builder 模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#分析"><span class="nav-number">2.1.</span> <span class="nav-text">分析</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-使用私有构造方法或枚类实现-Singleton-属性"><span class="nav-number">3.</span> <span class="nav-text">3. 使用私有构造方法或枚类实现 Singleton 属性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#私有构造方法"><span class="nav-number">3.1.</span> <span class="nav-text">私有构造方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#枚举"><span class="nav-number">3.2.</span> <span class="nav-text">枚举</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-使用私有构造方法执行非实例化"><span class="nav-number">4.</span> <span class="nav-text">4. 使用私有构造方法执行非实例化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-使用依赖注入取代硬连接资源-hardwiring"><span class="nav-number">5.</span> <span class="nav-text">5. 使用依赖注入取代硬连接资源(hardwiring</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-避免创建不必要的对象"><span class="nav-number">6.</span> <span class="nav-text">6. 避免创建不必要的对象</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-消除过期的对象引用"><span class="nav-number">7.</span> <span class="nav-text">7. 消除过期的对象引用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-避免使用-Finalizer-和-Cleaner-机制"><span class="nav-number">8.</span> <span class="nav-text">8. 避免使用 Finalizer 和 Cleaner 机制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#缺点"><span class="nav-number">8.1.</span> <span class="nav-text">缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#正确做法"><span class="nav-number">8.2.</span> <span class="nav-text">正确做法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#合法用途"><span class="nav-number">8.3.</span> <span class="nav-text">合法用途</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#9-使用-try-with-resources-语句替代-try-finally-语句"><span class="nav-number">9.</span> <span class="nav-text">9. 使用 try-with-resources 语句替代 try-finally 语句</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#对比"><span class="nav-number">9.1.</span> <span class="nav-text">对比</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分析-1"><span class="nav-number">9.2.</span> <span class="nav-text">分析</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#10-重写-equals-方法时遵守通用约定"><span class="nav-number">10.</span> <span class="nav-text">10. 重写 equals 方法时遵守通用约定</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#不覆盖-equals-方法的场景"><span class="nav-number">10.1.</span> <span class="nav-text">不覆盖 equals 方法的场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#覆盖-equals-方法的场景"><span class="nav-number">10.2.</span> <span class="nav-text">覆盖 equals 方法的场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通用约定"><span class="nav-number">10.3.</span> <span class="nav-text">通用约定</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编写高质量-equals-方法"><span class="nav-number">10.4.</span> <span class="nav-text">编写高质量 equals 方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#11-重写-equals-方法时同时也要重写-hashcode-方法"><span class="nav-number">11.</span> <span class="nav-text">11. 重写 equals 方法时同时也要重写 hashcode 方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Object-规范"><span class="nav-number">11.1.</span> <span class="nav-text">Object 规范</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一个简单的配方"><span class="nav-number">11.2.</span> <span class="nav-text">一个简单的配方</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#12-始终重写-toString-方法"><span class="nav-number">12.</span> <span class="nav-text">12. 始终重写 toString 方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#13-谨慎地重写-clone-方法"><span class="nav-number">13.</span> <span class="nav-text">13. 谨慎地重写 clone 方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#缺陷"><span class="nav-number">13.1.</span> <span class="nav-text">缺陷</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#clone-方法的通用规范-非绝对"><span class="nav-number">13.2.</span> <span class="nav-text">clone 方法的通用规范 ( 非绝对 )</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#复制构造方法及其静态工厂变体与-Cloneable-clone-相比有许多优点"><span class="nav-number">13.3.</span> <span class="nav-text">复制构造方法及其静态工厂变体与 Cloneable/clone 相比有许多优点</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Chaosn Chan</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count"> 全站共 8.6k 字</span>
+</div>
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="Total Visitors">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="Total Views">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+  
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.1"></script>
+
+  <script src="/js/motion.js?v=7.1.1"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.1.1"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.1"></script>
+<script src="/js/post-details.js?v=7.1.1"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.1"></script>
+
+
+  
+
+  
+
+  
+
+  
+  
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: true,
+    appId: 'qzpdkcRbrQkmSUskAW5ApGjf-gzGzoHsz',
+    appKey: 'urRmgdtPd2rXBX5cm552mOAr',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: false,
+    lang: '' || 'zh-cn'
+  });
+</script>
+
+
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    <script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+</body>
+</html>
