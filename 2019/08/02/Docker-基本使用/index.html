@@ -96,18 +96,18 @@
 
 
 
-  <meta name="description" content="transient 一旦变量被 transient 修饰，变量将不再是对象持久化的一部分，该变量内容在序列化后无法获得访问。  transient 关键字只能修饰变量，而不能修饰方法和类。注意，本地变量是不能被 transient 关键字修饰的。变量如果是用户自定义类变量，则该类需要实现 Serializable 接口。  一个静态变量不管是否被 transient 修饰，均不能被序列化。   参">
-<meta name="keywords" content="java,transient">
+  <meta name="description" content="停止并删除所有容器1$ docker stop $(docker ps -q) docker rm $(docker ps -aq)  清理镜像12345# 清理 dangling 镜像$ docker rmi $(docker images -f &quot;dangling=true&quot; -q)# 根据通配符查找删除指定镜像$ docker rmi $(docker images -f &quot;referenc">
+<meta name="keywords" content="docker,docker-swarm,docker-compose">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java 关键字 transient">
-<meta property="og:url" content="https://chansonchan.cn/2019/05/31/Java-关键字-transient/index.html">
+<meta property="og:title" content="Docker 基本使用">
+<meta property="og:url" content="https://chansonchan.cn/2019/08/02/Docker-基本使用/index.html">
 <meta property="og:site_name" content="Chanson&#39;s blog">
-<meta property="og:description" content="transient 一旦变量被 transient 修饰，变量将不再是对象持久化的一部分，该变量内容在序列化后无法获得访问。  transient 关键字只能修饰变量，而不能修饰方法和类。注意，本地变量是不能被 transient 关键字修饰的。变量如果是用户自定义类变量，则该类需要实现 Serializable 接口。  一个静态变量不管是否被 transient 修饰，均不能被序列化。   参">
+<meta property="og:description" content="停止并删除所有容器1$ docker stop $(docker ps -q) docker rm $(docker ps -aq)  清理镜像12345# 清理 dangling 镜像$ docker rmi $(docker images -f &quot;dangling=true&quot; -q)# 根据通配符查找删除指定镜像$ docker rmi $(docker images -f &quot;referenc">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-05-31T11:16:10.708Z">
+<meta property="og:updated_time" content="2019-08-13T02:50:28.263Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Java 关键字 transient">
-<meta name="twitter:description" content="transient 一旦变量被 transient 修饰，变量将不再是对象持久化的一部分，该变量内容在序列化后无法获得访问。  transient 关键字只能修饰变量，而不能修饰方法和类。注意，本地变量是不能被 transient 关键字修饰的。变量如果是用户自定义类变量，则该类需要实现 Serializable 接口。  一个静态变量不管是否被 transient 修饰，均不能被序列化。   参">
+<meta name="twitter:title" content="Docker 基本使用">
+<meta name="twitter:description" content="停止并删除所有容器1$ docker stop $(docker ps -q) docker rm $(docker ps -aq)  清理镜像12345# 清理 dangling 镜像$ docker rmi $(docker images -f &quot;dangling=true&quot; -q)# 根据通配符查找删除指定镜像$ docker rmi $(docker images -f &quot;referenc">
 
 
 
@@ -115,7 +115,7 @@
 
   
   
-  <link rel="canonical" href="https://chansonchan.cn/2019/05/31/Java-关键字-transient/">
+  <link rel="canonical" href="https://chansonchan.cn/2019/08/02/Docker-基本使用/">
 
 
 
@@ -125,7 +125,7 @@
   };
 </script>
 
-  <title>Java 关键字 transient | Chanson's blog</title>
+  <title>Docker 基本使用 | Chanson's blog</title>
   
 
 
@@ -324,7 +324,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://chansonchan.cn/2019/05/31/Java-关键字-transient/">
+    <link itemprop="mainEntityOfPage" href="https://chansonchan.cn/2019/08/02/Docker-基本使用/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Chaosn Chan">
@@ -341,7 +341,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Java 关键字 transient
+          <h1 class="post-title" itemprop="name headline">Docker 基本使用
 
               
             
@@ -367,12 +367,24 @@
                 
               
 
-              <time title="Created: 2019-05-31 19:14:52 / Modified: 19:16:10" itemprop="dateCreated datePublished" datetime="2019-05-31T19:14:52+08:00">2019-05-31</time>
+              <time title="Created: 2019-08-02 14:45:18" itemprop="dateCreated datePublished" datetime="2019-08-02T14:45:18+08:00">2019-08-02</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-08-13 10:50:28" itemprop="dateModified" datetime="2019-08-13T10:50:28+08:00">2019-08-13</time>
               
             
           </span>
@@ -389,7 +401,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/programming/" itemprop="url" rel="index"><span itemprop="name">programming</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/devops/" itemprop="url" rel="index"><span itemprop="name">devops</span></a></span>
 
                 
                 
@@ -408,8 +420,8 @@
                 </span>
             
                 <span class="post-meta-item-text">Comments: </span>
-                <a href="/2019/05/31/Java-关键字-transient/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/05/31/Java-关键字-transient/" itemprop="commentCount"></span>
+                <a href="/2019/08/02/Docker-基本使用/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/08/02/Docker-基本使用/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -444,17 +456,22 @@
       
 
       
-        <h1 id="transient"><a href="#transient" class="headerlink" title="transient"></a>transient</h1><ul>
-<li><p>一旦变量被 <strong>transient</strong> 修饰，变量将不再是对象持久化的一部分，该变量内容在序列化后无法获得访问。</p>
+        <h1 id="停止并删除所有容器"><a href="#停止并删除所有容器" class="headerlink" title="停止并删除所有容器"></a>停止并删除所有容器</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker stop $(docker ps -q) docker rm $(docker ps -aq)</span><br></pre></td></tr></table></figure>
+
+<h1 id="清理镜像"><a href="#清理镜像" class="headerlink" title="清理镜像"></a>清理镜像</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 清理 dangling 镜像</span></span><br><span class="line">$ docker rmi $(docker images -f <span class="string">"dangling=true"</span> -q)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 根据通配符查找删除指定镜像</span></span><br><span class="line">$ docker rmi $(docker images -f <span class="string">"reference=*"</span> --format <span class="string">"&#123;&#123;.Repository&#125;&#125;:&#123;&#123;.Tag&#125;&#125;"</span>)</span><br></pre></td></tr></table></figure>
+
+<h1 id="创建-Swarm-集群以及其基本操作"><a href="#创建-Swarm-集群以及其基本操作" class="headerlink" title="创建 Swarm 集群以及其基本操作"></a>创建 Swarm 集群以及其基本操作</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 修改 node name</span></span><br><span class="line">￼$ sudo hostnamectl <span class="built_in">set</span>-hostname &#123;<span class="variable">$name</span>&#125;</span><br><span class="line">￼$ sudo systemctl restart docker</span><br><span class="line"></span><br><span class="line"><span class="comment"># ￼manager: 创建 swarm 集群</span></span><br><span class="line">￼$ ￼docker swarm init</span><br><span class="line"></span><br><span class="line"><span class="comment"># ￼node: 加入 swarm 集群</span></span><br><span class="line">￼$ ￼docker swarm join ......</span><br><span class="line"></span><br><span class="line"><span class="comment"># ￼获取加入token</span></span><br><span class="line">￼$ ￼docker swarm join-token [worker|manager]</span><br><span class="line"></span><br><span class="line"><span class="comment"># ￼manager: 查看节点</span></span><br><span class="line">￼$ ￼docker node ls</span><br><span class="line"></span><br><span class="line"><span class="comment"># 部署单个服务</span></span><br><span class="line">$ docker service create --replicas 3 -p 80:80 --name nginx nginx</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看服务</span></span><br><span class="line">$ docker service ls </span><br><span class="line"></span><br><span class="line"><span class="comment"># 服务伸缩</span></span><br><span class="line">$ docker service scale nginx=5</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除服务</span></span><br><span class="line">$ docker service rm nginx</span><br><span class="line"></span><br><span class="line"><span class="comment"># 根据 yaml 文件部署包含多个服务的 stack</span></span><br><span class="line">$ docker stack deploy -c xxxx.yml one-stack</span><br><span class="line"></span><br><span class="line"><span class="comment"># 根据 yaml 文件部署 stack 时能读取同层 .env 文件内设置的环境变量</span></span><br><span class="line">$ docker stack deploy -c &lt;(docker-compose -f xxxx.yml config) one-stack</span><br><span class="line"></span><br><span class="line"><span class="comment"># 根据 yaml 文件部署 stack 时能读取同层 .env 文件内设置的环境变量, 从私库拉取镜像</span></span><br><span class="line">$ docker stack deploy --with-registry-auth -c &lt;(docker-compose -f xxxx.yml config) one-stack</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看 stack</span></span><br><span class="line">$ docker stack ls </span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看 stack 中的服务</span></span><br><span class="line">$ docker stack ps one-stack </span><br><span class="line"></span><br><span class="line"><span class="comment"># 停止删除 stack (该命令不会移除服务所使用的数据卷，移除数据卷用 docker volume rm)</span></span><br><span class="line">$ docker stack down one-stack</span><br><span class="line"></span><br><span class="line"><span class="comment"># 更新 service 镜像, 从私库拉取</span></span><br><span class="line">$ docker service update --with-registry-auth --image image-name:tag service-name</span><br><span class="line"></span><br><span class="line"><span class="comment"># 批量删除 service</span></span><br><span class="line">$ docker service rm $(docker service ls -qf name=)</span><br></pre></td></tr></table></figure>
+
+<h1 id="Docker-Compose-文件相关配置"><a href="#Docker-Compose-文件相关配置" class="headerlink" title="Docker Compose 文件相关配置"></a>Docker Compose 文件相关配置</h1><ul>
+<li><p>参考<a href="https://docs.docker.com/compose/compose-file/" target="_blank" rel="noopener">官方文档</a></p>
 </li>
-<li><p><strong>transient</strong> 关键字只能修饰变量，而不能修饰方法和类。注意，本地变量是不能被 <strong>transient</strong> 关键字修饰的。变量如果是用户自定义类变量，则该类需要实现 <strong>Serializable 接口</strong>。</p>
-</li>
-<li><p>一个静态变量不管是否被 <strong>transient</strong> 修饰，均不能被序列化。</p>
+<li><p>yaml 中重用代码块</p>
 </li>
 </ul>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考:"></a>参考:</h1><blockquote>
-<p><a href="https://www.cnblogs.com/lanxuezaipiao/p/3369962.html" target="_blank" rel="noopener">https://www.cnblogs.com/lanxuezaipiao/p/3369962.html</a></p>
-</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">test:</span> <span class="meta">&amp;base</span></span><br><span class="line">	<span class="attr">a:</span> <span class="number">1</span></span><br><span class="line">	<span class="attr">b:</span> <span class="number">2</span></span><br><span class="line"></span><br><span class="line"><span class="attr">use1:</span> <span class="meta">*base</span></span><br><span class="line"></span><br><span class="line"><span class="attr">use2:</span> </span><br><span class="line"> <span class="string">&lt;&lt;:</span> <span class="meta">*base</span></span><br><span class="line"><span class="attr"> b:</span> <span class="number">3</span></span><br><span class="line"><span class="attr"> c:</span> <span class="number">4</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">test:</span></span><br><span class="line">	<span class="attr">a:</span> <span class="number">1</span></span><br><span class="line">	<span class="attr">b:</span> <span class="number">2</span></span><br><span class="line">	</span><br><span class="line"><span class="attr">use1:</span> </span><br><span class="line">	<span class="attr">a:</span> <span class="number">1</span></span><br><span class="line">	<span class="attr">b:</span> <span class="number">2</span></span><br><span class="line">	</span><br><span class="line"><span class="attr">use2:</span> </span><br><span class="line"><span class="attr"> a:</span> <span class="number">1</span></span><br><span class="line"><span class="attr"> b:</span> <span class="number">3</span></span><br><span class="line"><span class="attr"> c:</span> <span class="number">4</span></span><br></pre></td></tr></table></figure>
+
 
       
     </div>
@@ -478,9 +495,11 @@
       
         <div class="post-tags">
           
-            <a href="/tags/java/" rel="tag"># java</a>
+            <a href="/tags/docker/" rel="tag"># docker</a>
           
-            <a href="/tags/transient/" rel="tag"># transient</a>
+            <a href="/tags/docker-swarm/" rel="tag"># docker-swarm</a>
+          
+            <a href="/tags/docker-compose/" rel="tag"># docker-compose</a>
           
         </div>
       
@@ -493,8 +512,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/05/31/Java-关键字-volatile、synchronized/" rel="next" title="Java 关键字 volatile、synchronized">
-                <i class="fa fa-chevron-left"></i> Java 关键字 volatile、synchronized
+              <a href="/2019/08/02/在服务器上的相关运维操作/" rel="next" title="在服务器上的相关运维操作">
+                <i class="fa fa-chevron-left"></i> 在服务器上的相关运维操作
               </a>
             
           </div>
@@ -502,10 +521,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/06/08/Effective-Java-笔记/" rel="prev" title="Effective Java 笔记">
-                Effective Java 笔记 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -710,7 +725,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#transient"><span class="nav-number">1.</span> <span class="nav-text">transient</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">2.</span> <span class="nav-text">参考:</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#停止并删除所有容器"><span class="nav-number">1.</span> <span class="nav-text">停止并删除所有容器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#清理镜像"><span class="nav-number">2.</span> <span class="nav-text">清理镜像</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#创建-Swarm-集群以及其基本操作"><span class="nav-number">3.</span> <span class="nav-text">创建 Swarm 集群以及其基本操作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Docker-Compose-文件相关配置"><span class="nav-number">4.</span> <span class="nav-text">Docker Compose 文件相关配置</span></a></li></ol></div>
             
 
           </div>
