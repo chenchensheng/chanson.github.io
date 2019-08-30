@@ -104,7 +104,7 @@
 <meta property="og:site_name" content="Chanson&#39;s blog">
 <meta property="og:description" content="1. 考虑使用静态工厂方法替代构造方法优点 通过方法名体现不同构造方式的差异 不需要每次调用时都创建一个新对象 ( 单例模式, 享元模式 ) 可以返回其返回类型的任何子类型的对象 在编写包含该方法的类时，返回的对象的类不需要存在  限制 没有公共或受保护构造方法的类不能被子类化 ( 因为大部分实现会将构造函数设为私有 ) 没有构造函数那么明显  2. 当构造方法参数过多时使用 builder 模式">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-07-30T05:38:20.249Z">
+<meta property="og:updated_time" content="2019-08-28T07:05:06.229Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Effective Java 笔记">
 <meta name="twitter:description" content="1. 考虑使用静态工厂方法替代构造方法优点 通过方法名体现不同构造方式的差异 不需要每次调用时都创建一个新对象 ( 单例模式, 享元模式 ) 可以返回其返回类型的任何子类型的对象 在编写包含该方法的类时，返回的对象的类不需要存在  限制 没有公共或受保护构造方法的类不能被子类化 ( 因为大部分实现会将构造函数设为私有 ) 没有构造函数那么明显  2. 当构造方法参数过多时使用 builder 模式">
@@ -384,7 +384,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-07-30 13:38:20" itemprop="dateModified" datetime="2019-07-30T13:38:20+08:00">2019-07-30</time>
+                <time title="Modified: 2019-08-28 15:05:06" itemprop="dateModified" datetime="2019-08-28T15:05:06+08:00">2019-08-28</time>
               
             
           </span>
@@ -684,7 +684,152 @@
 <li>不会抛出不必要的检查异常</li>
 <li>不需要类型转换</li>
 </ul>
+<h1 id="14-考虑实现-Comparable-接口"><a href="#14-考虑实现-Comparable-接口" class="headerlink" title="14. 考虑实现 Comparable 接口"></a>14. 考虑实现 Comparable 接口</h1><ul>
+<li><p>如果你正在编写具有明显自然顺序(如字母顺序，数字顺序或时间顺序)的值类，则应该实现 Comparable 接口:</p>
+</li>
+<li><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Comparable</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">compareTo</span><span class="params">(T t)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+</li>
+</ul>
+<h2 id="compareTo-方法的通用约定"><a href="#compareTo-方法的通用约定" class="headerlink" title="compareTo 方法的通用约定"></a>compareTo 方法的通用约定</h2><ul>
+<li><p>将此对象与指定的对象按照排序进行比较,  返回值可能为负整数, 零或正整数, 因为此对象对应小于，等于或大于指定的对象。 如果指定对象的类型与此对象不能进行比较，则引发 ClassCastException 异常</p>
+</li>
+<li><p>实现类必须确保所有 <code>x</code> 和 <code>y</code> 都满足 <code>sgn(x.compareTo(y)) == -sgn(y. compareTo(x))</code>。 （这意味着 当且仅当 <code>y.compareTo(x)</code> 抛出异常时， <code>x.compareTo(y)</code> 必须抛出异常。）</p>
+</li>
+<li><p>实现类还必须确保该关系是可传递的：<code>(x. compareTo(y) &gt; 0 &amp;&amp; y.compareTo(z) &gt; 0)</code> 意味着<code>x.compareTo(z) &gt; 0</code> 。</p>
+</li>
+<li><p>对于所有的 <code>z</code>，实现类必须确保 <code>x.compareTo(y) == 0</code> 意味着 <code>sgn(x.compareTo(z)) == sgn(y.compareTo(z))</code> 。</p>
+</li>
+<li><p>推荐 <code>(x.compareTo(y) == 0) == (x.equals(y))</code> ，但不是必需的。 一般来说，任何实现了 Comparable 接口的类违反了这个条件都应该清楚地说明这个事实。 推荐的语言是 “注意：这个类有一个自然顺序，与 equals 不一致”。</p>
+</li>
+</ul>
+<h2 id="使用包装类中的静态-compare-方法或-Comparator-接口中的构建方法"><a href="#使用包装类中的静态-compare-方法或-Comparator-接口中的构建方法" class="headerlink" title="使用包装类中的静态 compare 方法或 Comparator 接口中的构建方法"></a>使用包装类中的静态 compare 方法或 Comparator 接口中的构建方法</h2><ul>
+<li><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Comparator based on static compare method</span></span><br><span class="line"><span class="keyword">static</span> Comparator&lt;Object&gt; hashCodeOrder = <span class="keyword">new</span> Comparator&lt;&gt;() &#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(Object o1, Object o2)</span> </span>&#123;</span><br><span class="line">  	<span class="keyword">return</span> Integer.compare(o1.hashCode(), o2.hashCode());</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Comparator based on Comparator construction method</span></span><br><span class="line"><span class="keyword">static</span> Comparator&lt;Object&gt; hashCodeOrder =</span><br><span class="line">	Comparator.comparingInt(o -&gt; o.hashCode());</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>请避免使用 “&lt;” 和 “&gt;” 运算符</p>
+</li>
+</ul>
+<h1 id="15-使类和成员的可访问性最小化"><a href="#15-使类和成员的可访问性最小化" class="headerlink" title="15. 使类和成员的可访问性最小化"></a>15. 使类和成员的可访问性最小化</h1><ul>
+<li>使用尽可能低的访问级别</li>
+<li>类具有公共静态 final 数组属性，或返回这样一个属性的访问器是错误的</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Potential security hole!</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Thing[] VALUES = &#123; ... &#125;;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>有两种方法可以解决这个问题</p>
+<ul>
+<li><p>你可以使公共数组私有并添加一个公共的不可变列表：</p>
+</li>
+<li><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Thing[] PRIVATE_VALUES = &#123; ... &#125;;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> List&lt;Thing&gt; VALUES =</span><br><span class="line">	Collections.unmodifiableList(Arrays.asList(PRIVATE_VALUES));</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>可以将数组设置为 private，并添加一个返回私有数组拷贝的公共方法：</p>
+</li>
+<li><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Thing[] PRIVATE_VALUES = &#123; ... &#125;;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Thing[] values() &#123;</span><br><span class="line">	<span class="keyword">return</span> PRIVATE_VALUES.clone();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="16-在公共类中使用访问方法而不是公共属性"><a href="#16-在公共类中使用访问方法而不是公共属性" class="headerlink" title="16. 在公共类中使用访问方法而不是公共属性"></a>16. 在公共类中使用访问方法而不是公共属性</h1><ul>
+<li>如果一个类在其包之外是可访问的，则提供访问方法来保留更 改类内部表示的灵活性</li>
+<li>如果一个类是包级私有的，或者是一个私有的内部类，那么暴露它的数据属性就没有什么本质上的错误</li>
+</ul>
+<h1 id="17-最小化可变性"><a href="#17-最小化可变性" class="headerlink" title="17. 最小化可变性"></a>17. 最小化可变性</h1><h2 id="要使一个类不可变，请遵循以下五条规则"><a href="#要使一个类不可变，请遵循以下五条规则" class="headerlink" title="要使一个类不可变，请遵循以下五条规则"></a>要使一个类不可变，请遵循以下五条规则</h2><ol>
+<li><p>不要提供修改对象状态的方法（也称为 mutators）</p>
+</li>
+<li><p>确保这个类不能被继承</p>
+</li>
+<li><p>把所有属性设置为 final</p>
+</li>
+<li><p>把所有的属性设置为 private</p>
+</li>
+<li><p>确保对任何可变组件的互斥访问 ( 确保该类的客户端无法获得对这些对象的引用 )</p>
+</li>
+</ol>
+<ul>
+<li><p>不可变对象本质上是线程安全的</p>
+</li>
+<li><p>不需要也不应该在一个不可变的类上提供一个 clone 方法或拷贝构造方法（copy constructor）</p>
+</li>
+<li><p>一个不可变的类可以提供静态的工厂来缓存经常被请求的实例</p>
+</li>
+<li><p>一个类不得允许子类化, 可以设置类为 <code>final</code> , 更灵活的方式是使其所有的构造方法私有或包级私有，并添加公共静态工厂，而不是公共构造方法</p>
+</li>
+<li><p>如果一个类不能设计为不可变类，那么也要尽可能地限制它的可变性</p>
+</li>
+</ul>
+<h1 id="18-组合优于继承"><a href="#18-组合优于继承" class="headerlink" title="18. 组合优于继承"></a>18. 组合优于继承</h1><ul>
+<li>与方法调用不同，继承打破了封装 , 父类的实现可能会不断变化, 子类可能会被破坏，即使它的代码没有任何改变</li>
+</ul>
+<h2 id="包装类-装饰器模式"><a href="#包装类-装饰器模式" class="headerlink" title="包装类 ( 装饰器模式 )"></a>包装类 ( 装饰器模式 )</h2><ul>
+<li><p>有时组合和转发的结合被不精确地地称为委托 (delegation). 从技术上讲，除非包装对象把自身传递给被包装对象，否则不是委托</p>
+</li>
+<li><p>包装类的缺点</p>
+<ul>
+<li>包装类不适合在回调框架（callback frameworks）中使用，其中对象将自我引用传递给其他对象以用于后续调用（“回调”）</li>
+<li>编写转发方法有些繁琐</li>
+</ul>
+</li>
+<li><p>只有在子类真的是父类的子类型的情况下，继承才是合适的</p>
+</li>
+</ul>
+<h1 id="19-如使用继承则设计，应当文档说明，否则不该使用"><a href="#19-如使用继承则设计，应当文档说明，否则不该使用" class="headerlink" title="19. 如使用继承则设计，应当文档说明，否则不该使用"></a>19. 如使用继承则设计，应当文档说明，否则不该使用</h1><ul>
+<li>这个类必须准确地描述重写这个方法带来的影响</li>
+<li>测试为继承而设计的类的唯一方法是编写子类, 经验表明，三个子类通常足以测试一个可继承的类。 这些子类应该由父类作者以外的人编写</li>
+<li>构造方法绝不能直接或间接调用可重写的方法</li>
+<li>如果你决定在为继承而设计的类中实现 <code>Cloneable</code> 或 <code>Serializable</code> 接口, 那么 <code>clone</code> 和 <code>readObject</code> 都不会直接或间接调用可重写的方法</li>
+</ul>
+<h1 id="20-接口优于抽象类"><a href="#20-接口优于抽象类" class="headerlink" title="20. 接口优于抽象类"></a>20. 接口优于抽象类</h1><ul>
+<li><p>Java 只允许单一继承</p>
+</li>
+<li><p>接口是定义混合类型（mixin）的理想选择, 允许构建非层级类型的框架</p>
+</li>
+<li><p>可以通过提供一个抽象的骨架实现类（abstract skeletal implementation class）来与接口一起使用，将接口和抽象类的优点结合起来。 接口定义了类型，可能提供了一些默认的方法，而骨架实现类在原始接口方法的顶层实现了剩余的非原始接口方法。 继承骨架实现需要大部分的工作来实现一个接口。 这就是模板方法设计模式</p>
+</li>
+</ul>
+<h1 id="21-为后代设计接口"><a href="#21-为后代设计接口" class="headerlink" title="21. 为后代设计接口"></a>21. 为后代设计接口</h1><ul>
+<li><p>编写一个默认方法并不总是可能的，它保留了每个可能的实现的所有不变量</p>
+</li>
+<li><p>在默认方法的情况下，接口的现有实现类可以在没有错误或警告的情况下编译，但在运行时会失败</p>
+</li>
+</ul>
+<h1 id="22-接口仅用来定义类型"><a href="#22-接口仅用来定义类型" class="headerlink" title="22. 接口仅用来定义类型"></a>22. 接口仅用来定义类型</h1><ul>
+<li>常量接口模式是对接口的糟糕使用</li>
+</ul>
+<h1 id="23-优先使用类层次而不是标签类"><a href="#23-优先使用类层次而不是标签类" class="headerlink" title="23. 优先使用类层次而不是标签类"></a>23. 优先使用类层次而不是标签类</h1><h1 id="24-优先考虑静态成员类"><a href="#24-优先考虑静态成员类" class="headerlink" title="24. 优先考虑静态成员类"></a>24. 优先考虑静态成员类</h1><ul>
+<li><p>非静态成员类的每个实例都隐含地与其包含的类的宿主实例相关联, 可以调用宿主实例上的方法, 不可能在没有宿主实例的情况下创建非静态成员类的实例</p>
+<ul>
+<li><p>非静态成员类的一个常见用法</p>
+</li>
+<li><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Typical use of a nonstatic member class</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MySet</span>&lt;<span class="title">E</span>&gt; <span class="keyword">extends</span> <span class="title">AbstractSet</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">  ... <span class="comment">// Bulk of the class omitted</span></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> Iterator&lt;E&gt; <span class="title">iterator</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  	<span class="keyword">return</span> <span class="keyword">new</span> MyIterator();</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">MyIterator</span> <span class="keyword">implements</span> <span class="title">Iterator</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">  	...</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>如果你声明了一个不需要访问宿主实例的成员类，总是把 static 修饰符放在它的声明中，使它成为一个静态成员类，而不是非静态的成员类</p>
+</li>
+<li><p>有四种不同的嵌套类，每个都有它的用途。 如果一个嵌套的类需要在一个方法之外可见，或者太长而不能很好地适应一个方法，使用一个成员类。 如果一个成员类的每个实例都需要一个对其宿主实例的引用，使其成为非静态的; 否则，使其静态。 假设这个类属于一个方法内部，如果你只需要从一个地方创建实例，并且存在一个预置类型来说明这个类的特征，那么把它作为一个匿名类; 否则，把它变成局部类。</p>
+</li>
+</ul>
+<h1 id="25-将源文件限制为单个顶级类"><a href="#25-将源文件限制为单个顶级类" class="headerlink" title="25. 将源文件限制为单个顶级类"></a>25. 将源文件限制为单个顶级类</h1><h1 id="26-不要使用原始类型"><a href="#26-不要使用原始类型" class="headerlink" title="26. 不要使用原始类型"></a>26. 不要使用原始类型</h1><ul>
+<li><p>如果你使用原始类型，则会丧失泛型的所有安全性和表达上的优势</p>
+</li>
+<li><p>以下是使用泛型类型的 <code>instanceof</code> 运算符的首选方法</p>
+<ul>
+<li><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Legitimate use of raw type - instanceof operator</span></span><br><span class="line"><span class="keyword">if</span> (o <span class="keyword">instanceof</span> Set) &#123; <span class="comment">// Raw type</span></span><br><span class="line">  Set&lt;?&gt; s = (Set&lt;?&gt;) o; <span class="comment">// Wildcard type</span></span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="27-消除非检查警告"><a href="#27-消除非检查警告" class="headerlink" title="27. 消除非检查警告"></a>27. 消除非检查警告</h1><ul>
+<li><p>尽可能 地消除每一个未经检查的警告</p>
+</li>
+<li><p>如果你不能消除警告，但你可以证明引发警告的代码是类型安全的，那么（并且只能这样）用<code>@SuppressWarnings(“unchecked”)</code> 注解来抑制警告</p>
+</li>
+<li><p>每当使用 <code>@SuppressWarnings(“unchecked”)</code> 注解时，请添加注释，说明为什么是安全的</p>
+</li>
+</ul>
+<h1 id="28-列表优于数组"><a href="#28-列表优于数组" class="headerlink" title="28. 列表优于数组"></a>28. 列表优于数组</h1><h1 id="29-优先考虑泛型"><a href="#29-优先考虑泛型" class="headerlink" title="29. 优先考虑泛型"></a>29. 优先考虑泛型</h1><h1 id="30-优先使用泛型方法"><a href="#30-优先使用泛型方法" class="headerlink" title="30. 优先使用泛型方法"></a>30. 优先使用泛型方法</h1>
       
     </div>
 
@@ -939,7 +1084,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-考虑使用静态工厂方法替代构造方法"><span class="nav-number">1.</span> <span class="nav-text">1. 考虑使用静态工厂方法替代构造方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#优点"><span class="nav-number">1.1.</span> <span class="nav-text">优点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#限制"><span class="nav-number">1.2.</span> <span class="nav-text">限制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-当构造方法参数过多时使用-builder-模式"><span class="nav-number">2.</span> <span class="nav-text">2. 当构造方法参数过多时使用 builder 模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#分析"><span class="nav-number">2.1.</span> <span class="nav-text">分析</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-使用私有构造方法或枚类实现-Singleton-属性"><span class="nav-number">3.</span> <span class="nav-text">3. 使用私有构造方法或枚类实现 Singleton 属性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#私有构造方法"><span class="nav-number">3.1.</span> <span class="nav-text">私有构造方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#枚举"><span class="nav-number">3.2.</span> <span class="nav-text">枚举</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-使用私有构造方法执行非实例化"><span class="nav-number">4.</span> <span class="nav-text">4. 使用私有构造方法执行非实例化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-使用依赖注入取代硬连接资源-hardwiring"><span class="nav-number">5.</span> <span class="nav-text">5. 使用依赖注入取代硬连接资源(hardwiring</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-避免创建不必要的对象"><span class="nav-number">6.</span> <span class="nav-text">6. 避免创建不必要的对象</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-消除过期的对象引用"><span class="nav-number">7.</span> <span class="nav-text">7. 消除过期的对象引用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-避免使用-Finalizer-和-Cleaner-机制"><span class="nav-number">8.</span> <span class="nav-text">8. 避免使用 Finalizer 和 Cleaner 机制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#缺点"><span class="nav-number">8.1.</span> <span class="nav-text">缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#正确做法"><span class="nav-number">8.2.</span> <span class="nav-text">正确做法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#合法用途"><span class="nav-number">8.3.</span> <span class="nav-text">合法用途</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#9-使用-try-with-resources-语句替代-try-finally-语句"><span class="nav-number">9.</span> <span class="nav-text">9. 使用 try-with-resources 语句替代 try-finally 语句</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#对比"><span class="nav-number">9.1.</span> <span class="nav-text">对比</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分析-1"><span class="nav-number">9.2.</span> <span class="nav-text">分析</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#10-重写-equals-方法时遵守通用约定"><span class="nav-number">10.</span> <span class="nav-text">10. 重写 equals 方法时遵守通用约定</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#不覆盖-equals-方法的场景"><span class="nav-number">10.1.</span> <span class="nav-text">不覆盖 equals 方法的场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#覆盖-equals-方法的场景"><span class="nav-number">10.2.</span> <span class="nav-text">覆盖 equals 方法的场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通用约定"><span class="nav-number">10.3.</span> <span class="nav-text">通用约定</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编写高质量-equals-方法"><span class="nav-number">10.4.</span> <span class="nav-text">编写高质量 equals 方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#11-重写-equals-方法时同时也要重写-hashcode-方法"><span class="nav-number">11.</span> <span class="nav-text">11. 重写 equals 方法时同时也要重写 hashcode 方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Object-规范"><span class="nav-number">11.1.</span> <span class="nav-text">Object 规范</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一个简单的配方"><span class="nav-number">11.2.</span> <span class="nav-text">一个简单的配方</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#12-始终重写-toString-方法"><span class="nav-number">12.</span> <span class="nav-text">12. 始终重写 toString 方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#13-谨慎地重写-clone-方法"><span class="nav-number">13.</span> <span class="nav-text">13. 谨慎地重写 clone 方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#缺陷"><span class="nav-number">13.1.</span> <span class="nav-text">缺陷</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#clone-方法的通用规范-非绝对"><span class="nav-number">13.2.</span> <span class="nav-text">clone 方法的通用规范 ( 非绝对 )</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#复制构造方法及其静态工厂变体与-Cloneable-clone-相比有许多优点"><span class="nav-number">13.3.</span> <span class="nav-text">复制构造方法及其静态工厂变体与 Cloneable/clone 相比有许多优点</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-考虑使用静态工厂方法替代构造方法"><span class="nav-number">1.</span> <span class="nav-text">1. 考虑使用静态工厂方法替代构造方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#优点"><span class="nav-number">1.1.</span> <span class="nav-text">优点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#限制"><span class="nav-number">1.2.</span> <span class="nav-text">限制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-当构造方法参数过多时使用-builder-模式"><span class="nav-number">2.</span> <span class="nav-text">2. 当构造方法参数过多时使用 builder 模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#分析"><span class="nav-number">2.1.</span> <span class="nav-text">分析</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-使用私有构造方法或枚类实现-Singleton-属性"><span class="nav-number">3.</span> <span class="nav-text">3. 使用私有构造方法或枚类实现 Singleton 属性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#私有构造方法"><span class="nav-number">3.1.</span> <span class="nav-text">私有构造方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#枚举"><span class="nav-number">3.2.</span> <span class="nav-text">枚举</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-使用私有构造方法执行非实例化"><span class="nav-number">4.</span> <span class="nav-text">4. 使用私有构造方法执行非实例化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-使用依赖注入取代硬连接资源-hardwiring"><span class="nav-number">5.</span> <span class="nav-text">5. 使用依赖注入取代硬连接资源(hardwiring</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-避免创建不必要的对象"><span class="nav-number">6.</span> <span class="nav-text">6. 避免创建不必要的对象</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-消除过期的对象引用"><span class="nav-number">7.</span> <span class="nav-text">7. 消除过期的对象引用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-避免使用-Finalizer-和-Cleaner-机制"><span class="nav-number">8.</span> <span class="nav-text">8. 避免使用 Finalizer 和 Cleaner 机制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#缺点"><span class="nav-number">8.1.</span> <span class="nav-text">缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#正确做法"><span class="nav-number">8.2.</span> <span class="nav-text">正确做法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#合法用途"><span class="nav-number">8.3.</span> <span class="nav-text">合法用途</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#9-使用-try-with-resources-语句替代-try-finally-语句"><span class="nav-number">9.</span> <span class="nav-text">9. 使用 try-with-resources 语句替代 try-finally 语句</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#对比"><span class="nav-number">9.1.</span> <span class="nav-text">对比</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分析-1"><span class="nav-number">9.2.</span> <span class="nav-text">分析</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#10-重写-equals-方法时遵守通用约定"><span class="nav-number">10.</span> <span class="nav-text">10. 重写 equals 方法时遵守通用约定</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#不覆盖-equals-方法的场景"><span class="nav-number">10.1.</span> <span class="nav-text">不覆盖 equals 方法的场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#覆盖-equals-方法的场景"><span class="nav-number">10.2.</span> <span class="nav-text">覆盖 equals 方法的场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通用约定"><span class="nav-number">10.3.</span> <span class="nav-text">通用约定</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编写高质量-equals-方法"><span class="nav-number">10.4.</span> <span class="nav-text">编写高质量 equals 方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#11-重写-equals-方法时同时也要重写-hashcode-方法"><span class="nav-number">11.</span> <span class="nav-text">11. 重写 equals 方法时同时也要重写 hashcode 方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Object-规范"><span class="nav-number">11.1.</span> <span class="nav-text">Object 规范</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一个简单的配方"><span class="nav-number">11.2.</span> <span class="nav-text">一个简单的配方</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#12-始终重写-toString-方法"><span class="nav-number">12.</span> <span class="nav-text">12. 始终重写 toString 方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#13-谨慎地重写-clone-方法"><span class="nav-number">13.</span> <span class="nav-text">13. 谨慎地重写 clone 方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#缺陷"><span class="nav-number">13.1.</span> <span class="nav-text">缺陷</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#clone-方法的通用规范-非绝对"><span class="nav-number">13.2.</span> <span class="nav-text">clone 方法的通用规范 ( 非绝对 )</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#复制构造方法及其静态工厂变体与-Cloneable-clone-相比有许多优点"><span class="nav-number">13.3.</span> <span class="nav-text">复制构造方法及其静态工厂变体与 Cloneable/clone 相比有许多优点</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#14-考虑实现-Comparable-接口"><span class="nav-number">14.</span> <span class="nav-text">14. 考虑实现 Comparable 接口</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#compareTo-方法的通用约定"><span class="nav-number">14.1.</span> <span class="nav-text">compareTo 方法的通用约定</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用包装类中的静态-compare-方法或-Comparator-接口中的构建方法"><span class="nav-number">14.2.</span> <span class="nav-text">使用包装类中的静态 compare 方法或 Comparator 接口中的构建方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#15-使类和成员的可访问性最小化"><span class="nav-number">15.</span> <span class="nav-text">15. 使类和成员的可访问性最小化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#16-在公共类中使用访问方法而不是公共属性"><span class="nav-number">16.</span> <span class="nav-text">16. 在公共类中使用访问方法而不是公共属性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#17-最小化可变性"><span class="nav-number">17.</span> <span class="nav-text">17. 最小化可变性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#要使一个类不可变，请遵循以下五条规则"><span class="nav-number">17.1.</span> <span class="nav-text">要使一个类不可变，请遵循以下五条规则</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#18-组合优于继承"><span class="nav-number">18.</span> <span class="nav-text">18. 组合优于继承</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#包装类-装饰器模式"><span class="nav-number">18.1.</span> <span class="nav-text">包装类 ( 装饰器模式 )</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#19-如使用继承则设计，应当文档说明，否则不该使用"><span class="nav-number">19.</span> <span class="nav-text">19. 如使用继承则设计，应当文档说明，否则不该使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#20-接口优于抽象类"><span class="nav-number">20.</span> <span class="nav-text">20. 接口优于抽象类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#21-为后代设计接口"><span class="nav-number">21.</span> <span class="nav-text">21. 为后代设计接口</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#22-接口仅用来定义类型"><span class="nav-number">22.</span> <span class="nav-text">22. 接口仅用来定义类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#23-优先使用类层次而不是标签类"><span class="nav-number">23.</span> <span class="nav-text">23. 优先使用类层次而不是标签类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#24-优先考虑静态成员类"><span class="nav-number">24.</span> <span class="nav-text">24. 优先考虑静态成员类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#25-将源文件限制为单个顶级类"><span class="nav-number">25.</span> <span class="nav-text">25. 将源文件限制为单个顶级类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#26-不要使用原始类型"><span class="nav-number">26.</span> <span class="nav-text">26. 不要使用原始类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#27-消除非检查警告"><span class="nav-number">27.</span> <span class="nav-text">27. 消除非检查警告</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#28-列表优于数组"><span class="nav-number">28.</span> <span class="nav-text">28. 列表优于数组</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#29-优先考虑泛型"><span class="nav-number">29.</span> <span class="nav-text">29. 优先考虑泛型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#30-优先使用泛型方法"><span class="nav-number">30.</span> <span class="nav-text">30. 优先使用泛型方法</span></a></li></ol></div>
             
 
           </div>
@@ -991,7 +1136,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count"> 全站共 9.5k 字</span>
+  <span class="post-count"> 全站共 11.7k 字</span>
 </div>
         
 <div class="busuanzi-count">
