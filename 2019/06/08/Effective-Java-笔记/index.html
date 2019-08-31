@@ -104,7 +104,7 @@
 <meta property="og:site_name" content="Chanson&#39;s blog">
 <meta property="og:description" content="1. 考虑使用静态工厂方法替代构造方法优点 通过方法名体现不同构造方式的差异 不需要每次调用时都创建一个新对象 ( 单例模式, 享元模式 ) 可以返回其返回类型的任何子类型的对象 在编写包含该方法的类时，返回的对象的类不需要存在  限制 没有公共或受保护构造方法的类不能被子类化 ( 因为大部分实现会将构造函数设为私有 ) 没有构造函数那么明显  2. 当构造方法参数过多时使用 builder 模式">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-08-28T07:05:06.229Z">
+<meta property="og:updated_time" content="2019-08-31T02:49:50.851Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Effective Java 笔记">
 <meta name="twitter:description" content="1. 考虑使用静态工厂方法替代构造方法优点 通过方法名体现不同构造方式的差异 不需要每次调用时都创建一个新对象 ( 单例模式, 享元模式 ) 可以返回其返回类型的任何子类型的对象 在编写包含该方法的类时，返回的对象的类不需要存在  限制 没有公共或受保护构造方法的类不能被子类化 ( 因为大部分实现会将构造函数设为私有 ) 没有构造函数那么明显  2. 当构造方法参数过多时使用 builder 模式">
@@ -278,6 +278,14 @@
 
       
       
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>Search</a>
+        </li>
+      
     </ul>
   
 
@@ -286,6 +294,27 @@
 
   
 
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
   
 </nav>
 
@@ -384,7 +413,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-08-28 15:05:06" itemprop="dateModified" datetime="2019-08-28T15:05:06+08:00">2019-08-28</time>
+                <time title="Modified: 2019-08-31 10:49:50" itemprop="dateModified" datetime="2019-08-31T10:49:50+08:00">2019-08-31</time>
               
             
           </span>
@@ -829,7 +858,21 @@
 <li><p>每当使用 <code>@SuppressWarnings(“unchecked”)</code> 注解时，请添加注释，说明为什么是安全的</p>
 </li>
 </ul>
-<h1 id="28-列表优于数组"><a href="#28-列表优于数组" class="headerlink" title="28. 列表优于数组"></a>28. 列表优于数组</h1><h1 id="29-优先考虑泛型"><a href="#29-优先考虑泛型" class="headerlink" title="29. 优先考虑泛型"></a>29. 优先考虑泛型</h1><h1 id="30-优先使用泛型方法"><a href="#30-优先使用泛型方法" class="headerlink" title="30. 优先使用泛型方法"></a>30. 优先使用泛型方法</h1>
+<h1 id="28-列表优于数组"><a href="#28-列表优于数组" class="headerlink" title="28. 列表优于数组"></a>28. 列表优于数组</h1><h1 id="29-优先考虑泛型"><a href="#29-优先考虑泛型" class="headerlink" title="29. 优先考虑泛型"></a>29. 优先考虑泛型</h1><h1 id="30-优先使用泛型方法"><a href="#30-优先使用泛型方法" class="headerlink" title="30. 优先使用泛型方法"></a>30. 优先使用泛型方法</h1><h1 id="31-使用限定通配符来增加-API-的灵活性"><a href="#31-使用限定通配符来增加-API-的灵活性" class="headerlink" title="31. 使用限定通配符来增加 API 的灵活性"></a>31. 使用限定通配符来增加 API 的灵活性</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// pushAll method without wildcard type - deficient!</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">pushAll</span><span class="params">(Iterable&lt;E&gt; src)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">for</span> (E e : src)</span><br><span class="line">  	push(e);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>假设有一个 <code>Stack&lt;Number&gt;</code>，并调用 <code>push(intVal)</code>，其中 <code>intVal</code> 的类型是 <code>Integer</code>, 会得到错误消息</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Wildcard type for a parameter that serves as an E producer</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">pushAll</span><span class="params">(Iterable&lt;? extends E&gt; src)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">for</span> (E e : src)</span><br><span class="line">  	push(e);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>为了获得最大的灵活性，对代表生产者或消费者的输入参数使用通配符类型<ul>
+<li>如果一个参数化类型代表一个 <code>T</code> 生产者，使用 <code>&lt;? extends T&gt;</code></li>
+<li>如果它代表 <code>T</code> 消费者，则使用 <code>&lt;? super T&gt;</code></li>
+</ul>
+</li>
+</ul>
+
       
     </div>
 
@@ -1084,7 +1127,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-考虑使用静态工厂方法替代构造方法"><span class="nav-number">1.</span> <span class="nav-text">1. 考虑使用静态工厂方法替代构造方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#优点"><span class="nav-number">1.1.</span> <span class="nav-text">优点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#限制"><span class="nav-number">1.2.</span> <span class="nav-text">限制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-当构造方法参数过多时使用-builder-模式"><span class="nav-number">2.</span> <span class="nav-text">2. 当构造方法参数过多时使用 builder 模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#分析"><span class="nav-number">2.1.</span> <span class="nav-text">分析</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-使用私有构造方法或枚类实现-Singleton-属性"><span class="nav-number">3.</span> <span class="nav-text">3. 使用私有构造方法或枚类实现 Singleton 属性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#私有构造方法"><span class="nav-number">3.1.</span> <span class="nav-text">私有构造方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#枚举"><span class="nav-number">3.2.</span> <span class="nav-text">枚举</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-使用私有构造方法执行非实例化"><span class="nav-number">4.</span> <span class="nav-text">4. 使用私有构造方法执行非实例化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-使用依赖注入取代硬连接资源-hardwiring"><span class="nav-number">5.</span> <span class="nav-text">5. 使用依赖注入取代硬连接资源(hardwiring</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-避免创建不必要的对象"><span class="nav-number">6.</span> <span class="nav-text">6. 避免创建不必要的对象</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-消除过期的对象引用"><span class="nav-number">7.</span> <span class="nav-text">7. 消除过期的对象引用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-避免使用-Finalizer-和-Cleaner-机制"><span class="nav-number">8.</span> <span class="nav-text">8. 避免使用 Finalizer 和 Cleaner 机制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#缺点"><span class="nav-number">8.1.</span> <span class="nav-text">缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#正确做法"><span class="nav-number">8.2.</span> <span class="nav-text">正确做法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#合法用途"><span class="nav-number">8.3.</span> <span class="nav-text">合法用途</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#9-使用-try-with-resources-语句替代-try-finally-语句"><span class="nav-number">9.</span> <span class="nav-text">9. 使用 try-with-resources 语句替代 try-finally 语句</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#对比"><span class="nav-number">9.1.</span> <span class="nav-text">对比</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分析-1"><span class="nav-number">9.2.</span> <span class="nav-text">分析</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#10-重写-equals-方法时遵守通用约定"><span class="nav-number">10.</span> <span class="nav-text">10. 重写 equals 方法时遵守通用约定</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#不覆盖-equals-方法的场景"><span class="nav-number">10.1.</span> <span class="nav-text">不覆盖 equals 方法的场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#覆盖-equals-方法的场景"><span class="nav-number">10.2.</span> <span class="nav-text">覆盖 equals 方法的场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通用约定"><span class="nav-number">10.3.</span> <span class="nav-text">通用约定</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编写高质量-equals-方法"><span class="nav-number">10.4.</span> <span class="nav-text">编写高质量 equals 方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#11-重写-equals-方法时同时也要重写-hashcode-方法"><span class="nav-number">11.</span> <span class="nav-text">11. 重写 equals 方法时同时也要重写 hashcode 方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Object-规范"><span class="nav-number">11.1.</span> <span class="nav-text">Object 规范</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一个简单的配方"><span class="nav-number">11.2.</span> <span class="nav-text">一个简单的配方</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#12-始终重写-toString-方法"><span class="nav-number">12.</span> <span class="nav-text">12. 始终重写 toString 方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#13-谨慎地重写-clone-方法"><span class="nav-number">13.</span> <span class="nav-text">13. 谨慎地重写 clone 方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#缺陷"><span class="nav-number">13.1.</span> <span class="nav-text">缺陷</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#clone-方法的通用规范-非绝对"><span class="nav-number">13.2.</span> <span class="nav-text">clone 方法的通用规范 ( 非绝对 )</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#复制构造方法及其静态工厂变体与-Cloneable-clone-相比有许多优点"><span class="nav-number">13.3.</span> <span class="nav-text">复制构造方法及其静态工厂变体与 Cloneable/clone 相比有许多优点</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#14-考虑实现-Comparable-接口"><span class="nav-number">14.</span> <span class="nav-text">14. 考虑实现 Comparable 接口</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#compareTo-方法的通用约定"><span class="nav-number">14.1.</span> <span class="nav-text">compareTo 方法的通用约定</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用包装类中的静态-compare-方法或-Comparator-接口中的构建方法"><span class="nav-number">14.2.</span> <span class="nav-text">使用包装类中的静态 compare 方法或 Comparator 接口中的构建方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#15-使类和成员的可访问性最小化"><span class="nav-number">15.</span> <span class="nav-text">15. 使类和成员的可访问性最小化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#16-在公共类中使用访问方法而不是公共属性"><span class="nav-number">16.</span> <span class="nav-text">16. 在公共类中使用访问方法而不是公共属性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#17-最小化可变性"><span class="nav-number">17.</span> <span class="nav-text">17. 最小化可变性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#要使一个类不可变，请遵循以下五条规则"><span class="nav-number">17.1.</span> <span class="nav-text">要使一个类不可变，请遵循以下五条规则</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#18-组合优于继承"><span class="nav-number">18.</span> <span class="nav-text">18. 组合优于继承</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#包装类-装饰器模式"><span class="nav-number">18.1.</span> <span class="nav-text">包装类 ( 装饰器模式 )</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#19-如使用继承则设计，应当文档说明，否则不该使用"><span class="nav-number">19.</span> <span class="nav-text">19. 如使用继承则设计，应当文档说明，否则不该使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#20-接口优于抽象类"><span class="nav-number">20.</span> <span class="nav-text">20. 接口优于抽象类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#21-为后代设计接口"><span class="nav-number">21.</span> <span class="nav-text">21. 为后代设计接口</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#22-接口仅用来定义类型"><span class="nav-number">22.</span> <span class="nav-text">22. 接口仅用来定义类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#23-优先使用类层次而不是标签类"><span class="nav-number">23.</span> <span class="nav-text">23. 优先使用类层次而不是标签类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#24-优先考虑静态成员类"><span class="nav-number">24.</span> <span class="nav-text">24. 优先考虑静态成员类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#25-将源文件限制为单个顶级类"><span class="nav-number">25.</span> <span class="nav-text">25. 将源文件限制为单个顶级类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#26-不要使用原始类型"><span class="nav-number">26.</span> <span class="nav-text">26. 不要使用原始类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#27-消除非检查警告"><span class="nav-number">27.</span> <span class="nav-text">27. 消除非检查警告</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#28-列表优于数组"><span class="nav-number">28.</span> <span class="nav-text">28. 列表优于数组</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#29-优先考虑泛型"><span class="nav-number">29.</span> <span class="nav-text">29. 优先考虑泛型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#30-优先使用泛型方法"><span class="nav-number">30.</span> <span class="nav-text">30. 优先使用泛型方法</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-考虑使用静态工厂方法替代构造方法"><span class="nav-number">1.</span> <span class="nav-text">1. 考虑使用静态工厂方法替代构造方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#优点"><span class="nav-number">1.1.</span> <span class="nav-text">优点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#限制"><span class="nav-number">1.2.</span> <span class="nav-text">限制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-当构造方法参数过多时使用-builder-模式"><span class="nav-number">2.</span> <span class="nav-text">2. 当构造方法参数过多时使用 builder 模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#分析"><span class="nav-number">2.1.</span> <span class="nav-text">分析</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-使用私有构造方法或枚类实现-Singleton-属性"><span class="nav-number">3.</span> <span class="nav-text">3. 使用私有构造方法或枚类实现 Singleton 属性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#私有构造方法"><span class="nav-number">3.1.</span> <span class="nav-text">私有构造方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#枚举"><span class="nav-number">3.2.</span> <span class="nav-text">枚举</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-使用私有构造方法执行非实例化"><span class="nav-number">4.</span> <span class="nav-text">4. 使用私有构造方法执行非实例化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-使用依赖注入取代硬连接资源-hardwiring"><span class="nav-number">5.</span> <span class="nav-text">5. 使用依赖注入取代硬连接资源(hardwiring</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-避免创建不必要的对象"><span class="nav-number">6.</span> <span class="nav-text">6. 避免创建不必要的对象</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-消除过期的对象引用"><span class="nav-number">7.</span> <span class="nav-text">7. 消除过期的对象引用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-避免使用-Finalizer-和-Cleaner-机制"><span class="nav-number">8.</span> <span class="nav-text">8. 避免使用 Finalizer 和 Cleaner 机制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#缺点"><span class="nav-number">8.1.</span> <span class="nav-text">缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#正确做法"><span class="nav-number">8.2.</span> <span class="nav-text">正确做法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#合法用途"><span class="nav-number">8.3.</span> <span class="nav-text">合法用途</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#9-使用-try-with-resources-语句替代-try-finally-语句"><span class="nav-number">9.</span> <span class="nav-text">9. 使用 try-with-resources 语句替代 try-finally 语句</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#对比"><span class="nav-number">9.1.</span> <span class="nav-text">对比</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分析-1"><span class="nav-number">9.2.</span> <span class="nav-text">分析</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#10-重写-equals-方法时遵守通用约定"><span class="nav-number">10.</span> <span class="nav-text">10. 重写 equals 方法时遵守通用约定</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#不覆盖-equals-方法的场景"><span class="nav-number">10.1.</span> <span class="nav-text">不覆盖 equals 方法的场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#覆盖-equals-方法的场景"><span class="nav-number">10.2.</span> <span class="nav-text">覆盖 equals 方法的场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通用约定"><span class="nav-number">10.3.</span> <span class="nav-text">通用约定</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编写高质量-equals-方法"><span class="nav-number">10.4.</span> <span class="nav-text">编写高质量 equals 方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#11-重写-equals-方法时同时也要重写-hashcode-方法"><span class="nav-number">11.</span> <span class="nav-text">11. 重写 equals 方法时同时也要重写 hashcode 方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Object-规范"><span class="nav-number">11.1.</span> <span class="nav-text">Object 规范</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一个简单的配方"><span class="nav-number">11.2.</span> <span class="nav-text">一个简单的配方</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#12-始终重写-toString-方法"><span class="nav-number">12.</span> <span class="nav-text">12. 始终重写 toString 方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#13-谨慎地重写-clone-方法"><span class="nav-number">13.</span> <span class="nav-text">13. 谨慎地重写 clone 方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#缺陷"><span class="nav-number">13.1.</span> <span class="nav-text">缺陷</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#clone-方法的通用规范-非绝对"><span class="nav-number">13.2.</span> <span class="nav-text">clone 方法的通用规范 ( 非绝对 )</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#复制构造方法及其静态工厂变体与-Cloneable-clone-相比有许多优点"><span class="nav-number">13.3.</span> <span class="nav-text">复制构造方法及其静态工厂变体与 Cloneable/clone 相比有许多优点</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#14-考虑实现-Comparable-接口"><span class="nav-number">14.</span> <span class="nav-text">14. 考虑实现 Comparable 接口</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#compareTo-方法的通用约定"><span class="nav-number">14.1.</span> <span class="nav-text">compareTo 方法的通用约定</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用包装类中的静态-compare-方法或-Comparator-接口中的构建方法"><span class="nav-number">14.2.</span> <span class="nav-text">使用包装类中的静态 compare 方法或 Comparator 接口中的构建方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#15-使类和成员的可访问性最小化"><span class="nav-number">15.</span> <span class="nav-text">15. 使类和成员的可访问性最小化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#16-在公共类中使用访问方法而不是公共属性"><span class="nav-number">16.</span> <span class="nav-text">16. 在公共类中使用访问方法而不是公共属性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#17-最小化可变性"><span class="nav-number">17.</span> <span class="nav-text">17. 最小化可变性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#要使一个类不可变，请遵循以下五条规则"><span class="nav-number">17.1.</span> <span class="nav-text">要使一个类不可变，请遵循以下五条规则</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#18-组合优于继承"><span class="nav-number">18.</span> <span class="nav-text">18. 组合优于继承</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#包装类-装饰器模式"><span class="nav-number">18.1.</span> <span class="nav-text">包装类 ( 装饰器模式 )</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#19-如使用继承则设计，应当文档说明，否则不该使用"><span class="nav-number">19.</span> <span class="nav-text">19. 如使用继承则设计，应当文档说明，否则不该使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#20-接口优于抽象类"><span class="nav-number">20.</span> <span class="nav-text">20. 接口优于抽象类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#21-为后代设计接口"><span class="nav-number">21.</span> <span class="nav-text">21. 为后代设计接口</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#22-接口仅用来定义类型"><span class="nav-number">22.</span> <span class="nav-text">22. 接口仅用来定义类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#23-优先使用类层次而不是标签类"><span class="nav-number">23.</span> <span class="nav-text">23. 优先使用类层次而不是标签类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#24-优先考虑静态成员类"><span class="nav-number">24.</span> <span class="nav-text">24. 优先考虑静态成员类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#25-将源文件限制为单个顶级类"><span class="nav-number">25.</span> <span class="nav-text">25. 将源文件限制为单个顶级类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#26-不要使用原始类型"><span class="nav-number">26.</span> <span class="nav-text">26. 不要使用原始类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#27-消除非检查警告"><span class="nav-number">27.</span> <span class="nav-text">27. 消除非检查警告</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#28-列表优于数组"><span class="nav-number">28.</span> <span class="nav-text">28. 列表优于数组</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#29-优先考虑泛型"><span class="nav-number">29.</span> <span class="nav-text">29. 优先考虑泛型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#30-优先使用泛型方法"><span class="nav-number">30.</span> <span class="nav-text">30. 优先使用泛型方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#31-使用限定通配符来增加-API-的灵活性"><span class="nav-number">31.</span> <span class="nav-text">31. 使用限定通配符来增加 API 的灵活性</span></a></li></ol></div>
             
 
           </div>
@@ -1136,7 +1179,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count"> 全站共 11.7k 字</span>
+  <span class="post-count"> 全站共 11.9k 字</span>
 </div>
         
 <div class="busuanzi-count">
@@ -1307,6 +1350,326 @@
 
 
   
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
 
 
 
