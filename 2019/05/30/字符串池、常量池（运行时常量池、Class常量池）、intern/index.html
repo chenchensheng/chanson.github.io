@@ -96,18 +96,18 @@
 
 
 
-  <meta name="description" content="重点： Class 常量池 是编译期生成的 Class 文件中的常量池 运行时常量池 是 Class 常量池 在运行时的表示形式 字符串常量池 是缓存字符串的，全局共享，它保存的是 String 实例对象的引用  Class 常量池常量池中主要存放两大类常量：字面量（Literal） 和 符号引用（Symbolic Reference），字面量比较接近于 Java 语言层面的常量概念，如文本字符串">
+  <meta name="description" content="重点： Class 常量池 是编译期生成的 .class 文件中的常量池 运行时常量池 是 Class 常量池 在运行时的表示形式 字符串常量池 是缓存字符串的，全局共享，它保存的是 String 实例对象的引用  Class 常量池 常量池中主要存放两大类常量：字面量（Literal） 和 符号引用（Symbolic Reference），字面量比较接近于 Java 语言层面的常量概念，如文本字">
 <meta name="keywords" content="java,string">
 <meta property="og:type" content="article">
 <meta property="og:title" content="字符串池、常量池（运行时常量池、Class常量池）、intern">
 <meta property="og:url" content="https://chansonchan.cn/2019/05/30/字符串池、常量池（运行时常量池、Class常量池）、intern/index.html">
 <meta property="og:site_name" content="Chanson&#39;s blog">
-<meta property="og:description" content="重点： Class 常量池 是编译期生成的 Class 文件中的常量池 运行时常量池 是 Class 常量池 在运行时的表示形式 字符串常量池 是缓存字符串的，全局共享，它保存的是 String 实例对象的引用  Class 常量池常量池中主要存放两大类常量：字面量（Literal） 和 符号引用（Symbolic Reference），字面量比较接近于 Java 语言层面的常量概念，如文本字符串">
+<meta property="og:description" content="重点： Class 常量池 是编译期生成的 .class 文件中的常量池 运行时常量池 是 Class 常量池 在运行时的表示形式 字符串常量池 是缓存字符串的，全局共享，它保存的是 String 实例对象的引用  Class 常量池 常量池中主要存放两大类常量：字面量（Literal） 和 符号引用（Symbolic Reference），字面量比较接近于 Java 语言层面的常量概念，如文本字">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-05-30T14:47:11.104Z">
+<meta property="og:updated_time" content="2020-03-13T13:36:25.155Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="字符串池、常量池（运行时常量池、Class常量池）、intern">
-<meta name="twitter:description" content="重点： Class 常量池 是编译期生成的 Class 文件中的常量池 运行时常量池 是 Class 常量池 在运行时的表示形式 字符串常量池 是缓存字符串的，全局共享，它保存的是 String 实例对象的引用  Class 常量池常量池中主要存放两大类常量：字面量（Literal） 和 符号引用（Symbolic Reference），字面量比较接近于 Java 语言层面的常量概念，如文本字符串">
+<meta name="twitter:description" content="重点： Class 常量池 是编译期生成的 .class 文件中的常量池 运行时常量池 是 Class 常量池 在运行时的表示形式 字符串常量池 是缓存字符串的，全局共享，它保存的是 String 实例对象的引用  Class 常量池 常量池中主要存放两大类常量：字面量（Literal） 和 符号引用（Symbolic Reference），字面量比较接近于 Java 语言层面的常量概念，如文本字">
 
 
 
@@ -396,12 +396,24 @@
                 
               
 
-              <time title="Created: 2019-05-30 20:31:25 / Modified: 22:47:11" itemprop="dateCreated datePublished" datetime="2019-05-30T20:31:25+08:00">2019-05-30</time>
+              <time title="Created: 2019-05-30 20:31:25" itemprop="dateCreated datePublished" datetime="2019-05-30T20:31:25+08:00">2019-05-30</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-03-13 21:36:25" itemprop="dateModified" datetime="2020-03-13T21:36:25+08:00">2020-03-13</time>
               
             
           </span>
@@ -474,23 +486,38 @@
 
       
         <h2 id="重点："><a href="#重点：" class="headerlink" title="重点："></a>重点：</h2><ul>
-<li>Class 常量池 是编译期生成的 Class 文件中的常量池</li>
-<li>运行时常量池 是 Class 常量池 在运行时的表示形式</li>
-<li>字符串常量池 是缓存字符串的，全局共享，它保存的是 String 实例对象的引用</li>
+<li><strong>Class 常量池</strong> 是编译期生成的 <strong>.class</strong> 文件中的常量池</li>
+<li><strong>运行时常量池</strong> 是 Class 常量池 在运行时的表示形式</li>
+<li><strong>字符串常量池</strong> 是缓存字符串的，全局共享，它保存的是 String 实例对象的引用</li>
 </ul>
-<h2 id="Class-常量池"><a href="#Class-常量池" class="headerlink" title="Class 常量池"></a><strong>Class 常量池</strong></h2><p>常量池中主要存放两大类常量：字面量（Literal） 和 符号引用（Symbolic Reference），字面量比较接近于 Java 语言层面的常量概念，如文本字符串 、声明为 final 的常量值等。而符号引用则属于编译原理方面的概念，包括了下面三类常量： </p>
+<h2 id="Class-常量池"><a href="#Class-常量池" class="headerlink" title="Class 常量池"></a><strong>Class 常量池</strong></h2><ul>
+<li><p>常量池中主要存放两大类常量：字面量（Literal） 和 符号引用（Symbolic Reference），字面量比较接近于 Java 语言层面的常量概念，如文本字符串 、声明为 final 的常量值等。而符号引用则属于编译原理方面的概念，包括了下面三类常量： </p>
 <ul>
 <li>类和接口的全限定名（Fully Qualified Name） </li>
 <li>字段的名称和描述符（Descriptor） </li>
 <li>方法的名称和描述符 </li>
 </ul>
-<p>通过 javap 命令可以看到 Class 文件的常量池部分。 </p>
-<h2 id="运行时常量池"><a href="#运行时常量池" class="headerlink" title="运行时常量池"></a><strong>运行时常量池</strong></h2><p>运行时常量池（Runtime Constant Pool）是方法区的一部分，它是 Class 文件中每一个类或接口的常量池表的运行时表示形式。Class 常量池中存放的编译期生成的各种字面量和符号引用，将在类加载后进入方法区的运行时常量池中存放。</p>
-<p>方法区与 Java 堆一样，是各个线程共享的内存区域，它用于存储已被虚拟机加载的类信息、常量、静态常量、即时编译器编译后的代码等数据。虽然 Java 虚拟机规范把方法区描述为堆的一个逻辑部分，但是它却有一个别名叫 Non-Heap（非堆）。目的应该是与 Java 堆区分开来。 </p>
-<h2 id="字符串常量池"><a href="#字符串常量池" class="headerlink" title="字符串常量池"></a><strong>字符串常量池</strong></h2><p>字符串常量池是用来缓存字符串的。对于需要重复使用的字符串，每次都去 new 一个 String 实例，无疑是在浪费资源，降低效率。所以，JVM 一般会维护一个字符串常量池，它是全局共享的，你可是把它看成是一个 HashSet<string>。需要注意的是，它保存的是堆中字符串实例的引用，并不存储实例本身。 </string></p>
-<h2 id="String-intern"><a href="#String-intern" class="headerlink" title="String.intern()"></a><strong>String.intern()</strong></h2><p>查找当前字符串常量池是否存在该字符串的引用，如果存在直接返回引用；如果不存在，则在堆中创建该字符串实例，并返回其引用。</p>
-<p>在 JDK 1.6，常量池是在永久代中的，和 Java 堆是完全分开来的区域</p>
-<p>在 JDK 1.7, 常量池在堆中</p>
+</li>
+<li><p>通过 javap 命令可以看到 <strong>.class</strong> 文件的常量池部分。 </p>
+</li>
+</ul>
+<h2 id="运行时常量池"><a href="#运行时常量池" class="headerlink" title="运行时常量池"></a><strong>运行时常量池</strong></h2><ul>
+<li><p>运行时常量池（Runtime Constant Pool）是方法区的一部分，它是 Class 文件中每一个类或接口的常量池表的运行时表示形式。Class 常量池中存放的编译期生成的各种字面量和符号引用，将在类加载后进入方法区的运行时常量池中存放。</p>
+</li>
+<li><p>方法区与 Java 堆一样，是各个线程共享的内存区域，它用于存储已被虚拟机加载的类信息、常量、静态常量、即时编译器编译后的代码等数据。虽然 Java 虚拟机规范把方法区描述为堆的一个逻辑部分，但是它却有一个别名叫 Non-Heap（非堆）。目的应该是与 Java 堆区分开来。 </p>
+</li>
+</ul>
+<h2 id="字符串常量池"><a href="#字符串常量池" class="headerlink" title="字符串常量池"></a><strong>字符串常量池</strong></h2><ul>
+<li><p>字符串常量池是用来缓存字符串的。对于需要重复使用的字符串，每次都去 new 一个 String 实例，无疑是在浪费资源，降低效率。所以，JVM 一般会维护一个字符串常量池，它是全局共享的，你可是把它看成是一个 HashSet&lt;String&gt;。需要注意的是，它保存的是堆中字符串实例的引用，并不存储实例本身。 </p>
+</li>
+<li><p>在 JDK 1.6, 常量池是在永久代中的，和 Java 堆是完全分开来的区域</p>
+</li>
+<li><p>在 JDK 1.7, 常量池在堆中</p>
+</li>
+</ul>
+<h2 id="String-intern"><a href="#String-intern" class="headerlink" title="String.intern()"></a><strong>String.intern()</strong></h2><ul>
+<li>查找当前字符串常量池是否存在该字符串的引用，如果存在直接返回引用；如果不存在，则在堆中创建该字符串实例，并返回其引用。</li>
+</ul>
 
       
     </div>
@@ -616,7 +643,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">10</span>
+                    <span class="site-state-item-count">14</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -686,7 +713,13 @@
                     
                       
                     
-                    <span class="site-state-item-count">16</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -802,7 +835,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count"> 全站共 12.6k 字</span>
+  <span class="post-count"> 全站共 18.1k 字</span>
 </div>
         
 <div class="busuanzi-count">

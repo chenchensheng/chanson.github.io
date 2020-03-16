@@ -104,7 +104,7 @@
 <meta property="og:site_name" content="Chanson&#39;s blog">
 <meta property="og:description" content="停止并删除所有容器1$ docker stop $(docker ps -q) docker rm $(docker ps -aq)  清理镜像12345# 清理 dangling 镜像$ docker rmi $(docker images -f &quot;dangling=true&quot; -q)# 根据通配符查找删除指定镜像$ docker rmi $(docker images -f &quot;referenc">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2020-01-16T03:42:05.683Z">
+<meta property="og:updated_time" content="2020-02-12T12:46:32.273Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Docker 基本使用">
 <meta name="twitter:description" content="停止并删除所有容器1$ docker stop $(docker ps -q) docker rm $(docker ps -aq)  清理镜像12345# 清理 dangling 镜像$ docker rmi $(docker images -f &quot;dangling=true&quot; -q)# 根据通配符查找删除指定镜像$ docker rmi $(docker images -f &quot;referenc">
@@ -413,7 +413,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2020-01-16 11:42:05" itemprop="dateModified" datetime="2020-01-16T11:42:05+08:00">2020-01-16</time>
+                <time title="Modified: 2020-02-12 20:46:32" itemprop="dateModified" datetime="2020-02-12T20:46:32+08:00">2020-02-12</time>
               
             
           </span>
@@ -501,6 +501,26 @@
 
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">test:</span></span><br><span class="line"><span class="attr"> a:</span> <span class="number">1</span></span><br><span class="line"><span class="attr"> b:</span> <span class="number">2</span></span><br><span class="line">	</span><br><span class="line"><span class="attr">use1:</span> </span><br><span class="line"><span class="attr"> a:</span> <span class="number">1</span></span><br><span class="line"><span class="attr"> b:</span> <span class="number">2</span></span><br><span class="line">	</span><br><span class="line"><span class="attr">use2:</span> </span><br><span class="line"><span class="attr"> a:</span> <span class="number">1</span></span><br><span class="line"><span class="attr"> b:</span> <span class="number">3</span></span><br><span class="line"><span class="attr"> c:</span> <span class="number">4</span></span><br></pre></td></tr></table></figure>
 
+<h1 id="Dockerfile"><a href="#Dockerfile" class="headerlink" title="Dockerfile"></a>Dockerfile</h1><ul>
+<li><p>ONBUILD 指令</p>
+<ul>
+<li><p>格式：<strong>ONBUILD &lt;其它指令&gt;</strong>。 <code>ONBUILD</code>是一个特殊的指令，它后面跟的是其它指令，比如 RUN, COPY 等，而这些指令，在当前镜像构建时并不会被执行。只有当以当前镜像为基础镜像，去构建下一级镜像的时候才会被执行。</p>
+</li>
+<li><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> node:slim</span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> mkdir /app</span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> /app</span></span><br><span class="line"><span class="keyword">ONBUILD</span> <span class="keyword">COPY</span><span class="bash"> ./package.json /app</span></span><br><span class="line"><span class="keyword">ONBUILD</span> <span class="keyword">RUN</span><span class="bash"> [ <span class="string">"npm"</span>, <span class="string">"install"</span> ]</span></span><br><span class="line"><span class="keyword">ONBUILD</span> <span class="keyword">COPY</span><span class="bash"> . /app/</span></span><br><span class="line"><span class="keyword">CMD</span><span class="bash"> [ <span class="string">"npm"</span>, <span class="string">"start"</span> ]</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>这样各个子镜像在构建的时候就不需要重复加入上面三行命令</p>
+</li>
+</ul>
+</li>
+<li><p>多阶段构建</p>
+<ul>
+<li><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> golang AS build-<span class="keyword">env</span></span><br><span class="line"><span class="keyword">ADD</span><span class="bash"> . /go/src/app</span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> /go/src/app</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> go get -u -v github.com/kardianos/govendor</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> govendor sync</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> GOOS=linux GOARCH=386 go build -v -o /go/src/app/app-server</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">FROM</span> alpine</span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apk add -U tzdata</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> ln -sf /usr/share/zoneinfo/Asia/Shanghai  /etc/localtime</span></span><br><span class="line"><span class="keyword">COPY</span><span class="bash"> --from=build-env /go/src/app/app-server /usr/<span class="built_in">local</span>/bin/app-server</span></span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">8080</span></span><br><span class="line"><span class="keyword">CMD</span><span class="bash"> [ <span class="string">"app-server"</span> ]</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>默认情况下，构建阶段是没有命令的，我们可以通过它们的索引来引用它们，第一个 FROM 指令从<code>0</code>开始，我们也可以用 <code>AS</code> 指令为阶段命令，比如我们这里的将第一阶段命名为 <code>build-env</code>，然后在其他阶段需要引用的时候使用 <code>--from=build-env</code> 参数即可</p>
+</li>
+</ul>
+</li>
+</ul>
 
       
     </div>
@@ -628,7 +648,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">10</span>
+                    <span class="site-state-item-count">14</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -698,7 +718,13 @@
                     
                       
                     
-                    <span class="site-state-item-count">16</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -762,7 +788,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#停止并删除所有容器"><span class="nav-number">1.</span> <span class="nav-text">停止并删除所有容器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#清理镜像"><span class="nav-number">2.</span> <span class="nav-text">清理镜像</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#创建-Swarm-集群以及其基本操作"><span class="nav-number">3.</span> <span class="nav-text">创建 Swarm 集群以及其基本操作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Docker-Compose-文件相关配置"><span class="nav-number">4.</span> <span class="nav-text">Docker Compose 文件相关配置</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#停止并删除所有容器"><span class="nav-number">1.</span> <span class="nav-text">停止并删除所有容器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#清理镜像"><span class="nav-number">2.</span> <span class="nav-text">清理镜像</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#创建-Swarm-集群以及其基本操作"><span class="nav-number">3.</span> <span class="nav-text">创建 Swarm 集群以及其基本操作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Docker-Compose-文件相关配置"><span class="nav-number">4.</span> <span class="nav-text">Docker Compose 文件相关配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Dockerfile"><span class="nav-number">5.</span> <span class="nav-text">Dockerfile</span></a></li></ol></div>
             
 
           </div>
@@ -814,7 +840,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count"> 全站共 12.6k 字</span>
+  <span class="post-count"> 全站共 18.1k 字</span>
 </div>
         
 <div class="busuanzi-count">
