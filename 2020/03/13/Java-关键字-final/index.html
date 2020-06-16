@@ -104,7 +104,7 @@
 <meta property="og:site_name" content="Chanson&#39;s blog">
 <meta property="og:description" content="final方法 被 final 修饰的方法不可被重写。它可以防止任何继承类修改方法的意义和实现 而且使用 final 修饰方法的执行效率一般高于普通方法，这里不得不提一下 Java 的内联（inline）机制   ​        当我们调用方法时，实际上是将程序的执行转移到该方法所在的内存地址上，将该方法执行完后，再返回到执行该方法前的位置，这种转移操作要求在转移前保存当前的数据以及内存地址，在">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2020-03-13T13:32:59.788Z">
+<meta property="og:updated_time" content="2020-03-20T06:03:26.351Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java 关键字 final">
 <meta name="twitter:description" content="final方法 被 final 修饰的方法不可被重写。它可以防止任何继承类修改方法的意义和实现 而且使用 final 修饰方法的执行效率一般高于普通方法，这里不得不提一下 Java 的内联（inline）机制   ​        当我们调用方法时，实际上是将程序的执行转移到该方法所在的内存地址上，将该方法执行完后，再返回到执行该方法前的位置，这种转移操作要求在转移前保存当前的数据以及内存地址，在">
@@ -396,12 +396,24 @@
                 
               
 
-              <time title="Created: 2020-03-13 19:14:52 / Modified: 21:32:59" itemprop="dateCreated datePublished" datetime="2020-03-13T19:14:52+08:00">2020-03-13</time>
+              <time title="Created: 2020-03-13 19:14:52" itemprop="dateCreated datePublished" datetime="2020-03-13T19:14:52+08:00">2020-03-13</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-03-20 14:03:26" itemprop="dateModified" datetime="2020-03-20T14:03:26+08:00">2020-03-20</time>
               
             
           </span>
@@ -521,7 +533,7 @@
 <p>初次读一个包含 final 域的对象的引用，与随后初次读这个 final 域，这两个操作之间不能重排序。</p>
 </blockquote>
 <ul>
-<li><p>意思是说，在读一个对象的 final 域之前，一定会先读包含这个 final 域的对象的引用。</p>
+<li><p>意思是说，在读一个对象的 <strong>final</strong> 域之前，一定会先读包含这个 <strong>final</strong> 域的对象的引用。</p>
 </li>
 <li><p>对于内存语义这块，还需要结合代码去理解，参考《Java 并发编程的艺术》一书 3.6 节。</p>
 </li>
@@ -729,9 +741,7 @@
                     
                       
                     
-                      
-                    
-                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-count">18</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -847,7 +857,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count"> 全站共 18.1k 字</span>
+  <span class="post-count"> 全站共 24.8k 字</span>
 </div>
         
 <div class="busuanzi-count">
