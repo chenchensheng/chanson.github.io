@@ -104,7 +104,7 @@
 <meta property="og:site_name" content="Chanson&#39;s blog">
 <meta property="og:description" content="final方法 被 final 修饰的方法不可被重写。它可以防止任何继承类修改方法的意义和实现 而且使用 final 修饰方法的执行效率一般高于普通方法，这里不得不提一下 Java 的内联（inline）机制   ​        当我们调用方法时，实际上是将程序的执行转移到该方法所在的内存地址上，将该方法执行完后，再返回到执行该方法前的位置，这种转移操作要求在转移前保存当前的数据以及内存地址，在">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2020-03-20T06:03:26.351Z">
+<meta property="og:updated_time" content="2020-06-16T06:09:27.709Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java 关键字 final">
 <meta name="twitter:description" content="final方法 被 final 修饰的方法不可被重写。它可以防止任何继承类修改方法的意义和实现 而且使用 final 修饰方法的执行效率一般高于普通方法，这里不得不提一下 Java 的内联（inline）机制   ​        当我们调用方法时，实际上是将程序的执行转移到该方法所在的内存地址上，将该方法执行完后，再返回到执行该方法前的位置，这种转移操作要求在转移前保存当前的数据以及内存地址，在">
@@ -413,7 +413,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2020-03-20 14:03:26" itemprop="dateModified" datetime="2020-03-20T14:03:26+08:00">2020-03-20</time>
+                <time title="Modified: 2020-06-16 14:09:27" itemprop="dateModified" datetime="2020-06-16T14:09:27+08:00">2020-06-16</time>
               
             
           </span>
@@ -512,10 +512,10 @@
 </li>
 <li><p>修饰引用变量时，变量指向的对象地址不可改变</p>
 </li>
-<li><p>这里还涉及到了一个类似 C 语言的宏替换概念，由于 final 修饰的 String 变量不可更改，所以，当一个 <strong>String</strong> 变量被 <strong>final</strong> 修饰时，这个值在编译期就可以确定，所有将该变量直接替换为它对应的值，如下：</p>
+<li><p>这里还涉及到了一个类似 C 语言的宏替换概念，由于 <strong>final</strong> 修饰的 <strong>String</strong> 变量不可更改，所以，当一个 <strong>String</strong> 变量被 <strong>final</strong> 修饰时，这个值在编译期就可以确定，所以将该变量直接替换为它对应的值，如下：</p>
 </li>
 </ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> String a = <span class="string">"hello"</span>;</span><br><span class="line">        String b = <span class="string">"hello"</span>;</span><br><span class="line">        <span class="keyword">final</span> String c = <span class="string">"world"</span>;</span><br><span class="line">        String d = <span class="string">"hello"</span> + <span class="string">"world"</span>;</span><br><span class="line">        String e = a + c;</span><br><span class="line">        String f = b + c;</span><br><span class="line">        String g = <span class="string">"helloworld"</span>;</span><br><span class="line">      </span><br><span class="line">        <span class="comment">// 在编译期，由于 a 和 c 的值已经确定并且不会再更改（效果同 d），</span></span><br><span class="line">        <span class="comment">// 所以 e 的值能够在编译期就确定下来，直接指向了常量区的 g，前两个均为 true</span></span><br><span class="line">        System.out.println(g == d);<span class="comment">//true</span></span><br><span class="line">        System.out.println(g == e);<span class="comment">//true</span></span><br><span class="line">      </span><br><span class="line">        <span class="comment">// 由于 b 值的不确定性，所以在编译期不能确定其值，只能在运行时确认</span></span><br><span class="line">        System.out.println(g == f);<span class="comment">//false</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> String a = <span class="string">"hello"</span>;</span><br><span class="line">        String b = <span class="string">"hello"</span>;</span><br><span class="line">        <span class="keyword">final</span> String c = <span class="string">"world"</span>;</span><br><span class="line">        String d = <span class="string">"hello"</span> + <span class="string">"world"</span>;</span><br><span class="line">        String e = a + c;</span><br><span class="line">        String f = b + c;</span><br><span class="line">        String g = <span class="string">"helloworld"</span>;</span><br><span class="line">      </span><br><span class="line">        <span class="comment">// 在编译期，由于 a 和 c 的值已经确定并且不会再更改（效果同 d），</span></span><br><span class="line">        <span class="comment">// 所以 e 的值能够在编译期就确定下来，直接指向了常量区的 g，前两个均为 true</span></span><br><span class="line">        System.out.println(g == d); <span class="comment">// true</span></span><br><span class="line">        System.out.println(g == e); <span class="comment">// true</span></span><br><span class="line">      </span><br><span class="line">        <span class="comment">// 由于 b 值的不确定性，所以在编译期不能确定其值，只能在运行时确认</span></span><br><span class="line">        System.out.println(g == f); <span class="comment">// false</span></span><br><span class="line">      </span><br><span class="line">        <span class="comment">// 注意: 以上比较的是变量的地址</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h2 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h2><ul>
 <li><strong>final</strong> 修饰的参数有一个只读的属性，即可以读取该参数，但是无法更改参数的值，同修饰变量一样，当参数为基本类型时，该参数的值不可改变；当参数为引用类型时，参数的引用地址不可改变。</li>
@@ -857,7 +857,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count"> 全站共 24.8k 字</span>
+  <span class="post-count"> 全站共 24.9k 字</span>
 </div>
         
 <div class="busuanzi-count">
