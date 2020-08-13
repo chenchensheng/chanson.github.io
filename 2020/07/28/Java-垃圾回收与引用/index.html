@@ -1,0 +1,1896 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.1" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.1.1',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: true,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="Java 垃圾回收 垃圾回收就是由程序自动的回收已死对象, 可以分为两个部分  如何判断对象已死  如何清理掉已死对象     判断对象是否存活引用计数法 给对象中添加一个引用计数器 每当有一个地方引用它时，计数器就加 1 当引用失效时, 计数器就减 1 当对象的计数器值为 0 时，则代表该对象可以被回收了 优点是实现简单且回收效率高 缺点是无法解决循环引用的问题, 即两个对象相互引用的情况  可">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 垃圾回收">
+<meta property="og:url" content="https://chansonchan.cn/2020/07/28/Java-垃圾回收与引用/index.html">
+<meta property="og:site_name" content="Chanson&#39;s blog">
+<meta property="og:description" content="Java 垃圾回收 垃圾回收就是由程序自动的回收已死对象, 可以分为两个部分  如何判断对象已死  如何清理掉已死对象     判断对象是否存活引用计数法 给对象中添加一个引用计数器 每当有一个地方引用它时，计数器就加 1 当引用失效时, 计数器就减 1 当对象的计数器值为 0 时，则代表该对象可以被回收了 优点是实现简单且回收效率高 缺点是无法解决循环引用的问题, 即两个对象相互引用的情况  可">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://gitee.com/chansonchan/image/raw/master/uPic/3b5fb91056ef56c4484bc8c9a225e0521b8.jpg">
+<meta property="og:image" content="https://gitee.com/chansonchan/image/raw/master/uPic/8.jpeg">
+<meta property="og:image" content="https://gitee.com/chansonchan/image/raw/master/uPic/WX20200730-220739.png">
+<meta property="og:image" content="https://gitee.com/chansonchan/image/raw/master/uPic/v2-d10ed378de12ef54042aa185d3c35236_b.webp">
+<meta property="og:image" content="https://gitee.com/chansonchan/image/raw/master/uPic/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031382f392f332f313635396434626230353531636165333f773d3133333826683d35343126663d706e6726733d3737323334.png">
+<meta property="og:image" content="https://gitee.com/chansonchan/image/raw/master/uPic/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031382f31312f352f313636653163323462383532333337323f773d35333226683d36323526663d706e6726733d3331333138.png">
+<meta property="og:updated_time" content="2020-08-13T13:52:44.069Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java 垃圾回收">
+<meta name="twitter:description" content="Java 垃圾回收 垃圾回收就是由程序自动的回收已死对象, 可以分为两个部分  如何判断对象已死  如何清理掉已死对象     判断对象是否存活引用计数法 给对象中添加一个引用计数器 每当有一个地方引用它时，计数器就加 1 当引用失效时, 计数器就减 1 当对象的计数器值为 0 时，则代表该对象可以被回收了 优点是实现简单且回收效率高 缺点是无法解决循环引用的问题, 即两个对象相互引用的情况  可">
+<meta name="twitter:image" content="https://gitee.com/chansonchan/image/raw/master/uPic/3b5fb91056ef56c4484bc8c9a225e0521b8.jpg">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://chansonchan.cn/2020/07/28/Java-垃圾回收与引用/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Java 垃圾回收 | Chanson's blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Chanson's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>Search</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://chansonchan.cn/2020/07/28/Java-垃圾回收与引用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Chaosn Chan">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chanson's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Java 垃圾回收
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-07-28 10:16:48" itemprop="dateCreated datePublished" datetime="2020-07-28T10:16:48+08:00">2020-07-28</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-08-13 21:52:44" itemprop="dateModified" datetime="2020-08-13T21:52:44+08:00">2020-08-13</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">Comments: </span>
+                <a href="/2020/07/28/Java-垃圾回收与引用/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/07/28/Java-垃圾回收与引用/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             Views:  
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Java-垃圾回收"><a href="#Java-垃圾回收" class="headerlink" title="Java 垃圾回收"></a>Java 垃圾回收</h1><ul>
+<li><p>垃圾回收就是由程序自动的回收<strong>已死</strong>对象, 可以分为两个部分</p>
+<ul>
+<li><p>如何判断对象已死</p>
+</li>
+<li><p>如何清理掉已死对象</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="判断对象是否存活"><a href="#判断对象是否存活" class="headerlink" title="判断对象是否存活"></a>判断对象是否存活</h2><h3 id="引用计数法"><a href="#引用计数法" class="headerlink" title="引用计数法"></a>引用计数法</h3><ul>
+<li>给对象中添加一个引用计数器</li>
+<li>每当有一个地方引用它时，计数器就加 1</li>
+<li>当引用失效时, 计数器就减 1</li>
+<li>当对象的计数器值为 0 时，则代表该对象可以被回收了</li>
+<li>优点是实现简单且回收效率高</li>
+<li>缺点是无法解决循环引用的问题, 即两个对象相互引用的情况</li>
+</ul>
+<h3 id="可达性分析"><a href="#可达性分析" class="headerlink" title="可达性分析"></a>可达性分析</h3><ul>
+<li><p>被商用 JVM 采用</p>
+</li>
+<li><p>从 <code>GC ROOT</code> 作为起点开始遍历所有节点, <code>GC ROOT</code> 指以下几类对象</p>
+<ul>
+<li>虚拟机栈的栈帧的局部变量表所引用的对象</li>
+<li>本地方法栈的 JNI 所引用的对象</li>
+<li>方法区的静态变量和常量所引用的对象</li>
+<li><img src="https://gitee.com/chansonchan/image/raw/master/uPic/3b5fb91056ef56c4484bc8c9a225e0521b8.jpg" alt="3b5fb91056ef56c4484bc8c9a225e0521b8.jpg"></li>
+</ul>
+</li>
+<li><p>对于遍历到的每个节点都做一个标识</p>
+</li>
+<li><p>遍历完成后, 没有标识的节点说明是可回收的</p>
+</li>
+</ul>
+<h2 id="回收算法"><a href="#回收算法" class="headerlink" title="回收算法"></a>回收算法</h2><h3 id="标记清除"><a href="#标记清除" class="headerlink" title="标记清除"></a>标记清除</h3><ul>
+<li>通常使用一张<strong>表</strong> (类似) 来记录哪些空间已被使用</li>
+<li>首先通过可达性分析找到所有的垃圾，然后将其占用的空间释放掉</li>
+<li>该算法的问题是可能会产生大量的内存碎片</li>
+</ul>
+<p><img src="https://gitee.com/chansonchan/image/raw/master/uPic/8.jpeg" alt="8"></p>
+<h3 id="标记整理"><a href="#标记整理" class="headerlink" title="标记整理"></a>标记整理</h3><ul>
+<li><p>为了解决内存碎片的问题，标记整理在标记清除算法上做了优化</p>
+</li>
+<li><p>在找到所有垃圾对象后，不是直接释放掉其占用的空间，而是将所有存活对象往内存一端移动</p>
+</li>
+<li><p>回收完成后，所有对象都是相邻的</p>
+<p><img src="https://gitee.com/chansonchan/image/raw/master/uPic/WX20200730-220739.png" alt="WX20200730-220739"></p>
+</li>
+</ul>
+<h3 id="复制算法"><a href="#复制算法" class="headerlink" title="复制算法"></a>复制算法</h3><ul>
+<li>复制算法将内存区域划分为两个，同一时间只有一个区域有对象</li>
+<li>每次垃圾回收时，通过可达性分析算法，找出所有存活对象，将这些存活对象移动到另一区域</li>
+<li>为新对象分配内存时，可以通过智能指针的形式，高效简单</li>
+<li>复制算法的缺点是会浪费一部分空间以便存放下次回收后存活的对象且需要一块额外的空间进行担保（当一个区域存放不下存活的对象时）</li>
+</ul>
+<h3 id="分代收集"><a href="#分代收集" class="headerlink" title="分代收集"></a>分代收集</h3><ul>
+<li><p>在商用 JVM 中，大多使用的是分代收集算法</p>
+</li>
+<li><p>根据对象的特性，可以将内存划分为 3 个代：年轻代，老年代，永久代（ JVM 8 后称为元空间）</p>
+<ul>
+<li><p>年轻代存放新分配的对象，使用的是<strong>复制算法</strong></p>
+</li>
+<li><p>老年代使用<strong>标记清除</strong>或<strong>标记整理算法</strong></p>
+</li>
+<li><p>其中年轻代分为一个 Eden 区和两个 Survivor 区 (From, To)，其比例默认为 8:1:1（<code>-XX:SurvivorRatio</code>）</p>
+<ul>
+<li><p><img src="https://gitee.com/chansonchan/image/raw/master/uPic/v2-d10ed378de12ef54042aa185d3c35236_b.webp" alt="img"></p>
+</li>
+<li><p><strong>优先在 Eden 区分配对象</strong></p>
+<ul>
+<li>Eden 区空间不足，触发 Minor GC (Young GC)，标记可回收对象，然后 Eden 区存活对象拷贝到往 Survivor-From 区，接下来清空 Eden 区</li>
+<li>再次触发 Minor GC，扫描 Eden 区和 From 区，把存活的对象复制到 To 区，清空 Eden 区和 From 区</li>
+<li>如果在 Minor GC 复制存活对象到 Survivor 区时，发现 Survivor 区内存不够，则提前把对象放入老年代</li>
+</ul>
+</li>
+<li><p><strong>大对象直接进入老年代</strong></p>
+<ul>
+<li>如果发现需要大量连续内存空间的 Java 对象，如很长的字符串或者数组，则直接把对象放入老年代<ul>
+<li>可通过 <code>-XX:PretenureSizeThreshold</code> 参数设置大对象的最小大小，该参数只对 Serial 和 ParNew 两款收集器有效</li>
+</ul>
+</li>
+<li>因为新生代采用复制算法收集垃圾，大对象直接进入老年代，避免在 Eden 区和 Survivor 区发生大量内存复制</li>
+<li>写程序的时候尽量避免大对象</li>
+</ul>
+</li>
+<li><p><strong>长期存活对象进入老年代</strong></p>
+<ul>
+<li><strong>固定对象年龄判断：</strong>默认情况，存活对象在 Survivor 的 From 和 To 区来回交换 15 次后，如果对象最终还是存活，就放入老年代<ul>
+<li>可以通过 <code>-XX:MaxTenuringThreshold</code> 参数来设置对象的年龄</li>
+</ul>
+</li>
+<li><strong>动态对象年龄判断：</strong>如果发现 Survivor 中有相同年龄的对象空间总和大于 Survivor 空间的一半，那么年龄大于或者等于该年龄的对象直接晋升到老年代</li>
+</ul>
+</li>
+<li><p><strong>空间分配担保</strong></p>
+<ul>
+<li>为什么需要分配担保<ul>
+<li>如果 Survivor 区存活了很多对象，空间不够了，都需要晋升到老年代，那么就需要老年代进行分配担保，也就是将Survivor 无法容纳的对象直接进入老年代</li>
+</ul>
+</li>
+<li>发生 Minor GC 前，JVM 先检查老年代最大可用连续空间是否大于新生代所有对象的总空间<ul>
+<li>大于：空间足够，直接 Minor GC</li>
+<li>小于：进行一次 Full GC</li>
+</ul>
+</li>
+<li>JDK 6 Update 24 前会根据 <code>HandlePromotionFailure</code> 参数判断是否允许担保失败<ul>
+<li>如果允许，则尝试一次 Minor GC</li>
+<li>否则，则进行 Full GC</li>
+</ul>
+</li>
+<li>年轻代老年代比例默认为 1:2 (<code>-XX:NewRatio, -Xmn</code>)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>年轻代使用复制算法的原因是年轻代对象的创建和回收很频繁，同时大部分对象很快都会死亡，所以复制算法创建和回收对象的效率都比较高</p>
+</li>
+<li><p>老年代不使用复制算法的原因是老年代对象通常存活时间比较长，如果采用复制算法，则复制存活对象的开销会比较大，且复制算法是需要其他区域担保的。 所以老年代不使用复制算法</p>
+</li>
+</ul>
+<h2 id="垃圾回收器"><a href="#垃圾回收器" class="headerlink" title="垃圾回收器"></a>垃圾回收器</h2><h3 id="Serial-串行回收器（年轻代）"><a href="#Serial-串行回收器（年轻代）" class="headerlink" title="Serial 串行回收器（年轻代）"></a>Serial 串行回收器（年轻代）</h3><ul>
+<li><p>使用<strong>单线程</strong>，<strong>复制算法</strong>实现</p>
+</li>
+<li><p>在回收的整个过程中需要 STW (Stop The World)</p>
+</li>
+<li><p>在单核 CPU 的机器上，使用单线程进行垃圾回收效率更高</p>
+</li>
+<li><p>使用方法：<code>XX:+UseSerialGC</code></p>
+</li>
+<li><p>ps：在 JDK Client 模式，不指定 VM 参数，默认是串行垃圾回收器</p>
+</li>
+</ul>
+<h3 id="Serial-Old-串行回收器（老年代）"><a href="#Serial-Old-串行回收器（老年代）" class="headerlink" title="Serial Old 串行回收器（老年代）"></a>Serial Old 串行回收器（老年代）</h3><ul>
+<li>与 Serial 相似，但使用<strong>标记整理</strong>算法实现</li>
+</ul>
+<h3 id="ParNew-并行回收器（年轻代）"><a href="#ParNew-并行回收器（年轻代）" class="headerlink" title="ParNew 并行回收器（年轻代）"></a>ParNew 并行回收器（年轻代）</h3><ul>
+<li>Serial 的<strong>多线程</strong>形式</li>
+<li><code>-XX:+UseParNewGC</code>（新生代使用并行收集器，老年代使用串行回收收集器）</li>
+<li>或者 <code>-XX:+UseConcMarkSweepGC</code> (新生代使用并行收集器，老年代使用 CMS)</li>
+</ul>
+<h3 id="Parallel-Scavenge-基于吞吐量的并行回收器（年轻代）"><a href="#Parallel-Scavenge-基于吞吐量的并行回收器（年轻代）" class="headerlink" title="Parallel Scavenge 基于吞吐量的并行回收器（年轻代）"></a>Parallel Scavenge 基于吞吐量的并行回收器（年轻代）</h3><ul>
+<li><p><strong>多线程</strong>的回收器，高吞吐量（= 程序运行时间 / (程序运行时间+回收器运行时间)），可以高效率的利用 CPU 时间，尽快完成程序的运算任务，适合后台应用等对响应时间要求不高的场景</p>
+</li>
+<li><p>有一个自适应条件参数（<code>-XX:+UseAdaptiveSizePolicy</code>），当这个参数打开后，无需手动指定新生代大小（<code>-Xmn</code>），Eden 和Survivor 比例（<code>-XX:SurvivorRatio</code>）等参数，虚拟机会动态调节这些参数来选择最适合的停顿时间（<code>-XX:MaxGCPauseMillis</code>）或吞吐量（ <code>-XX:GCTimeRatio</code>）</p>
+</li>
+<li><p>Parallel Scavenge 是 Server 级别多 CPU 机器上的默认 GC 方式，也可以通过 <code>-XX:+UseParallelGC</code> 来指定，并且可以采用 <code>-XX:ParallelGCThread</code> 来指定线程数</p>
+</li>
+<li><p>Parallel Scavenge 对应的老年代收集器只有 Serial Old 和 Parallel Old。不能与 CMS 搭配使用的原因是，其使用的框架不同，并不是技术原因</p>
+</li>
+</ul>
+<h3 id="Parallel-Old-基于吞吐量的并行回收器（老年代）"><a href="#Parallel-Old-基于吞吐量的并行回收器（老年代）" class="headerlink" title="Parallel Old 基于吞吐量的并行回收器（老年代）"></a>Parallel Old 基于吞吐量的并行回收器（老年代）</h3><ul>
+<li>使用<strong>多线程</strong>和<strong>标记整理</strong>算法</li>
+<li>与 Parallen Scavenge 相似，只不过是运用于老年代</li>
+</ul>
+<h3 id="CMS-关注暂停时间的回收器-（老年代）"><a href="#CMS-关注暂停时间的回收器-（老年代）" class="headerlink" title="CMS 关注暂停时间的回收器 （老年代）"></a>CMS 关注暂停时间的回收器 （老年代）</h3><ul>
+<li>基于标记清除算法实现，关注 GC 的暂停时间，在注重响应时间的应用上使用</li>
+</ul>
+<h4 id="三色标记法"><a href="#三色标记法" class="headerlink" title="三色标记法"></a>三色标记法</h4><ul>
+<li><p>在说 CMS 具体步骤前，先看下 CMS 使用的垃圾标记算法：三色标记法</p>
+</li>
+<li><p>将堆中对象分为 3 个集合：白色、灰色和黑色</p>
+<ul>
+<li>白色集合：需要被回收的对象</li>
+<li>黑色集合：没有引用白色集合中的对象，且从 <code>GC ROOT</code> 可达。该集合的对象是不会被回收的</li>
+<li>灰色集合：从根可达但是还没有扫描完其引用的所有对象，该集合的对象不会被回收，且当其引用的白色对象全部被扫描后，会将其加入到黑色集合中</li>
+</ul>
+</li>
+<li><p>一般来说，会将被 <code>GC ROOT</code> 直接引用到的对象初始化到灰色集合，其余所有对象初始化到白色集合，然后开始执行算法：</p>
+<ol>
+<li>将一个灰色对象加入到黑色集合</li>
+<li>将其引用到的所有白色对象加入到灰色集合</li>
+<li>重复上述两步，直到灰色集合为空</li>
+</ol>
+</li>
+<li><p>该算法保证从  <code>GC ROOT</code> 出发，所有没有被引用到的对象都在白色集合中，所以最后白色集合中的所有对象就是要回收的对象</p>
+</li>
+</ul>
+<h4 id="CMS-回收过程"><a href="#CMS-回收过程" class="headerlink" title="CMS 回收过程"></a>CMS 回收过程</h4><ul>
+<li>分为 4 个过程，初始标记，并发标记，重新标记，并发清理</li>
+</ul>
+<ol>
+<li><p>初始标记</p>
+<ul>
+<li>从 <code>GC ROOT</code> 出发，找到所有被 <code>GC ROOT</code> 直接引用的节点</li>
+<li>此过程需要 STW (Stop The World)</li>
+</ul>
+</li>
+<li><p>并发标记</p>
+<ul>
+<li>以上一步骤的节点为根节点，并发的遍历所有节点</li>
+<li>同时会开启 <code>Write Barrier</code></li>
+<li>如果在此过程中存在黑色对象新增对白色对象的引用，则会通过 <code>Write Barrier</code> 记录下来<ul>
+<li>如下图，在 GC 过程中，用三色标记法遍历到 A 这个对象（图 1），将A引用到的BCD标记为灰色</li>
+<li>之后，在应用程序线程中创建了一个对象 E，A 引用了它（ 图 2 这个阶段 GC 是并发标记的）</li>
+<li>然后将 A 标记为黑色（图 3）</li>
+<li>在 GC 扫描结束后，E 这个对象因为是白色的，所以将被回收掉</li>
+<li>这显然是不能接受的，并发垃圾回收器的底线是允许一部分垃圾暂时不回收（见下面的浮动垃圾），但绝不允许从根可达的存活对象被当作垃圾处理掉<br><img src="https://gitee.com/chansonchan/image/raw/master/uPic/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031382f392f332f313635396434626230353531636165333f773d3133333826683d35343126663d706e6726733d3737323334.png" alt="image"></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>重新标记</p>
+<ul>
+<li>因为并发标记的过程中可能有引用关系的变化，所以该阶段需要 STW</li>
+<li>以 <code>GC ROOT</code>，<code>Write Barrier</code> 中记录的对象为根节点，重新遍历</li>
+<li>这里为什么还需要再遍历 <code>GC ROOT</code> ？<ul>
+<li>因为 <code>Write Barrier</code> 是作用在堆上的，无法感知到 <code>GC ROOT</code> 上引用关系的变更</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>并发清理：</p>
+<ul>
+<li>并发的清理所有垃圾对象</li>
+</ul>
+</li>
+</ol>
+<ul>
+<li><p>CMS 通过将步骤拆分，实现了降低 STW 时间的目的。但 CMS 也会有以下问题：</p>
+<ul>
+<li><p><strong>浮动垃圾</strong>，在并发标记的过程中（及之后阶段），可能存在原来被引用的对象变成无人引用了</p>
+<ul>
+<li>在这次 GC 不会对其清理</li>
+</ul>
+</li>
+<li><p><strong>CPU 敏感</strong>，因为用户程序是和 GC 线程同时运行的，所以会导致 GC 的过程中程序运行变慢，GC 运行时间增长，吞吐量降低</p>
+<ul>
+<li>默认回收线程是（CPU 数量 + 3）/ 4，也就是 CPU 不足 4 个时，会有一半的 CPU 资源给 GC 线程</li>
+</ul>
+</li>
+<li><p><strong>空间碎片</strong>，标记清除算法共有的问题。当碎片过多时，为大对象分配内存空间就会很麻烦</p>
+<ul>
+<li>有时候就是老年代空间有大量空间剩余，但没有连续的大空间来分配当前对象，不得不提前触发 Full GC</li>
+<li>CMS 提供一个参数（<code>-XX:+UseCMSCompactAtFullCollection</code>），在 Full GC 发生时开启内存合并整理<ul>
+<li>这个过程是 STW 的</li>
+<li>同时还可以通过参数（<code>-XX:CMSFullGCsBeforeCom-paction</code>）设置执行多少次不压缩的 Full GC 后，进行一次压缩的</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>需要更大的内存空间</strong>，因为是同时运行的 GC 和用户程序，所以不能像其他老年代收集器一样，等老年代满了再触发 GC，而是要预留一定的空间</p>
+<ul>
+<li>CMS 可以配置当老年代使用率到达某个阈值时（ <code>-XX:CMSInitiatingOccupancyFraction=80</code> ），开始 CMS GC</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>在 Old GC 运行的过程中，可能有大量对象从年轻代晋升，而出现老年代存放不下的问题（因为这个时候垃圾还没被回收掉），该问题叫 Concurrent Model Failure, 这时候会启用 Serial Old 收集器，重新回收整个老年代</p>
+</li>
+<li><p>Concurrent Model Failure 一般伴随着 ParNew promotion failed（晋升担保失败）, 解决这个问题的办法就是可以让 CMS 在进行一定次数的 Full GC（标记清除）的时候进行一次标记整理算法，或者降低触发 CMS GC 的阈值</p>
+</li>
+</ul>
+<h1 id="Java-引用类型原理"><a href="#Java-引用类型原理" class="headerlink" title="Java 引用类型原理"></a>Java 引用类型原理</h1><ul>
+<li><p>Java 中主要有 4 种引用类型：<strong>强引用</strong>、<strong>软引用</strong>、<strong>弱引用</strong>、<strong>虚引用</strong></p>
+</li>
+<li><table>
+<thead>
+<tr>
+<th>序号</th>
+<th>引用类型</th>
+<th>取得目标对象方式</th>
+<th>垃圾回收条件</th>
+<th>是否可能内存泄漏</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>强引用</td>
+<td>直接调用</td>
+<td>不回收</td>
+<td>可能</td>
+</tr>
+<tr>
+<td>2</td>
+<td>软引用</td>
+<td>通过 get() 方法</td>
+<td>视内存情况回收</td>
+<td>不可能</td>
+</tr>
+<tr>
+<td>3</td>
+<td>弱引用</td>
+<td>通过 get() 方法</td>
+<td>永远回收</td>
+<td>不可能</td>
+</tr>
+<tr>
+<td>4</td>
+<td>虚引用</td>
+<td>无法取得</td>
+<td>不回收</td>
+<td>可能</td>
+</tr>
+</tbody></table>
+</li>
+<li><p><strong>强引用</strong>就是我们经常使用的 <code>Object a = new Object();</code> 这样的形式，在 Java 中并没有对应的 Reference 类</p>
+</li>
+<li><p>其他三种引用类型都继承于 <code>Reference</code> 类</p>
+</li>
+</ul>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><h3 id="相关字段"><a href="#相关字段" class="headerlink" title="相关字段"></a>相关字段</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Reference</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 引用的对象</span></span><br><span class="line">    <span class="keyword">private</span> T referent;</span><br><span class="line">  </span><br><span class="line">	  <span class="comment">// 回收队列，由使用者在 Reference 的构造函数中指定, 开发者可以通过从 ReferenceQueue 中 poll 感知到对象被回收的事件</span></span><br><span class="line">    <span class="keyword">volatile</span> ReferenceQueue&lt;? <span class="keyword">super</span> T&gt; queue;</span><br><span class="line">  </span><br><span class="line"> 	  <span class="comment">// 当该引用被加入到 queue 中的时候，该字段被设置为 queue 中的下一个元素，以形成链表结构</span></span><br><span class="line">    <span class="keyword">volatile</span> Reference next;</span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 在 GC 时，JVM 底层会维护一个叫 DiscoveredList 的链表，存放的是 Reference 对象，discovered 字段指向的就是链表中的下一个元素，由 JVM 设置</span></span><br><span class="line">    <span class="keyword">transient</span> <span class="keyword">private</span> Reference&lt;T&gt; discovered;  </span><br><span class="line">	  </span><br><span class="line">    <span class="comment">// 进行线程同步的锁对象</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">Lock</span> </span>&#123; &#125;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Lock lock = <span class="keyword">new</span> Lock();</span><br><span class="line"></span><br><span class="line">	  <span class="comment">// 等待加入 queue 的 Reference 对象，在 GC 时由 JVM 设置，会有一个 Java 层的线程 (ReferenceHandler) 源源不断的从pending 中提取元素加入到 queue</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Reference&lt;Object&gt; pending = <span class="keyword">null</span>;</span><br><span class="line">  </span><br><span class="line">  ......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="生命周期"><a href="#生命周期" class="headerlink" title="生命周期"></a>生命周期</h3><p><img src="https://gitee.com/chansonchan/image/raw/master/uPic/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031382f31312f352f313636653163323462383532333337323f773d35333226683d36323526663d706e6726733d3331333138.png" alt="img"></p>
+<ul>
+<li><p>主要分为 Native 层和 Java 层两个部分</p>
+<ul>
+<li><p>Native 层在 GC 时将需要被回收的 Reference 对象加入到 DiscoveredList 中，然后将 DiscoveredList 的元素移动到 PendingList 中, PendingList 的队首就是 Reference 类中的 pending 对象</p>
+</li>
+<li><p>Java 层代码</p>
+<ul>
+<li><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">ReferenceHandler</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>&#123;</span><br><span class="line">     	...</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">                tryHandlePending(<span class="keyword">true</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">  &#125; </span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">tryHandlePending</span><span class="params">(<span class="keyword">boolean</span> waitForNotify)</span> </span>&#123;</span><br><span class="line">        Reference&lt;Object&gt; r;</span><br><span class="line">        Cleaner c;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (lock) &#123;</span><br><span class="line">                <span class="keyword">if</span> (pending != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    r = pending;</span><br><span class="line">                 	  <span class="comment">// 如果是 Cleaner 对象，则记录下来，下面做特殊处理</span></span><br><span class="line">                    c = r <span class="keyword">instanceof</span> Cleaner ? (Cleaner) r : <span class="keyword">null</span>;</span><br><span class="line">                    <span class="comment">// 指向 PendingList 的下一个对象</span></span><br><span class="line">                    pending = r.discovered;</span><br><span class="line">                    r.discovered = <span class="keyword">null</span>;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="comment">// 如果 pending 为 null 就先等待，当有对象加入到 PendingList 中时，JVM 会执行 notify</span></span><br><span class="line">                    <span class="keyword">if</span> (waitForNotify) &#123;</span><br><span class="line">                        lock.wait();</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="comment">// retry if waited</span></span><br><span class="line">                    <span class="keyword">return</span> waitForNotify;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; </span><br><span class="line">        ...</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 如果是 CLeaner 对象，则调用 clean 方法进行资源回收</span></span><br><span class="line">        <span class="keyword">if</span> (c != <span class="keyword">null</span>) &#123;</span><br><span class="line">            c.clean();</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">		    <span class="comment">// 将 Reference 加入到 ReferenceQueue</span></span><br><span class="line">        ReferenceQueue&lt;? <span class="keyword">super</span> Object&gt; q = r.queue;</span><br><span class="line">        <span class="keyword">if</span> (q != ReferenceQueue.NULL) q.enqueue(r);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>对于 Cleaner 类型（继承自虚引用）的对象会有额外的处理</p>
+<ul>
+<li>在其指向的对象被回收时，会调用 <code>clean</code> 方法，该方法主要是用来做对应的资源回收</li>
+<li><strong>在堆外内存 DirectByteBuffer 中就是用 Cleaner 进行堆外内存的回收，这也是虚引用在 Java 中的典型应用</strong></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="SoftReference"><a href="#SoftReference" class="headerlink" title="SoftReference"></a>SoftReference</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SoftReference</span>&lt;<span class="title">T</span>&gt; <span class="keyword">extends</span> <span class="title">Reference</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">private</span> <span class="keyword">long</span> clock;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> timestamp;</span><br><span class="line">   </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">SoftReference</span><span class="params">(T referent)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(referent);</span><br><span class="line">        <span class="keyword">this</span>.timestamp = clock;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">SoftReference</span><span class="params">(T referent, ReferenceQueue&lt;? <span class="keyword">super</span> T&gt; q)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(referent, q);</span><br><span class="line">        <span class="keyword">this</span>.timestamp = clock;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> T <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        T o = <span class="keyword">super</span>.get();</span><br><span class="line">        <span class="keyword">if</span> (o != <span class="keyword">null</span> &amp;&amp; <span class="keyword">this</span>.timestamp != clock)</span><br><span class="line">            <span class="keyword">this</span>.timestamp = clock;</span><br><span class="line">        <span class="keyword">return</span> o;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>软引用的实现多了两个字段：<code>clock</code> 和 <code>timestamp</code></p>
+<ul>
+<li><code>clock</code> 是个静态变量，每次 GC 时都会将该字段设置成当前时间</li>
+<li><code>timestamp</code> 字段则会在每次调用 <code>get</code> 方法时将其赋值为 <code>clock</code>（如果不相等且对象没被回收）</li>
+</ul>
+</li>
+<li><p>通过 JVM 源码查看这两个字段的作用</p>
+<ul>
+<li><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">size_t</span></span><br><span class="line">ReferenceProcessor::process_discovered_reflist(</span><br><span class="line">  DiscoveredList               refs_lists[],</span><br><span class="line">  ReferencePolicy*             policy,</span><br><span class="line">  <span class="keyword">bool</span>                         clear_referent,</span><br><span class="line">  BoolObjectClosure*           is_alive,</span><br><span class="line">  OopClosure*                  keep_alive,</span><br><span class="line">  VoidClosure*                 complete_gc,</span><br><span class="line">  AbstractRefProcTaskExecutor* task_executor)</span><br><span class="line">&#123;</span><br><span class="line"> ...</span><br><span class="line">   <span class="comment">// refs_lists 就是前面提到的 DiscoveredList</span></span><br><span class="line">   <span class="comment">// 对于 DiscoveredList 的处理分为几个阶段，SoftReference 的处理就在第一阶段</span></span><br><span class="line"> ...</span><br><span class="line">   <span class="keyword">for</span> (uint i = <span class="number">0</span>; i &lt; _max_num_q; i++) &#123;</span><br><span class="line">     process_phase1(refs_lists[i], policy,</span><br><span class="line">                    is_alive, keep_alive, complete_gc);</span><br><span class="line">   &#125;</span><br><span class="line"> ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 该阶段的主要目的就是当内存足够时，将对应的 SoftReference 从 refs_list 中移除</span></span><br><span class="line"><span class="keyword">void</span></span><br><span class="line">ReferenceProcessor::process_phase1(DiscoveredList&amp;    refs_list,</span><br><span class="line">                                   ReferencePolicy*   policy,</span><br><span class="line">                                   BoolObjectClosure* is_alive,</span><br><span class="line">                                   OopClosure*        keep_alive,</span><br><span class="line">                                   VoidClosure*       complete_gc) &#123;</span><br><span class="line">  </span><br><span class="line">  <span class="function">DiscoveredListIterator <span class="title">iter</span><span class="params">(refs_list, keep_alive, is_alive)</span></span>;</span><br><span class="line">  <span class="comment">// Decide which softly reachable refs should be kept alive.</span></span><br><span class="line">  <span class="keyword">while</span> (iter.has_next()) &#123;</span><br><span class="line">    iter.load_ptrs(DEBUG_ONLY(!discovery_is_atomic() <span class="comment">/* allow_null_referent */</span>));</span><br><span class="line">    <span class="comment">// 判断引用的对象是否存活</span></span><br><span class="line">    <span class="keyword">bool</span> referent_is_dead = (iter.referent() != <span class="literal">NULL</span>) &amp;&amp; !iter.is_referent_alive();</span><br><span class="line">    <span class="comment">// 如果引用的对象已经不存活了，则会去调用对应的 ReferencePolicy 判断该对象是不时要被回收</span></span><br><span class="line">    <span class="keyword">if</span> (referent_is_dead &amp;&amp;</span><br><span class="line">        !policy-&gt;should_clear_reference(iter.obj(), _soft_ref_timestamp_clock)) &#123;</span><br><span class="line">      <span class="keyword">if</span> (TraceReferenceGC) &#123;</span><br><span class="line">        gclog_or_tty-&gt;print_cr(<span class="string">"Dropping reference ("</span> INTPTR_FORMAT <span class="string">": %s"</span>  <span class="string">") by policy"</span>,</span><br><span class="line">                               (<span class="keyword">void</span> *)iter.obj(), iter.obj()-&gt;klass()-&gt;internal_name());</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">// Remove Reference object from list</span></span><br><span class="line">      iter.remove();</span><br><span class="line">      <span class="comment">// Make the Reference object active again</span></span><br><span class="line">      iter.make_active();</span><br><span class="line">      <span class="comment">// keep the referent around</span></span><br><span class="line">      iter.make_referent_alive();</span><br><span class="line">      iter.move_to_next();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      iter.next();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"> ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>refs_lists</code> 中存放了本次 GC 发现的某种引用类型（虚引用、软引用、弱引用等），而 <code>process_discovered_reflist</code> 方法的作用就是将不需要被回收的对象从 <code>refs_lists</code> 移除掉，<code>refs_lists</code> 最后剩下的元素全是需要被回收的元素，最后会将其第一个元素赋值给上文提到过的 <code>Reference.java#pending</code> 字段</p>
+</li>
+<li><p>ReferencePolicy 一共有4种实现</p>
+<ul>
+<li><p>NeverClearPolicy，永远返回 false, 代表永远不回收 SoftReference，在 JVM 中该类没有被使用</p>
+</li>
+<li><p>AlwaysClearPolicy，永远返回 true，在 <code>referenceProcessor.hpp#setup</code> 方法中中可以设置 policy 为 AlwaysClearPolicy</p>
+</li>
+<li><p>LRUCurrentHeapPolicy，LRUMaxHeapPolicy</p>
+<ul>
+<li><p><code>should_clear_reference</code> 方法完全相同</p>
+<ul>
+<li><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> LRUMaxHeapPolicy::should_clear_reference(oop p,</span><br><span class="line">                                             jlong timestamp_clock) &#123;</span><br><span class="line">  jlong interval = timestamp_clock - java_lang_ref_SoftReference::timestamp(p);</span><br><span class="line">  assert(interval &gt;= <span class="number">0</span>, <span class="string">"Sanity check"</span>);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// The interval will be zero if the ref was accessed since the last scavenge/gc.</span></span><br><span class="line">  <span class="keyword">if</span>(interval &lt;= _max_interval) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>timestamp_clock</code> 就是 SoftReference 的静态字段 <code>clock</code></p>
+</li>
+<li><p><code>java_lang_ref_SoftReference::timestamp(p)</code> 对应是字段 <code>timestamp</code></p>
+</li>
+<li><p>如果上次 GC 后有调用 <code>SoftReference#get</code>，<code>interval</code> 值为 0，否则为若干次 GC 之间的时间差</p>
+</li>
+<li><p><code>_max_interval</code> 则代表了一个临界值，它的值在 LRUCurrentHeapPolicy 和 LRUMaxHeapPolicy 两种策略中有差异</p>
+<ul>
+<li><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> LRUCurrentHeapPolicy::setup() &#123;</span><br><span class="line">  _max_interval = (Universe::get_heap_free_at_last_gc() / M) * SoftRefLRUPolicyMSPerMB;</span><br><span class="line">  assert(_max_interval &gt;= <span class="number">0</span>,<span class="string">"Sanity check"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> LRUMaxHeapPolicy::setup() &#123;</span><br><span class="line">  <span class="keyword">size_t</span> max_heap = MaxHeapSize;</span><br><span class="line">  max_heap -= Universe::get_heap_used_at_last_gc();</span><br><span class="line">  max_heap /= M;</span><br><span class="line"></span><br><span class="line">  _max_interval = max_heap * SoftRefLRUPolicyMSPerMB;</span><br><span class="line">  assert(_max_interval &gt;= <span class="number">0</span>,<span class="string">"Sanity check"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>其中 <code>SoftRefLRUPolicyMSPerMB</code> 默认为 1000</p>
+<ul>
+<li>前者的计算方法和上次 GC 后可用堆大小有关</li>
+<li>后者计算方法和（堆大小 - 上次 GC 时堆使用大小）有关</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>所以 SoftReference 什么时候被回收和使用的策略（默认应该是 LRUCurrentHeapPolicy），堆可用大小，该 SoftReference 上一次调用 get 方法的时间都有关系</p>
+</li>
+</ul>
+<h3 id="WeakReference"><a href="#WeakReference" class="headerlink" title="WeakReference"></a>WeakReference</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WeakReference</span>&lt;<span class="title">T</span>&gt; <span class="keyword">extends</span> <span class="title">Reference</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">WeakReference</span><span class="params">(T referent)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(referent);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">WeakReference</span><span class="params">(T referent, ReferenceQueue&lt;? <span class="keyword">super</span> T&gt; q)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(referent, q);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>WeakReference 在 Java 层只是继承了 Reference，没有做任何的改动</p>
+</li>
+<li><p>那 <code>referent</code> 字段是什么时候被置为 null 的呢？我们再看下上文提到过的 <code>process_discovered_reflist</code> 方法：</p>
+<ul>
+<li><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">size_t</span></span><br><span class="line">ReferenceProcessor::process_discovered_reflist(</span><br><span class="line">  DiscoveredList               refs_lists[],</span><br><span class="line">  ReferencePolicy*             policy,</span><br><span class="line">  <span class="keyword">bool</span>                         clear_referent,</span><br><span class="line">  BoolObjectClosure*           is_alive,</span><br><span class="line">  OopClosure*                  keep_alive,</span><br><span class="line">  VoidClosure*                 complete_gc,</span><br><span class="line">  AbstractRefProcTaskExecutor* task_executor)</span><br><span class="line">&#123;</span><br><span class="line"> ...</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Phase 1: 将所有不存活但是还不能被回收的软引用从 refs_lists 中移除（只有 refs_lists 为软引用的时候，这里 policy 才不为 null）</span></span><br><span class="line">  <span class="keyword">if</span> (policy != <span class="literal">NULL</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (mt_processing) &#123;</span><br><span class="line">      <span class="function">RefProcPhase1Task <span class="title">phase1</span><span class="params">(*<span class="keyword">this</span>, refs_lists, policy, <span class="literal">true</span> <span class="comment">/*marks_oops_alive*/</span>)</span></span>;</span><br><span class="line">      task_executor-&gt;execute(phase1);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">for</span> (uint i = <span class="number">0</span>; i &lt; _max_num_q; i++) &#123;</span><br><span class="line">        process_phase1(refs_lists[i], policy,</span><br><span class="line">                       is_alive, keep_alive, complete_gc);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123; <span class="comment">// policy == NULL</span></span><br><span class="line">    assert(refs_lists != _discoveredSoftRefs,</span><br><span class="line">           <span class="string">"Policy must be specified for soft references."</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Phase 2:</span></span><br><span class="line">  <span class="comment">// 移除所有指向对象还存活的引用</span></span><br><span class="line">  <span class="keyword">if</span> (mt_processing) &#123;</span><br><span class="line">    <span class="function">RefProcPhase2Task <span class="title">phase2</span><span class="params">(*<span class="keyword">this</span>, refs_lists, !discovery_is_atomic() <span class="comment">/*marks_oops_alive*/</span>)</span></span>;</span><br><span class="line">    task_executor-&gt;execute(phase2);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">for</span> (uint i = <span class="number">0</span>; i &lt; _max_num_q; i++) &#123;</span><br><span class="line">      process_phase2(refs_lists[i], is_alive, keep_alive, complete_gc);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Phase 3:</span></span><br><span class="line">  <span class="comment">// 根据 clear_referent 的值决定是否将不存活对象回收</span></span><br><span class="line">  <span class="keyword">if</span> (mt_processing) &#123;</span><br><span class="line">    <span class="function">RefProcPhase3Task <span class="title">phase3</span><span class="params">(*<span class="keyword">this</span>, refs_lists, clear_referent, <span class="literal">true</span> <span class="comment">/*marks_oops_alive*/</span>)</span></span>;</span><br><span class="line">    task_executor-&gt;execute(phase3);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">for</span> (uint i = <span class="number">0</span>; i &lt; _max_num_q; i++) &#123;</span><br><span class="line">      process_phase3(refs_lists[i], clear_referent,</span><br><span class="line">                     is_alive, keep_alive, complete_gc);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> total_list_count;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span></span><br><span class="line">ReferenceProcessor::process_phase3(DiscoveredList&amp;    refs_list,</span><br><span class="line">                                   <span class="keyword">bool</span>               clear_referent,</span><br><span class="line">                                   BoolObjectClosure* is_alive,</span><br><span class="line">                                   OopClosure*        keep_alive,</span><br><span class="line">                                   VoidClosure*       complete_gc) &#123;</span><br><span class="line">  ResourceMark rm;</span><br><span class="line">  <span class="function">DiscoveredListIterator <span class="title">iter</span><span class="params">(refs_list, keep_alive, is_alive)</span></span>;</span><br><span class="line">  <span class="keyword">while</span> (iter.has_next()) &#123;</span><br><span class="line">    iter.update_discovered();</span><br><span class="line">    iter.load_ptrs(DEBUG_ONLY(<span class="literal">false</span> <span class="comment">/* allow_null_referent */</span>));</span><br><span class="line">    <span class="keyword">if</span> (clear_referent) &#123;</span><br><span class="line">      <span class="comment">// NULL out referent pointer</span></span><br><span class="line">      <span class="comment">// 将 Reference 的 referent 字段置为 null，之后会被 GC 回收</span></span><br><span class="line">      iter.clear_referent();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="comment">// keep the referent around</span></span><br><span class="line">      <span class="comment">// 标记引用的对象为存活，该对象在这次 GC 将不会被回收</span></span><br><span class="line">      iter.make_referent_alive();</span><br><span class="line">    &#125;</span><br><span class="line">	...</span><br><span class="line">  &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>不管是弱引用还是其他引用类型，将字段 referent 置 null 的操作都发生在 <code>process_phase3</code> 中，而具体行为是由 <code>clear_referent</code> 的值决定的。而 <code>clear_referent</code> 的值则和引用类型相关</p>
+<ul>
+<li><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">ReferenceProcessorStats ReferenceProcessor::process_discovered_references(</span><br><span class="line">  BoolObjectClosure*           is_alive,</span><br><span class="line">  OopClosure*                  keep_alive,</span><br><span class="line">  VoidClosure*                 complete_gc,</span><br><span class="line">  AbstractRefProcTaskExecutor* task_executor,</span><br><span class="line">  GCTimer*                     gc_timer) &#123;</span><br><span class="line">  NOT_PRODUCT(verify_ok_to_handle_reflists());</span><br><span class="line">	...</span><br><span class="line">  <span class="comment">// process_discovered_reflist 方法的第 3 个字段就是 clear_referent</span></span><br><span class="line">  <span class="comment">// Soft references</span></span><br><span class="line">  <span class="keyword">size_t</span> soft_count = <span class="number">0</span>;</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="function">GCTraceTime <span class="title">tt</span><span class="params">(<span class="string">"SoftReference"</span>, trace_time, <span class="literal">false</span>, gc_timer)</span></span>;</span><br><span class="line">    soft_count =</span><br><span class="line">      process_discovered_reflist(_discoveredSoftRefs, _current_soft_ref_policy, <span class="literal">true</span>,</span><br><span class="line">                                 is_alive, keep_alive, complete_gc, task_executor);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  update_soft_ref_master_clock();</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Weak references</span></span><br><span class="line">  <span class="keyword">size_t</span> weak_count = <span class="number">0</span>;</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="function">GCTraceTime <span class="title">tt</span><span class="params">(<span class="string">"WeakReference"</span>, trace_time, <span class="literal">false</span>, gc_timer)</span></span>;</span><br><span class="line">    weak_count =</span><br><span class="line">      process_discovered_reflist(_discoveredWeakRefs, <span class="literal">NULL</span>, <span class="literal">true</span>,</span><br><span class="line">                                 is_alive, keep_alive, complete_gc, task_executor);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Final references</span></span><br><span class="line">  <span class="keyword">size_t</span> final_count = <span class="number">0</span>;</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="function">GCTraceTime <span class="title">tt</span><span class="params">(<span class="string">"FinalReference"</span>, trace_time, <span class="literal">false</span>, gc_timer)</span></span>;</span><br><span class="line">    final_count =</span><br><span class="line">      process_discovered_reflist(_discoveredFinalRefs, <span class="literal">NULL</span>, <span class="literal">false</span>,</span><br><span class="line">                                 is_alive, keep_alive, complete_gc, task_executor);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Phantom references</span></span><br><span class="line">  <span class="keyword">size_t</span> phantom_count = <span class="number">0</span>;</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="function">GCTraceTime <span class="title">tt</span><span class="params">(<span class="string">"PhantomReference"</span>, trace_time, <span class="literal">false</span>, gc_timer)</span></span>;</span><br><span class="line">    phantom_count =</span><br><span class="line">      process_discovered_reflist(_discoveredPhantomRefs, <span class="literal">NULL</span>, <span class="literal">false</span>,</span><br><span class="line">                                 is_alive, keep_alive, complete_gc, task_executor);</span><br><span class="line">  &#125;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>可以看到，对于 Soft references 和 Weak references <code>clear_referent</code> 字段传入的都是 true</p>
+<ul>
+<li>对象不可达后，引用字段就会被置为 null，然后对象就会被回收</li>
+<li>对于软引用来说，如果内存足够的话，在 Phase 1 相关的引用就会从 refs_list 中被移除，到 Phase 3 时 refs_list 为空集合</li>
+</ul>
+</li>
+<li><p>对于 Final references 和 Phantom references，<code>clear_referent</code> 字段传入的是 false</p>
+<ul>
+<li>也就意味着被这两种引用类型引用的对象，<strong>如果没有其他额外处理，只要 Reference 对象还存活，那引用的对象是不会被回收的</strong></li>
+<li>Final references 和对象是否重写了 finalize 方法有关, 不在本文分析范围之内</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="PhantomReference"><a href="#PhantomReference" class="headerlink" title="PhantomReference"></a>PhantomReference</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PhantomReference</span>&lt;<span class="title">T</span>&gt; <span class="keyword">extends</span> <span class="title">Reference</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> T <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">PhantomReference</span><span class="params">(T referent, ReferenceQueue&lt;? <span class="keyword">super</span> T&gt; q)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(referent, q);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>可以看到虚引用的 get 方法永远返回 null，我们看个 demo</p>
+<ul>
+<li><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">demo</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">   Object obj = <span class="keyword">new</span> Object();</span><br><span class="line">   ReferenceQueue&lt;Object&gt; refQueue = <span class="keyword">new</span> ReferenceQueue&lt;&gt;();</span><br><span class="line">   PhantomReference&lt;Object&gt; phanRef = <span class="keyword">new</span> PhantomReference&lt;&gt;(obj, refQueue);</span><br><span class="line"></span><br><span class="line">   Object objg = phanRef.get();</span><br><span class="line">   <span class="comment">// 这里拿到的是 null</span></span><br><span class="line">   System.out.println(objg);</span><br><span class="line">   <span class="comment">// 让 obj 变成垃圾</span></span><br><span class="line">   obj = <span class="keyword">null</span>;</span><br><span class="line">   System.gc();</span><br><span class="line">   Thread.sleep(<span class="number">3000</span>);</span><br><span class="line">   <span class="comment">// gc 后会将 phanRef 加入到 refQueue 中</span></span><br><span class="line">   Reference&lt;? extends Object&gt; phanRefP = refQueue.remove();</span><br><span class="line">   <span class="comment">// 这里输出 true</span></span><br><span class="line">   System.out.println(phanRefP == phanRef);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>从以上代码中可以看到，虚引用能够在指向对象不可达时得到一个’通知’（其实所有继承 References 的类都有这个功能）</p>
+</li>
+<li><p>需要注意的是 GC 完成后，<strong>phanRef.referent 依然指向之前创建 Object，也就是说 Object 对象一直没被回收</strong></p>
+</li>
+<li><p>造成这一现象的原因在前面也已经说了：<code>clear_referent</code> 字段传入的是 false</p>
+</li>
+<li><p>对于虚引用来说，从 <code>refQueue.remove();</code> 得到引用对象后，可以调用 <code>clear</code> 方法强行解除引用和对象之间的关系，使得对象下次可以 GC 时可以被回收掉</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>我们经常在网上看到软引用的介绍是：在内存不足的时候才会回收，那内存不足是怎么定义的？为什么才叫内存不足？<ul>
+<li>软引用会在内存不足时被回收，内存不足的定义和该引用对象 <code>get</code> 的时间以及当前堆可用内存大小都有关系，计算公式在上文中也已经给出</li>
+</ul>
+</li>
+<li>网上对于虚引用的介绍是：形同虚设，与其他几种引用都不同，虚引用并不会决定对象的生命周期。主要用来跟踪对象被垃圾回收器回收的活动。真的是这样吗？<ul>
+<li>严格的说，虚引用是会影响对象生命周期的，如果不做任何处理，只要虚引用不被回收，那其引用的对象永远不会被回收</li>
+<li>所以一般来说，从 ReferenceQueue 中获得 PhantomReference 对象后，如果 PhantomReference 对象不会被回收的话（比如被其他 GC ROOT 可达的对象引用），需要调用 <code>clear</code> 方法解除 PhantomReference 和其引用对象的引用关系</li>
+</ul>
+</li>
+<li>各个引用的使用场景<ul>
+<li>软引用<ul>
+<li>用于缓存，创建的对象放进缓存中，当内存不足时，JVM 就会回收早先创建的对象</li>
+</ul>
+</li>
+<li>弱引用<ul>
+<li>WeakHashMap 中的 key 使用的是弱引用</li>
+<li>Threadlocal 中 ThreadLocalMap 的 Entry 继承自弱引用, 避免 Threadlocal 无法回收</li>
+</ul>
+</li>
+<li>虚引用<ul>
+<li>DirectByteBuffer 中使用虚引用的子类 <code>Cleaner.java</code> 来实现堆外内存的回收</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="关于-JVM-堆外内存"><a href="#关于-JVM-堆外内存" class="headerlink" title="关于 JVM 堆外内存"></a>关于 JVM 堆外内存</h1><ul>
+<li>Java 中的对象都是在 JVM 堆中分配的，其好处在于开发者不用关心对象的回收</li>
+<li>但有利必有弊，堆内内存主要有两个缺点<ol>
+<li>GC 是有成本的，堆中的对象数量越多，GC 的开销也会越大</li>
+<li>使用堆内内存进行文件、网络的 IO 时，JVM 会使用堆外内存做一次额外的中转，也就是会多一次内存拷贝</li>
+</ol>
+</li>
+<li>和堆内内存相对应，堆外内存就是把内存对象分配在 Java 虚拟机堆以外的内存，这些内存直接受操作系统管理（而不是虚拟机），这样做的结果就是能够在一定程度上减少垃圾回收对应用程序造成的影响</li>
+</ul>
+<h2 id="堆外内存的实现-DirectByteBuffer"><a href="#堆外内存的实现-DirectByteBuffer" class="headerlink" title="堆外内存的实现 (DirectByteBuffer)"></a>堆外内存的实现 (DirectByteBuffer)</h2><ul>
+<li><p>Java 中分配堆外内存的方式有两种</p>
+<ul>
+<li>一是通过 <code>ByteBuffer.java#allocateDirect</code> 得到以一个 <code>DirectByteBuffer</code> 对象</li>
+<li>二是直接调用 <code>Unsafe.java#allocateMemory</code> 分配内存，但 <code>Unsafe</code> 只能在 JDK 的代码中调用，一般不会直接使用该方法分配内存 </li>
+</ul>
+</li>
+<li><p>其中 <code>DirectByteBuffer</code> 也是用 <code>Unsafe</code> 去实现内存分配的，对堆内存的分配、读写、回收都做了封装</p>
+</li>
+</ul>
+<h4 id="堆外内存的分配与回收"><a href="#堆外内存的分配与回收" class="headerlink" title="堆外内存的分配与回收"></a>堆外内存的分配与回收</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ByteBuffer.java </span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ByteBuffer <span class="title">allocateDirect</span><span class="params">(<span class="keyword">int</span> capacity)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> DirectByteBuffer(capacity);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// DirectByteBuffer.java </span></span><br><span class="line">DirectByteBuffer(<span class="keyword">int</span> cap) &#123;                   <span class="comment">// package-private</span></span><br><span class="line">    <span class="comment">// 主要是调用 ByteBuffer 的构造方法，为字段赋值</span></span><br><span class="line">    <span class="keyword">super</span>(-<span class="number">1</span>, <span class="number">0</span>, cap, cap);</span><br><span class="line">    <span class="comment">// 如果是按页对齐，则还要加一个 Page 的大小；我们分析只 pa 为 false 的情况就好了</span></span><br><span class="line">    <span class="keyword">boolean</span> pa = VM.isDirectMemoryPageAligned();</span><br><span class="line">    <span class="keyword">int</span> ps = Bits.pageSize();</span><br><span class="line">    <span class="keyword">long</span> size = Math.max(<span class="number">1L</span>, (<span class="keyword">long</span>)cap + (pa ? ps : <span class="number">0</span>));</span><br><span class="line">    <span class="comment">// 预分配内存</span></span><br><span class="line">    Bits.reserveMemory(size, cap);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">long</span> base = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// 分配内存</span></span><br><span class="line">        base = unsafe.allocateMemory(size);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (OutOfMemoryError x) &#123;</span><br><span class="line">        Bits.unreserveMemory(size, cap);</span><br><span class="line">        <span class="keyword">throw</span> x;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 将分配的内存的所有值赋值为 0</span></span><br><span class="line">    unsafe.setMemory(base, size, (<span class="keyword">byte</span>) <span class="number">0</span>);</span><br><span class="line">    <span class="comment">// 为 address 赋值，address 就是分配内存的起始地址，之后的数据读写都是以它作为基准</span></span><br><span class="line">    <span class="keyword">if</span> (pa &amp;&amp; (base % ps != <span class="number">0</span>)) &#123;</span><br><span class="line">        <span class="comment">// Round up to page boundary</span></span><br><span class="line">        address = base + ps - (base &amp; (ps - <span class="number">1</span>));</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// pa 为 false 的情况，address == base</span></span><br><span class="line">        address = base;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 创建一个 Cleaner，将 this 和一个 Deallocator 对象传进去</span></span><br><span class="line">    cleaner = Cleaner.create(<span class="keyword">this</span>, <span class="keyword">new</span> Deallocator(base, size, cap));</span><br><span class="line">    att = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><code>DirectByteBuffer</code> 构造方法分为几个步骤</p>
+<ol>
+<li>预分配内存</li>
+<li>分配内存</li>
+<li>将刚分配的内存空间初始化为 0</li>
+<li>创建一个 <code>Cleaner</code> 对象，<code>Cleaner</code> 对象的作用是当 <code>DirectByteBuffer</code> 对象被回收时，释放其对应的堆外内存</li>
+</ol>
+</li>
+<li><p>当 GC 发现 <code>DirectByteBuffer</code> 对象变成垃圾时，会调用 <code>Cleaner#clean</code> 回收对应的堆外内存，一定程度上防止了内存泄露</p>
+<ul>
+<li>当然也可以手动的调用该方法，对堆外内存进行提前回收</li>
+</ul>
+</li>
+</ul>
+<h4 id="Cleaner-的实现"><a href="#Cleaner-的实现" class="headerlink" title="Cleaner 的实现"></a>Cleaner 的实现</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Cleaner</span> <span class="keyword">extends</span> <span class="title">PhantomReference</span>&lt;<span class="title">Object</span>&gt; </span>&#123;</span><br><span class="line">   ...</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Cleaner</span><span class="params">(Object referent, Runnable thunk)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(referent, dummyQueue);</span><br><span class="line">        <span class="keyword">this</span>.thunk = thunk;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">clean</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (remove(<span class="keyword">this</span>)) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="comment">// thunk 是一个 Deallocator 对象</span></span><br><span class="line">                <span class="keyword">this</span>.thunk.run();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (<span class="keyword">final</span> Throwable var2) &#123;</span><br><span class="line">              ...</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Deallocator</span></span></span><br><span class="line"><span class="class">    <span class="keyword">implements</span> <span class="title">Runnable</span></span></span><br><span class="line"><span class="class">    </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> Unsafe unsafe = Unsafe.getUnsafe();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">long</span> address;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">long</span> size;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> capacity;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="title">Deallocator</span><span class="params">(<span class="keyword">long</span> address, <span class="keyword">long</span> size, <span class="keyword">int</span> capacity)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">assert</span> (address != <span class="number">0</span>);</span><br><span class="line">            <span class="keyword">this</span>.address = address;</span><br><span class="line">            <span class="keyword">this</span>.size = size;</span><br><span class="line">            <span class="keyword">this</span>.capacity = capacity;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (address == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="comment">// Paranoia</span></span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 调用 unsafe 方法回收堆外内存</span></span><br><span class="line">            unsafe.freeMemory(address);</span><br><span class="line">            address = <span class="number">0</span>;</span><br><span class="line">            Bits.unreserveMemory(size, capacity);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>当字段 <code>referent</code>  (也就是 <code>DirectByteBuffer</code> 对象)被回收时，会调用到 <code>Cleaner#clean</code> 方法，最终会调用到 <code>Deallocator#run</code> 进行堆外内存的回收</li>
+<li><strong>Cleaner 是虚引用在 JDK 中的一个典型应用场景</strong></li>
+</ul>
+<h4 id="预分配内存"><a href="#预分配内存" class="headerlink" title="预分配内存"></a>预分配内存</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">reserveMemory</span><span class="params">(<span class="keyword">long</span> size, <span class="keyword">int</span> cap)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// maxMemory 代表最大堆外内存，也就是 -XX:MaxDirectMemorySize 指定的值</span></span><br><span class="line">        <span class="keyword">if</span> (!memoryLimitSet &amp;&amp; VM.isBooted()) &#123;</span><br><span class="line">            maxMemory = VM.maxDirectMemory();</span><br><span class="line">            memoryLimitSet = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 1.如果堆外内存还有空间，则直接返回</span></span><br><span class="line">        <span class="keyword">if</span> (tryReserveMemory(size, cap)) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">		    <span class="comment">// 走到这里说明堆外内存剩余空间已经不足了</span></span><br><span class="line">        <span class="keyword">final</span> JavaLangRefAccess jlra = SharedSecrets.getJavaLangRefAccess();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 2.堆外内存进行回收，最终会调用到 Cleaner#clean 的方法。如果目前没有堆外内存可以回收则跳过该循环</span></span><br><span class="line">        <span class="keyword">while</span> (jlra.tryHandlePendingReference()) &#123;</span><br><span class="line">            <span class="comment">// 如果空闲的内存足够了，则 return</span></span><br><span class="line">            <span class="keyword">if</span> (tryReserveMemory(size, cap)) &#123;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 3.主动触发一次 GC，目的是触发老年代 GC</span></span><br><span class="line">        System.gc();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 4.重复上面的过程</span></span><br><span class="line">        <span class="keyword">boolean</span> interrupted = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">long</span> sleepTime = <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">int</span> sleeps = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (tryReserveMemory(size, cap)) &#123;</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (sleeps &gt;= MAX_SLEEPS) &#123;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (!jlra.tryHandlePendingReference()) &#123;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        Thread.sleep(sleepTime);</span><br><span class="line">                        sleepTime &lt;&lt;= <span class="number">1</span>;</span><br><span class="line">                        sleeps++;</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                        interrupted = <span class="keyword">true</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 5.超出指定的次数后，还是没有足够内存，则抛异常</span></span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> OutOfMemoryError(<span class="string">"Direct buffer memory"</span>);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (interrupted) &#123;</span><br><span class="line">                <span class="comment">// don't swallow interrupts</span></span><br><span class="line">                Thread.currentThread().interrupt();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">tryReserveMemory</span><span class="params">(<span class="keyword">long</span> size, <span class="keyword">int</span> cap)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// size 和 cap 主要是 page 对齐的区别，这里我们把这两个值看作是相等的</span></span><br><span class="line">        <span class="keyword">long</span> totalCap;</span><br><span class="line">        <span class="comment">// totalCapacity 代表通过 DirectByteBuffer 分配的堆外内存的大小</span></span><br><span class="line">        <span class="comment">// 当已分配大小 &lt;= 还剩下的堆外内存大小 时，更新 totalCapacity 的值返回 true</span></span><br><span class="line">        <span class="keyword">while</span> (cap &lt;= maxMemory - (totalCap = totalCapacity.get())) &#123;</span><br><span class="line">            <span class="keyword">if</span> (totalCapacity.compareAndSet(totalCap, totalCap + cap)) &#123;</span><br><span class="line">                reservedMemory.addAndGet(size);</span><br><span class="line">                count.incrementAndGet();</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">		    <span class="comment">// 堆外内存不足，返回 false</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>在创建一个新的 <code>DirecByteBuffer</code> 时，会先确认有没有足够的内存，如果没有的话，会通过一些手段回收一部分堆外内存，直到可用内存大于需要分配的内存。具体步骤如下：</p>
+<ol>
+<li><p>如果可用堆外内存足够，则直接返回</p>
+</li>
+<li><p>调用 <code>tryHandlePendingReference</code> 方法回收已经变成垃圾的 <code>DirectByteBuffer</code> 对象对应的堆外内存，直到可用内存足够，或目前没有垃圾 <code>DirectByteBuffer</code> 对象</p>
+<ul>
+<li><code>tryHandlePendingReference</code> 最终调用到的是 <code>Reference#tryHandlePending</code> 方法</li>
+<li>此方法在前面有介绍过, 对于 <code>Cleaner</code> 对象调用对应的 <code>Cleaner#clean</code> 方法进行回收</li>
+</ul>
+</li>
+<li><p>触发一次 Full GC, 其主要目的是为了防止<strong>冰山现象</strong></p>
+<ul>
+<li><p>一个 <code>DirectByteBuffer</code> 对象本身占用的内存很小，但是它可能引用了一块很大的堆外内存</p>
+</li>
+<li><p>如果 <code>DirectByteBuffer</code> 对象进入了老年代之后变成了垃圾，因为老年代 GC 一直没有触发，导致这块堆外内存也一直没有被回收</p>
+</li>
+<li><p>需要注意的是如果使用参数 <code>-XX:+DisableExplicitGC</code>，那 <code>System.gc();</code> 是无效的</p>
+</li>
+</ul>
+</li>
+<li><p>重复 1，2 步骤的流程，直到可用内存大于需要分配的内存</p>
+</li>
+<li><p>如果超出指定次数还没有回收到足够内存，则 OOM</p>
+</li>
+</ol>
+</li>
+</ul>
+<h4 id="堆外内存的读写"><a href="#堆外内存的读写" class="headerlink" title="堆外内存的读写"></a>堆外内存的读写</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> ByteBuffer <span class="title">put</span><span class="params">(<span class="keyword">byte</span> x)</span> </span>&#123;</span><br><span class="line">       unsafe.putByte(ix(nextPutIndex()), ((x)));</span><br><span class="line">       <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">int</span> <span class="title">nextPutIndex</span><span class="params">()</span> </span>&#123;                         </span><br><span class="line">    <span class="keyword">if</span> (position &gt;= limit)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> BufferOverflowException();</span><br><span class="line">    <span class="keyword">return</span> position++;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">long</span> <span class="title">ix</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> address + ((<span class="keyword">long</span>)i &lt;&lt; <span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">byte</span> <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> ((unsafe.getByte(ix(nextGetIndex()))));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">int</span> <span class="title">nextGetIndex</span><span class="params">()</span> </span>&#123;                          <span class="comment">// package-private</span></span><br><span class="line">    <span class="keyword">if</span> (position &gt;= limit)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> BufferUnderflowException();</span><br><span class="line">    <span class="keyword">return</span> position++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>读写的逻辑比较简单，<code>address</code> 就是构造方法中分配的 native 内存的起始地址</li>
+<li><code>Unsafe</code> 的 <code>putByte</code>/<code>getByte</code> 都是 native 方法，就是写入值到某个地址/获取某个地址的值</li>
+</ul>
+<h4 id="堆外内存的使用场景"><a href="#堆外内存的使用场景" class="headerlink" title="堆外内存的使用场景"></a>堆外内存的使用场景</h4><ul>
+<li><p><strong>适合长期存在或能复用的场景</strong>, 堆外内存分配回收也是有开销的，所以适合长期存在的对象</p>
+</li>
+<li><p><strong>适合注重稳定的场景</strong>, 堆外内存能有效避免因 GC 导致的暂停问题</p>
+</li>
+</ul>
+<p>堆外内存能有效避免因GC导致的暂停问题。</p>
+<ul>
+<li><p><strong>适合简单对象的存储</strong>, 因为堆外内存只能存储字节数组，所以对于复杂的 DTO 对象，每次存储/读取都需要序列化/反序列化</p>
+</li>
+<li><p><strong>适合注重 IO 效率的场景</strong>, 用堆外内存读写文件性能更好</p>
+</li>
+</ul>
+<h5 id="文件IO"><a href="#文件IO" class="headerlink" title="文件IO"></a>文件IO</h5><ul>
+<li>堆外内存 IO 为什么有更好的性能</li>
+</ul>
+<h6 id="BIO"><a href="#BIO" class="headerlink" title="BIO"></a>BIO</h6><ul>
+<li><p>BIO 的文件写 <code>FileOutputStream#write</code> 最终会调用到 native 层的 <code>io_util.c#writeBytes</code> 方法</p>
+</li>
+<li><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span></span><br><span class="line">writeBytes(JNIEnv *env, jobject <span class="keyword">this</span>, jbyteArray bytes,</span><br><span class="line">           jint off, jint len, jboolean append, jfieldID fid)</span><br><span class="line">&#123;</span><br><span class="line">    jint n;</span><br><span class="line">    <span class="keyword">char</span> stackBuf[BUF_SIZE];</span><br><span class="line">    <span class="keyword">char</span> *buf = <span class="literal">NULL</span>;</span><br><span class="line">    FD fd;</span><br><span class="line"></span><br><span class="line"> 	...</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果写入长度为 0，直接返回 0</span></span><br><span class="line">    <span class="keyword">if</span> (len == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (len &gt; BUF_SIZE) &#123;</span><br><span class="line">        <span class="comment">// 如果写入长度大于 BUF_SIZE（8192），无法使用栈空间 buffer</span></span><br><span class="line">        <span class="comment">// 需要调用 malloc 在堆空间申请 buffer</span></span><br><span class="line">        buf = <span class="built_in">malloc</span>(len);</span><br><span class="line">        <span class="keyword">if</span> (buf == <span class="literal">NULL</span>) &#123;</span><br><span class="line">            JNU_ThrowOutOfMemoryError(env, <span class="literal">NULL</span>);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        buf = stackBuf;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 复制 Java 传入的 byte 数组数据到 C 空间的 buffer 中</span></span><br><span class="line">    (*env)-&gt;GetByteArrayRegion(env, bytes, off, len, (jbyte *)buf);</span><br><span class="line"> 	</span><br><span class="line">     <span class="keyword">if</span> (!(*env)-&gt;ExceptionOccurred(env)) &#123;</span><br><span class="line">        off = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span> (len &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            fd = GET_FD(<span class="keyword">this</span>, fid);</span><br><span class="line">            <span class="keyword">if</span> (fd == <span class="number">-1</span>) &#123;</span><br><span class="line">                JNU_ThrowIOException(env, <span class="string">"Stream Closed"</span>);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 写入到文件，这里传递的数组是我们新创建的 buf</span></span><br><span class="line">            <span class="keyword">if</span> (append == JNI_TRUE) &#123;</span><br><span class="line">                n = (jint)IO_Append(fd, buf+off, len);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                n = (jint)IO_Write(fd, buf+off, len);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (n == JVM_IO_ERR) &#123;</span><br><span class="line">                JNU_ThrowIOExceptionWithLastError(env, <span class="string">"Write error"</span>);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (n == JVM_IO_INTR) &#123;</span><br><span class="line">                JNU_ThrowByName(env, <span class="string">"java/io/InterruptedIOException"</span>, <span class="literal">NULL</span>);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            off += n;</span><br><span class="line">            len -= n;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>GetByteArrayRegion</code> 其实就是对数组进行了一份拷贝，该函数的实现在 jni.cpp 宏定义中</p>
+<ul>
+<li><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// jni.cpp</span></span><br><span class="line">JNI_ENTRY(<span class="keyword">void</span>, \</span><br><span class="line">jni_Get##Result##ArrayRegion(JNIEnv *env, ElementType##Array <span class="built_in">array</span>, jsize start, \</span><br><span class="line">             jsize len, ElementType *buf)) \</span><br><span class="line"> ...</span><br><span class="line">      <span class="keyword">int</span> sc = TypeArrayKlass::cast(src-&gt;klass())-&gt;log2_element_size(); \</span><br><span class="line">      <span class="comment">// 内存拷贝</span></span><br><span class="line">      <span class="built_in">memcpy</span>((u_char*) buf, \</span><br><span class="line">             (u_char*) src-&gt;Tag##_at_addr(start), \</span><br><span class="line">             len &lt;&lt; sc);                          \</span><br><span class="line">...</span><br><span class="line">  &#125; \</span><br><span class="line">JNI_END</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>传统的 BIO，在 native 层真正写文件前，会在堆外内存（c 分配的内存）中对字节数组拷贝一份，之后真正 IO 时，使用的是堆外的数组, 这样做的原因是:</p>
+<ul>
+<li>底层通过 write、read、pwrite，pread 函数进行系统调用时，需要传入 buffer 的起始地址和 buffer count 作为参数<ul>
+<li>如果使用 Java Heap 的话，我们知道 JVM 中 buffer 往往以 byte[] 的形式存在，这是一个特殊的对象，由于 Java Heap GC 的存在，这里对象在堆中的位置往往会发生移动，移动后我们传入系统函数的地址参数就不是真正的 buffer 地址了，这样的话无论读写都会发生出错。而 C Heap 仅仅受 Full GC 的影响，相对来说地址稳定</li>
+</ul>
+</li>
+<li>JVM 规范中没有要求 Java 的 byte[] 必须是连续的内存空间，它往往受宿主语言的类型约束<ul>
+<li>而 C Heap 中我们分配的虚拟地址空间是可以连续的，而上述的系统调用要求我们使用连续的地址空间作为 buffer</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h6 id="NIO"><a href="#NIO" class="headerlink" title="NIO"></a>NIO</h6><ul>
+<li><p>NIO 的文件写最终会调用到 <code>IOUtil#write</code></p>
+</li>
+<li><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">write</span><span class="params">(FileDescriptor fd, ByteBuffer src, <span class="keyword">long</span> position,</span></span></span><br><span class="line"><span class="function"><span class="params">                     NativeDispatcher nd, Object lock)</span></span></span><br><span class="line"><span class="function">        throws IOException</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">    	  <span class="comment">// 如果是堆外内存，则直接写</span></span><br><span class="line">        <span class="keyword">if</span> (src instanceof DirectBuffer)</span><br><span class="line">            <span class="keyword">return</span> writeFromNativeBuffer(fd, src, position, nd, lock);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Substitute a native buffer</span></span><br><span class="line">        <span class="keyword">int</span> pos = src.position();</span><br><span class="line">        <span class="keyword">int</span> lim = src.limit();</span><br><span class="line">        assert (pos &lt;= lim);</span><br><span class="line">        <span class="keyword">int</span> rem = (pos &lt;= lim ? lim - pos : <span class="number">0</span>);</span><br><span class="line">        <span class="comment">// 创建一块堆外内存，并将数据赋值到堆外内存中去</span></span><br><span class="line">        ByteBuffer bb = Util.getTemporaryDirectBuffer(rem);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            bb.put(src);</span><br><span class="line">            bb.flip();</span><br><span class="line">            <span class="comment">// Do not update src until we see how many bytes were written</span></span><br><span class="line">            src.position(pos);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">int</span> n = writeFromNativeBuffer(fd, bb, position, nd, lock);</span><br><span class="line">            <span class="keyword">if</span> (n &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="comment">// now update src</span></span><br><span class="line">                src.position(pos + n);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> n;</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            Util.offerFirstTemporaryDirectBuffer(bb);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line"> 	  <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 分配一片堆外内存</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">static</span> ByteBuffer <span class="title">getTemporaryDirectBuffer</span><span class="params">(<span class="keyword">int</span> size)</span> </span>&#123;</span><br><span class="line">        BufferCache cache = bufferCache.get();</span><br><span class="line">        ByteBuffer buf = cache.get(size);</span><br><span class="line">        <span class="keyword">if</span> (buf != null) &#123;</span><br><span class="line">            <span class="keyword">return</span> buf;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// No suitable buffer in the cache so we need to allocate a new</span></span><br><span class="line">            <span class="comment">// one. To avoid the cache growing then we remove the first</span></span><br><span class="line">            <span class="comment">// buffer from the cache and free it.</span></span><br><span class="line">            <span class="keyword">if</span> (!cache.isEmpty()) &#123;</span><br><span class="line">                buf = cache.removeFirst();</span><br><span class="line">                <span class="built_in">free</span>(buf);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> ByteBuffer.allocateDirect(size);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>NIO 的文件写，对于堆内内存来说也是会有一次额外的内存拷贝的</p>
+</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><blockquote>
+<p><a href="https://github.com/farmerjohngit/myblog/issues/3" target="_blank" rel="noopener">https://github.com/farmerjohngit/myblog/issues/3</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/102758471" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/102758471</a></p>
+<p><a href="https://my.oschina.net/dust8080/blog/3094511" target="_blank" rel="noopener">https://my.oschina.net/dust8080/blog/3094511</a></p>
+<p><a href="https://github.com/farmerjohngit/myblog/issues/10" target="_blank" rel="noopener">https://github.com/farmerjohngit/myblog/issues/10</a></p>
+</blockquote>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/05/20/Java-线程与线程池/" rel="next" title="Java 线程与线程池">
+                <i class="fa fa-chevron-left"></i> Java 线程与线程池
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/08/05/Java-集合与同步/" rel="prev" title="Java 集合与同步">
+                Java 集合与同步 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="Chaosn Chan">
+            
+              <p class="site-author-name" itemprop="name">Chaosn Chan</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">15</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">17</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/chenchensheng" title="GitHub &rarr; https://github.com/chenchensheng" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:330266801@qq.com" title="E-Mail &rarr; mailto:330266801@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Java-垃圾回收"><span class="nav-number">1.</span> <span class="nav-text">Java 垃圾回收</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#判断对象是否存活"><span class="nav-number">1.1.</span> <span class="nav-text">判断对象是否存活</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#引用计数法"><span class="nav-number">1.1.1.</span> <span class="nav-text">引用计数法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#可达性分析"><span class="nav-number">1.1.2.</span> <span class="nav-text">可达性分析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#回收算法"><span class="nav-number">1.2.</span> <span class="nav-text">回收算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#标记清除"><span class="nav-number">1.2.1.</span> <span class="nav-text">标记清除</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#标记整理"><span class="nav-number">1.2.2.</span> <span class="nav-text">标记整理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#复制算法"><span class="nav-number">1.2.3.</span> <span class="nav-text">复制算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分代收集"><span class="nav-number">1.2.4.</span> <span class="nav-text">分代收集</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#垃圾回收器"><span class="nav-number">1.3.</span> <span class="nav-text">垃圾回收器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Serial-串行回收器（年轻代）"><span class="nav-number">1.3.1.</span> <span class="nav-text">Serial 串行回收器（年轻代）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Serial-Old-串行回收器（老年代）"><span class="nav-number">1.3.2.</span> <span class="nav-text">Serial Old 串行回收器（老年代）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ParNew-并行回收器（年轻代）"><span class="nav-number">1.3.3.</span> <span class="nav-text">ParNew 并行回收器（年轻代）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Parallel-Scavenge-基于吞吐量的并行回收器（年轻代）"><span class="nav-number">1.3.4.</span> <span class="nav-text">Parallel Scavenge 基于吞吐量的并行回收器（年轻代）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Parallel-Old-基于吞吐量的并行回收器（老年代）"><span class="nav-number">1.3.5.</span> <span class="nav-text">Parallel Old 基于吞吐量的并行回收器（老年代）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CMS-关注暂停时间的回收器-（老年代）"><span class="nav-number">1.3.6.</span> <span class="nav-text">CMS 关注暂停时间的回收器 （老年代）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#三色标记法"><span class="nav-number">1.3.6.1.</span> <span class="nav-text">三色标记法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CMS-回收过程"><span class="nav-number">1.3.6.2.</span> <span class="nav-text">CMS 回收过程</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java-引用类型原理"><span class="nav-number">2.</span> <span class="nav-text">Java 引用类型原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Reference"><span class="nav-number">2.1.</span> <span class="nav-text">Reference</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#相关字段"><span class="nav-number">2.1.1.</span> <span class="nav-text">相关字段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#生命周期"><span class="nav-number">2.1.2.</span> <span class="nav-text">生命周期</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SoftReference"><span class="nav-number">2.1.3.</span> <span class="nav-text">SoftReference</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#WeakReference"><span class="nav-number">2.1.4.</span> <span class="nav-text">WeakReference</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PhantomReference"><span class="nav-number">2.1.5.</span> <span class="nav-text">PhantomReference</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">2.2.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#关于-JVM-堆外内存"><span class="nav-number">3.</span> <span class="nav-text">关于 JVM 堆外内存</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#堆外内存的实现-DirectByteBuffer"><span class="nav-number">3.1.</span> <span class="nav-text">堆外内存的实现 (DirectByteBuffer)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#堆外内存的分配与回收"><span class="nav-number">3.1.0.1.</span> <span class="nav-text">堆外内存的分配与回收</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Cleaner-的实现"><span class="nav-number">3.1.0.2.</span> <span class="nav-text">Cleaner 的实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#预分配内存"><span class="nav-number">3.1.0.3.</span> <span class="nav-text">预分配内存</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#堆外内存的读写"><span class="nav-number">3.1.0.4.</span> <span class="nav-text">堆外内存的读写</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#堆外内存的使用场景"><span class="nav-number">3.1.0.5.</span> <span class="nav-text">堆外内存的使用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#文件IO"><span class="nav-number">3.1.0.5.1.</span> <span class="nav-text">文件IO</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#BIO"><span class="nav-number">3.1.0.5.1.1.</span> <span class="nav-text">BIO</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#NIO"><span class="nav-number">3.1.0.5.1.2.</span> <span class="nav-text">NIO</span></a></li></ol></li></ol></li></ol></li></ol></li></ol><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Chaosn Chan</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count"> 全站共 36.3k 字</span>
+</div>
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="Total Visitors">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="Total Views">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+  
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.1"></script>
+
+  <script src="/js/motion.js?v=7.1.1"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.1.1"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.1"></script>
+<script src="/js/post-details.js?v=7.1.1"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.1"></script>
+
+
+  
+
+  
+
+  
+
+  
+  
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: true,
+    appId: 'qzpdkcRbrQkmSUskAW5ApGjf-gzGzoHsz',
+    appKey: 'urRmgdtPd2rXBX5cm552mOAr',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: false,
+    lang: '' || 'zh-cn'
+  });
+</script>
+
+
+
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    <script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+</body>
+</html>

@@ -104,7 +104,7 @@
 <meta property="og:site_name" content="Chanson&#39;s blog">
 <meta property="og:description" content="final方法 被 final 修饰的方法不可被重写。它可以防止任何继承类修改方法的意义和实现 而且使用 final 修饰方法的执行效率一般高于普通方法，这里不得不提一下 Java 的内联（inline）机制   ​        当我们调用方法时，实际上是将程序的执行转移到该方法所在的内存地址上，将该方法执行完后，再返回到执行该方法前的位置，这种转移操作要求在转移前保存当前的数据以及内存地址，在">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2020-06-16T06:09:27.709Z">
+<meta property="og:updated_time" content="2020-06-30T10:09:10.904Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java 关键字 final">
 <meta name="twitter:description" content="final方法 被 final 修饰的方法不可被重写。它可以防止任何继承类修改方法的意义和实现 而且使用 final 修饰方法的执行效率一般高于普通方法，这里不得不提一下 Java 的内联（inline）机制   ​        当我们调用方法时，实际上是将程序的执行转移到该方法所在的内存地址上，将该方法执行完后，再返回到执行该方法前的位置，这种转移操作要求在转移前保存当前的数据以及内存地址，在">
@@ -413,7 +413,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2020-06-16 14:09:27" itemprop="dateModified" datetime="2020-06-16T14:09:27+08:00">2020-06-16</time>
+                <time title="Modified: 2020-06-30 18:09:10" itemprop="dateModified" datetime="2020-06-30T18:09:10+08:00">2020-06-30</time>
               
             
           </span>
@@ -519,6 +519,11 @@
 
 <h2 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h2><ul>
 <li><strong>final</strong> 修饰的参数有一个只读的属性，即可以读取该参数，但是无法更改参数的值，同修饰变量一样，当参数为基本类型时，该参数的值不可改变；当参数为引用类型时，参数的引用地址不可改变。</li>
+<li>有什么意义?<ul>
+<li>对于通过入参引用修改对象时, 可以防止在函数中通过赋值修改该引用, 避免修改失败</li>
+<li>可以在函数中将入参再传递给匿名函数 (lambda), 因为该入参被 <strong>final</strong> 修饰后是存在于常量池中, 而不是函数的调用栈, 这样该函数调用完之后匿名函数还是能读到该入参的值</li>
+</ul>
+</li>
 </ul>
 <h2 id="final-的内存语义"><a href="#final-的内存语义" class="headerlink" title="final 的内存语义"></a>final 的内存语义</h2><ul>
 <li><strong>volatile</strong> 可以禁止指令重排序，<strong>final</strong> 同样有这样的作用，对于 <strong>final</strong> 域，编译器和处理器要遵守两个重排序规则</li>
@@ -667,7 +672,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">14</span>
+                    <span class="site-state-item-count">15</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -739,9 +744,7 @@
                     
                       
                     
-                      
-                    
-                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-count">17</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -857,7 +860,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count"> 全站共 24.9k 字</span>
+  <span class="post-count"> 全站共 36.3k 字</span>
 </div>
         
 <div class="busuanzi-count">

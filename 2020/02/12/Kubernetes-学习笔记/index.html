@@ -96,20 +96,20 @@
 
 
 
-  <meta name="description" content="Docker 基础 Namespace 进程之间的可见性   Cgoups 限制资源的使用    K8s 基础 Master  控制节点，负责整个集群的管理和控制。Master 节点上包含以下组件： etcd apiserver controller manager scheduler     Node  工作节点, 工作负载主要是运行容器应用。Node 节点上包含以下组件： kubelet ku">
+  <meta name="description" content="Docker 基础 Namespace 进程之间的可见性   Cgoups 限制资源的使用    K8s 基础组件  Kubernetes 主要由以下几个核心组件组成:  master 组件, 可以运行于集群中的任何机器上, 但为了简洁性通常在同一台机器上运行所有的 master 组件，且不在此机器上运行用户的容器 kube-apiserver 提供了资源操作的唯一入口，并提供认证、授权、访问控制">
 <meta name="keywords" content="k8s">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Kubernetes 学习笔记">
 <meta property="og:url" content="https://chansonchan.cn/2020/02/12/Kubernetes-学习笔记/index.html">
 <meta property="og:site_name" content="Chanson&#39;s blog">
-<meta property="og:description" content="Docker 基础 Namespace 进程之间的可见性   Cgoups 限制资源的使用    K8s 基础 Master  控制节点，负责整个集群的管理和控制。Master 节点上包含以下组件： etcd apiserver controller manager scheduler     Node  工作节点, 工作负载主要是运行容器应用。Node 节点上包含以下组件： kubelet ku">
+<meta property="og:description" content="Docker 基础 Namespace 进程之间的可见性   Cgoups 限制资源的使用    K8s 基础组件  Kubernetes 主要由以下几个核心组件组成:  master 组件, 可以运行于集群中的任何机器上, 但为了简洁性通常在同一台机器上运行所有的 master 组件，且不在此机器上运行用户的容器 kube-apiserver 提供了资源操作的唯一入口，并提供认证、授权、访问控制">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="https://chansonchan.cn/images/k8s-basic.png">
-<meta property="og:updated_time" content="2020-06-02T07:52:51.840Z">
+<meta property="og:image" content="https://gitee.com/chansonchan/image/raw/master/uPic/k8s-basic.png">
+<meta property="og:updated_time" content="2020-08-13T06:13:31.900Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes 学习笔记">
-<meta name="twitter:description" content="Docker 基础 Namespace 进程之间的可见性   Cgoups 限制资源的使用    K8s 基础 Master  控制节点，负责整个集群的管理和控制。Master 节点上包含以下组件： etcd apiserver controller manager scheduler     Node  工作节点, 工作负载主要是运行容器应用。Node 节点上包含以下组件： kubelet ku">
-<meta name="twitter:image" content="https://chansonchan.cn/images/k8s-basic.png">
+<meta name="twitter:description" content="Docker 基础 Namespace 进程之间的可见性   Cgoups 限制资源的使用    K8s 基础组件  Kubernetes 主要由以下几个核心组件组成:  master 组件, 可以运行于集群中的任何机器上, 但为了简洁性通常在同一台机器上运行所有的 master 组件，且不在此机器上运行用户的容器 kube-apiserver 提供了资源操作的唯一入口，并提供认证、授权、访问控制">
+<meta name="twitter:image" content="https://gitee.com/chansonchan/image/raw/master/uPic/k8s-basic.png">
 
 
 
@@ -415,7 +415,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2020-06-02 15:52:51" itemprop="dateModified" datetime="2020-06-02T15:52:51+08:00">2020-06-02</time>
+                <time title="Modified: 2020-08-13 14:13:31" itemprop="dateModified" datetime="2020-08-13T14:13:31+08:00">2020-08-13</time>
               
             
           </span>
@@ -497,10 +497,58 @@
 </ul>
 </li>
 </ul>
-<h1 id="K8s-基础"><a href="#K8s-基础" class="headerlink" title="K8s 基础"></a>K8s 基础</h1><ul>
-<li><p>Master</p>
+<h1 id="K8s-基础"><a href="#K8s-基础" class="headerlink" title="K8s 基础"></a>K8s 基础</h1><h2 id="组件"><a href="#组件" class="headerlink" title="组件"></a>组件</h2><p><img src="https://gitee.com/chansonchan/image/raw/master/uPic/k8s-basic.png" alt="k8s-basic"></p>
 <ul>
-<li>控制节点，负责整个集群的管理和控制。Master 节点上包含以下组件：<ul>
+<li><p>Kubernetes 主要由以下几个核心组件组成:</p>
+<ul>
+<li>master 组件, 可以运行于集群中的任何机器上, 但为了简洁性通常在同一台机器上运行所有的 master 组件，且不在此机器上运行用户的容器<ul>
+<li>kube-apiserver 提供了资源操作的唯一入口，并提供认证、授权、访问控制、API 注册和发现等机制</li>
+<li>etcd 保存了整个集群的状态，就是一个数据库</li>
+<li>kube-scheduler 负责资源的调度，按照预定的调度策略将 Pod 调度到相应的机器上</li>
+<li>kube-controller-manager 负责维护集群的状态，比如故障检测、自动扩展、滚动更新等</li>
+<li>cloud-controller-manager 运行了与具体云基础设施供应商互动的控制器</li>
+</ul>
+</li>
+<li>node 组件<ul>
+<li>Kubelet 负责维护容器的生命周期，同时也负责 Volume（CSI）和网络（CNI）的管理</li>
+<li>Container Runtime 负责镜像管理以及 Pod 和容器的真正运行（CRI）</li>
+<li>kube-proxy 负责为 Service 提供 cluster 内部的服务发现和负载均衡</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>除了上面的这些核心组件，还有一些推荐的插件：</p>
+<ul>
+<li>kube-dns 负责为整个集群提供 DNS 服务</li>
+<li>Ingress Controller 为服务提供外网入口</li>
+<li>Heapster 提供资源监控</li>
+<li>Dashboard 提供 GUI</li>
+</ul>
+</li>
+<li><p>Kubernetes 多组件之间的通信原理</p>
+<ul>
+<li>apiserver 负责 etcd 存储的所有操作，且只有 apiserver 才直接操作 etcd 集群</li>
+<li>apiserver 对内（集群中的其他组件）和对外（用户）提供统一的 REST API，其他组件均通过 apiserver 进行通信<ul>
+<li>controller manager、scheduler、kube-proxy 和 kubelet 等均通过 apiserver watch API 监测资源变化情况，并对资源作相应的操作</li>
+<li>所有需要更新资源状态的操作均通过 apiserver 的 REST API 进行</li>
+</ul>
+</li>
+<li>apiserver 也会直接调用 kubelet API（如 logs, exec, attach 等），默认不校验 kubelet 证书，但可以通过 <code>--kubelet-certificate-authority</code> 开启（而 GKE 通过 SSH 隧道保护它们之间的通信）</li>
+</ul>
+</li>
+<li><p>比如最典型的创建 Pod 的流程：</p>
+<ul>
+<li>用户通过 REST API 创建一个 Pod</li>
+<li>apiserver 将其写入 etcd</li>
+<li>scheduluer 检测到未绑定 Node 的 Pod，开始调度并更新 Pod 的 Node 绑定</li>
+<li>kubelet 检测到有新的 Pod 调度过来，通过 container runtime 运行该 Pod</li>
+<li>kubelet 通过 container runtime 取到 Pod 状态，并更新到 apiserver 中</li>
+</ul>
+</li>
+</ul>
+<h2 id="Master"><a href="#Master" class="headerlink" title="Master"></a>Master</h2><ul>
+<li>控制节点，负责整个集群的管理和控制</li>
+<li>Master 节点上包含以下组件：<ul>
 <li>etcd</li>
 <li>apiserver</li>
 <li>controller manager</li>
@@ -508,9 +556,7 @@
 </ul>
 </li>
 </ul>
-</li>
-<li><p>Node</p>
-<ul>
+<h2 id="Node"><a href="#Node" class="headerlink" title="Node"></a>Node</h2><ul>
 <li>工作节点, 工作负载主要是运行容器应用。Node 节点上包含以下组件：<ul>
 <li>kubelet</li>
 <li>kube-proxy</li>
@@ -518,24 +564,39 @@
 </ul>
 </li>
 </ul>
+<h2 id="Pod"><a href="#Pod" class="headerlink" title="Pod"></a>Pod</h2><ul>
+<li><p>一个 pod 的所有容器都运行在同一个节点</p>
 </li>
-<li><p>Pod</p>
+<li><p>在 pod 中指定容器端口只是展示作用</p>
 <ul>
-<li>静态 Pod</li>
-<li>Pod Hook<ul>
+<li>可以通过对端口命名更方便的使用</li>
+</ul>
+</li>
+<li><p>使用 <code>kubectl port-forward</code> 将本地网络端口转发到 pod 端口</p>
+<ul>
+<li><code>kubectl port-forward nginx 8888:80</code> </li>
+</ul>
+</li>
+<li><p>静态 Pod</p>
+</li>
+<li><p>Pod Hook</p>
+<ul>
 <li>PostStart</li>
 <li>PreStop</li>
 </ul>
 </li>
-<li>健康检查<ul>
+<li><p>健康检查</p>
+<ul>
 <li>livenessProbe</li>
 <li>readnessProbe</li>
 </ul>
 </li>
-<li>Init Container</li>
-</ul>
+<li><p>Init Container</p>
 </li>
-<li><p>Deploymen</p>
+<li></li>
+<li></li>
+<li></li>
+<li><p>Deployment</p>
 <ul>
 <li>Replication Controller（RC）</li>
 <li>Replication Set（RS）<ul>
@@ -611,48 +672,6 @@
 <li><p>PVC</p>
 <ul>
 <li>StorageClass</li>
-</ul>
-</li>
-</ul>
-<h2 id="组件"><a href="#组件" class="headerlink" title="组件"></a>组件</h2><p><img src="/images/k8s-basic.png" alt></p>
-<ul>
-<li><p>Kubernetes 主要由以下几个核心组件组成:</p>
-<ul>
-<li>etcd 保存了整个集群的状态，就是一个数据库</li>
-<li>Apiserver 提供了资源操作的唯一入口，并提供认证、授权、访问控制、API 注册和发现等机制</li>
-<li>Controller Manager 负责维护集群的状态，比如故障检测、自动扩展、滚动更新等</li>
-<li>Scheduler 负责资源的调度，按照预定的调度策略将 Pod 调度到相应的机器上</li>
-<li>Kubelet 负责维护容器的生命周期，同时也负责 Volume（CSI）和网络（CNI）的管理；</li>
-<li>Container Runtime 负责镜像管理以及 Pod 和容器的真正运行（CRI）</li>
-<li>kube-proxy 负责为 Service 提供 cluster 内部的服务发现和负载均衡</li>
-</ul>
-</li>
-<li><p>除了上面的这些核心组件，还有一些推荐的插件：</p>
-<ul>
-<li>kube-dns 负责为整个集群提供 DNS 服务</li>
-<li>Ingress Controller 为服务提供外网入口</li>
-<li>Heapster 提供资源监控</li>
-<li>Dashboard 提供 GUI</li>
-</ul>
-</li>
-<li><p>Kubernetes 多组件之间的通信原理</p>
-<ul>
-<li>apiserver 负责 etcd 存储的所有操作，且只有 apiserver 才直接操作 etcd 集群</li>
-<li>apiserver 对内（集群中的其他组件）和对外（用户）提供统一的 REST API，其他组件均通过 apiserver 进行通信<ul>
-<li>controller manager、scheduler、kube-proxy 和 kubelet 等均通过 apiserver watch API 监测资源变化情况，并对资源作相应的操作</li>
-<li>所有需要更新资源状态的操作均通过 apiserver 的 REST API 进行</li>
-</ul>
-</li>
-<li>apiserver 也会直接调用 kubelet API（如 logs, exec, attach 等），默认不校验 kubelet 证书，但可以通过 <code>--kubelet-certificate-authority</code> 开启（而 GKE 通过 SSH 隧道保护它们之间的通信）</li>
-</ul>
-</li>
-<li><p>比如最典型的创建 Pod 的流程：</p>
-<ul>
-<li>用户通过 REST API 创建一个 Pod</li>
-<li>apiserver 将其写入 etcd</li>
-<li>scheduluer 检测到未绑定 Node 的 Pod，开始调度并更新 Pod 的 Node 绑定</li>
-<li>kubelet 检测到有新的 Pod 调度过来，通过 container runtime 运行该 Pod</li>
-<li>kubelet 通过 container runtime 取到 Pod 状态，并更新到 apiserver 中</li>
 </ul>
 </li>
 </ul>
@@ -818,7 +837,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">14</span>
+                    <span class="site-state-item-count">15</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -890,9 +909,7 @@
                     
                       
                     
-                      
-                    
-                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-count">17</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -956,7 +973,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Docker-基础"><span class="nav-number">1.</span> <span class="nav-text">Docker 基础</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#K8s-基础"><span class="nav-number">2.</span> <span class="nav-text">K8s 基础</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#组件"><span class="nav-number">2.1.</span> <span class="nav-text">组件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务发现"><span class="nav-number">2.2.</span> <span class="nav-text">服务发现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Helm"><span class="nav-number">2.3.</span> <span class="nav-text">Helm</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Docker-基础"><span class="nav-number">1.</span> <span class="nav-text">Docker 基础</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#K8s-基础"><span class="nav-number">2.</span> <span class="nav-text">K8s 基础</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#组件"><span class="nav-number">2.1.</span> <span class="nav-text">组件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Master"><span class="nav-number">2.2.</span> <span class="nav-text">Master</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Node"><span class="nav-number">2.3.</span> <span class="nav-text">Node</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pod"><span class="nav-number">2.4.</span> <span class="nav-text">Pod</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务发现"><span class="nav-number">2.5.</span> <span class="nav-text">服务发现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Helm"><span class="nav-number">2.6.</span> <span class="nav-text">Helm</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -1008,7 +1025,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count"> 全站共 24.9k 字</span>
+  <span class="post-count"> 全站共 36.3k 字</span>
 </div>
         
 <div class="busuanzi-count">
