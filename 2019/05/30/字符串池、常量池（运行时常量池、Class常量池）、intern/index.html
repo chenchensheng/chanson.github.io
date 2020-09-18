@@ -983,7 +983,7 @@
 <script>
   function renderGitment() {
     var gitment = new Gitmint({
-      id: window.location.pathname,
+      id: decodeURI(window.location.pathname)
       owner: 'chenchensheng',
       repo: 'chanson.github.io',
       
