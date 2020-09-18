@@ -179,6 +179,20 @@
   </url>
   
   <url>
+    <loc>https://chansonchan.cn/tags/gitlab/</loc>
+    <lastmod>2020-09-18</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://chansonchan.cn/tags/devops/</loc>
+    <lastmod>2020-09-18</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://chansonchan.cn/tags/java/</loc>
     <lastmod>2020-09-18</lastmod>
     <changefreq>daily</changefreq>
@@ -235,21 +249,14 @@
   </url>
   
   <url>
+    <loc>https://chansonchan.cn/tags/effective-java/</loc>
+    <lastmod>2020-09-18</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://chansonchan.cn/tags/hashmap/</loc>
-    <lastmod>2020-09-18</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://chansonchan.cn/tags/gitlab/</loc>
-    <lastmod>2020-09-18</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://chansonchan.cn/tags/devops/</loc>
     <lastmod>2020-09-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -278,13 +285,6 @@
   
   <url>
     <loc>https://chansonchan.cn/tags/mongodb/</loc>
-    <lastmod>2020-09-18</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://chansonchan.cn/tags/effective-java/</loc>
     <lastmod>2020-09-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
