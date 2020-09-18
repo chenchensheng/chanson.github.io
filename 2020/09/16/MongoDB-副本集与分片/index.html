@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.1" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.1.1',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: true,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="MongoDB 副本集与分片副本集 (Replica sets) 提供数据的冗余备份, 在多个服务器上存储数据副本, 提高了数据的可用性， 并可以保证数据的安全性  副本集包含多个数据节点和一个仲裁节点（可选）  在数据节点中，只有一个成员被视为主要节点 (primary)，而其他节点则被视为次要节点 (secondary) 仲裁者 (Arbiter) 不保存数据, 当 primary 不可用时投">
+<meta name="keywords" content="mongodb">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MongoDB 副本集与分片">
+<meta property="og:url" content="https://chansonchan.cn/2020/09/16/MongoDB-副本集与分片/index.html">
+<meta property="og:site_name" content="Chanson&#39;s blog">
+<meta property="og:description" content="MongoDB 副本集与分片副本集 (Replica sets) 提供数据的冗余备份, 在多个服务器上存储数据副本, 提高了数据的可用性， 并可以保证数据的安全性  副本集包含多个数据节点和一个仲裁节点（可选）  在数据节点中，只有一个成员被视为主要节点 (primary)，而其他节点则被视为次要节点 (secondary) 仲裁者 (Arbiter) 不保存数据, 当 primary 不可用时投">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://gitee.com/chansonchan/image/raw/master/uPic/image-20200917202406186.png">
+<meta property="og:image" content="https://gitee.com/chansonchan/image/raw/master/uPic/image-20200917202714712.png">
+<meta property="og:image" content="https://gitee.com/chansonchan/image/raw/master/uPic/1578455248157007595.jpg">
+<meta property="og:updated_time" content="2020-09-18T03:17:46.296Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MongoDB 副本集与分片">
+<meta name="twitter:description" content="MongoDB 副本集与分片副本集 (Replica sets) 提供数据的冗余备份, 在多个服务器上存储数据副本, 提高了数据的可用性， 并可以保证数据的安全性  副本集包含多个数据节点和一个仲裁节点（可选）  在数据节点中，只有一个成员被视为主要节点 (primary)，而其他节点则被视为次要节点 (secondary) 仲裁者 (Arbiter) 不保存数据, 当 primary 不可用时投">
+<meta name="twitter:image" content="https://gitee.com/chansonchan/image/raw/master/uPic/image-20200917202406186.png">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://chansonchan.cn/2020/09/16/MongoDB-副本集与分片/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>MongoDB 副本集与分片 | Chanson's blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Chanson's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>Search</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://chansonchan.cn/2020/09/16/MongoDB-副本集与分片/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Chaosn Chan">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chanson's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">MongoDB 副本集与分片
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-09-16 19:53:37" itemprop="dateCreated datePublished" datetime="2020-09-16T19:53:37+08:00">2020-09-16</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-09-18 11:17:46" itemprop="dateModified" datetime="2020-09-18T11:17:46+08:00">2020-09-18</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">Comments: </span>
+                <a href="/2020/09/16/MongoDB-副本集与分片/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2020/09/16/MongoDB-副本集与分片/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             Views:  
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="MongoDB-副本集与分片"><a href="#MongoDB-副本集与分片" class="headerlink" title="MongoDB 副本集与分片"></a>MongoDB 副本集与分片</h1><h2 id="副本集-Replica-sets"><a href="#副本集-Replica-sets" class="headerlink" title="副本集 (Replica sets)"></a>副本集 (Replica sets)</h2><ul>
+<li><p>提供数据的冗余备份, 在多个服务器上存储数据副本, 提高了数据的可用性， 并可以保证数据的安全性</p>
+</li>
+<li><p>副本集包含多个数据节点和一个仲裁节点（可选）</p>
+<ul>
+<li>在数据节点中，只有一个成员被视为主要节点 (primary)，而其他节点则被视为次要节点 (secondary)</li>
+<li>仲裁者 (Arbiter) 不保存数据, 当 primary 不可用时投票选举切换 primary</li>
+<li>一个副本集最多可以有 50 个成员，但只有 7 个投票成员</li>
+</ul>
+</li>
+<li><p>选举时避免出现平票的情况，部署一般采用基数节点</p>
+</li>
+</ul>
+<h3 id="Primary"><a href="#Primary" class="headerlink" title="Primary"></a>Primary</h3><p><img src="https://gitee.com/chansonchan/image/raw/master/uPic/image-20200917202406186.png" alt="image-20200917202406186"></p>
+<ul>
+<li>主节点是副本集中接收写操作的唯一成员<ul>
+<li>MongoDB 在主数据库上应用写操作，然后在主数据库的操作日志 (oplog) 上记录该操作</li>
+<li>次要成员复制此日志，并将操作应用于其数据集</li>
+</ul>
+</li>
+<li>副本集的所有成员都可以接受读取操作<ul>
+<li>默认情况下，应用程序将其读取操作定向到 Primary</li>
+</ul>
+</li>
+</ul>
+<h3 id="Secondary"><a href="#Secondary" class="headerlink" title="Secondary"></a>Secondary</h3><p><img src="https://gitee.com/chansonchan/image/raw/master/uPic/image-20200917202714712.png" alt="image-20200917202714712"></p>
+<ul>
+<li>次要节点数据的复制过程是异步的</li>
+</ul>
+<h3 id="Arbiter"><a href="#Arbiter" class="headerlink" title="Arbiter"></a>Arbiter</h3><ul>
+<li>仲裁节点使用最小的资源并且不要求硬件设备</li>
+<li>不能将 Arbiter 部署在同一个数据集节点中</li>
+</ul>
+<h2 id="分片-Sharding"><a href="#分片-Sharding" class="headerlink" title="分片 (Sharding)"></a>分片 (Sharding)</h2><p><img src="https://gitee.com/chansonchan/image/raw/master/uPic/1578455248157007595.jpg" alt="1578455248157007595.jpg"></p>
+<ul>
+<li>分片集群由以下三个组件构成<ul>
+<li><strong>mongos</strong><ul>
+<li>数据库集群请求的入口，负责把对应的数据请求请求转发到对应的 shard 服务器上</li>
+<li>在生产环境通常有多 mongos 作为请求的入口，防止其中一个挂掉所有的 mongodb 请求都没有办法操作</li>
+</ul>
+</li>
+<li><strong>config server</strong><ul>
+<li>存储所有数据库元信息（路由、分片）的配置</li>
+<li>mongos 本身没有物理存储分片服务器和数据路由信息，只是缓存在内存里，配置服务器则实际存储这些数据</li>
+<li>MongoDB 3.4 开始必须将配置服务器部署为副本集 (CSRS, Config Servers Replica Set)，防止数据丢失</li>
+</ul>
+</li>
+<li><strong>shard</strong><ul>
+<li>分片是指将数据库拆分，将其分散在不同的机器上的过程，每个分片是整体数据的子集，且都可以部署为副本集<ul>
+<li>MongoDB 3.6 开始必须将分片部署为副本集</li>
+</ul>
+</li>
+<li>将数据分散到不同的机器上，不需要功能强大的服务器就可以存储更多的数据和处理更大的负载</li>
+<li>基本思想就是将集合切成小块，这些块分散到若干片里，每个片只负责总数据的一部分，最后通过一个均衡器来对各个分片进行均衡（数据迁移）</li>
+<li>如果集合没有分片，那么该集合数据都存储在数据库的 Primary Shard 中</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="分片机制"><a href="#分片机制" class="headerlink" title="分片机制"></a>分片机制</h3><h4 id="分片键-Shared-Key"><a href="#分片键-Shared-Key" class="headerlink" title="分片键 (Shared Key)"></a>分片键 (Shared Key)</h4><ul>
+<li><p>MongoDB 通过定义分片键从而对整个集合进行分片，分片键的好坏直接影响到整个集群的性能</p>
+</li>
+<li><p>一个集合只有且只能有一个分片键，一旦分片键确定好之后就不能更改</p>
+</li>
+<li><p>分片方式</p>
+<ul>
+<li><strong>基于范围</strong><ul>
+<li>优势：分片键范围查询性能较好，读性能较好</li>
+<li>劣势：数据分布可能不均匀，存在热点</li>
+</ul>
+</li>
+<li><strong>基于 Hash</strong><ul>
+<li>优势：数据分布均匀，写性能较好，适用于日志、物联网等高并发场景</li>
+<li>劣势：范围查询效率较低</li>
+</ul>
+</li>
+<li><strong>基于 zone/tag</strong><ul>
+<li>若数据具备一些天然的区分，如基于地域、时间等标签，数据可以基于标签来做区分</li>
+<li>优势：数据分布较为合理</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>分片键的选择</strong>, 选择合适的片键对 sharding 效率影响很大</p>
+<ul>
+<li><strong>取值基数</strong><ul>
+<li>取值基数建议尽可能大，如果用小基数的片键，因为备选值有限，那么块的总数量就有限，随着数据增多，块的大小会越来越大，导致水平扩展时移动块会非常困难</li>
+</ul>
+</li>
+<li><strong>取值分布</strong><ul>
+<li>取值分布建议尽量均匀，分布不均匀的片键会造成某些块的数据量非常大，同样有上面数据分布不均匀，性能瓶颈的问题</li>
+</ul>
+</li>
+<li><strong>查询带分片</strong><ul>
+<li>查询时建议带上分片，使用分片键进行条件查询时，mongos 可以直接定位到具体分片，否则 mongos 需要将查询分发到所有分片，再等待响应返回</li>
+</ul>
+</li>
+<li><strong>避免单调底层或递减</strong><ul>
+<li>单调递增的 sharding key，数据文件挪动小，但写入会集中，导致最后一篇的数据量持续增大，不断发生迁移，递减同理</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="Chunk-块"><a href="#Chunk-块" class="headerlink" title="Chunk 块"></a>Chunk 块</h4><ul>
+<li>chunk（块）是均衡器迁移数据的最小单元，默认大小为 64MB，取值范围为 1-1024MB</li>
+<li>一个 chunk 只存在于一个分片，每个 chunk 由片键特定范围内的文档组成，范围为 <code>[start,end)</code></li>
+<li>一个文档属于且只属于一个 chunk，当一个 chunk 增加到特定大小的时候，会通过拆分点（split point）被拆分成 2 个较小的块</li>
+<li>在有些情况下，chunk 会持续增长，超过 ChunkSize，官方称为 <a href="https://www.ibm.com/developerworks/cn/opensource/os-mongodb-sharded-cluster/Maximum-Number-of-Documents-Per-Chunk-to-Migrate" target="_blank" rel="noopener">jumbo chunk</a>，该块无法被拆分和迁移，所以会导致 chunk 在分片服务器上分布不均匀，从而成为性能瓶颈</li>
+</ul>
+<h5 id="Chunk-的拆分"><a href="#Chunk-的拆分" class="headerlink" title="Chunk 的拆分"></a>Chunk 的拆分</h5><ul>
+<li><p>mongos 会记录每个块中有多少数据，一旦达到了阈值就会检查是否需要对其进行拆分，如果确实需要拆分则可以在配置服务器上更新这个块的相关元信息</p>
+</li>
+<li><p>chunk 的拆分过程如下：</p>
+<ul>
+<li>mongos 接收到客户端发起的写请求后会检查当前块的拆分阈值点</li>
+<li>如果需要拆分，mongos 则会像分片服务器发起一个拆分请求</li>
+<li>分片服务器会做拆分工作，然后将信息返回 mongos</li>
+</ul>
+</li>
+</ul>
+<h5 id="Chunk-的迁移"><a href="#Chunk-的迁移" class="headerlink" title="Chunk 的迁移"></a>Chunk 的迁移</h5><ol>
+<li>均衡器进程发送 <code>moveChunk</code> 命令到源分片</li>
+<li>源分片使用内部 <code>moveChunk</code> 命令，在迁移过程，对该块的操作还是会路由到源分片</li>
+<li>目标分片构建索引</li>
+<li>目标分片开始进行数据复制</li>
+<li>复制完成后会同步在迁移过程中该块的更改</li>
+<li>同步完成后源分片会连接到配置服务器，使用块的新位置更新集群元数据</li>
+<li>源分片完成元数据更新后，一旦块上没有打开的游标，源分片将删除其文档副本</li>
+</ol>
+<ul>
+<li>迁移过程可确保一致性，并在平衡期间最大化块的可用性</li>
+</ul>
+<h6 id="迁移的阈值"><a href="#迁移的阈值" class="headerlink" title="迁移的阈值"></a>迁移的阈值</h6><ul>
+<li><p>对于数据的不均衡是根据两个分片上的 Chunk 个数差异来判定的，阈值对应表如下：</p>
+<ul>
+<li><table>
+<thead>
+<tr>
+<th align="left">Number of Chunks</th>
+<th align="left">Migration Threshold</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">Fewer than 20</td>
+<td align="left">2</td>
+</tr>
+<tr>
+<td align="left">20-79</td>
+<td align="left">4</td>
+</tr>
+<tr>
+<td align="left">80 and greater</td>
+<td align="left">8</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+</li>
+</ul>
+<h5 id="修改-Chunk-Size-的注意事项"><a href="#修改-Chunk-Size-的注意事项" class="headerlink" title="修改 Chunk Size 的注意事项"></a>修改 Chunk Size 的注意事项</h5><ul>
+<li><p>chunk 的自动拆分操作仅发生在插入或更新的时候。</p>
+</li>
+<li><p>如果减少 chunk size，将会耗费一些时间将原有的 chunk 拆分到新 chunk，并且此操作不可逆</p>
+</li>
+<li><p>如果新增 chunk size，已存在的 chunk 只会等到新的插入或更新操作将其扩充至新的大小</p>
+</li>
+<li><p>chunk size 的可调整范围为 1-1024MB</p>
+</li>
+</ul>
+<h3 id="Balancer-均衡器"><a href="#Balancer-均衡器" class="headerlink" title="Balancer 均衡器"></a>Balancer 均衡器</h3><ul>
+<li><p>MongoDB 的 balancer（均衡器）是监视每个分片的 chunk 数的一个后台进程</p>
+</li>
+<li><p>当分片上的 chunk 数达到特定迁移阈值时，均衡器会尝试在分片之间自动迁移块，使得每个分片的块的数量达到平衡</p>
+</li>
+<li><p>分片群集的平衡过程对用户和应用程序层完全透明，但在执行过程时可能会对性能产生一些影响</p>
+</li>
+<li><p>从 MongoDB 3.4 开始，balancer 在配置服务器副本集（CSRS）的主服务器上运行</p>
+<ul>
+<li>在 3.4 版本中，当平衡器进程处于活动状态时，主配置服务器的的 locks 集合通过修改 <code>_id: &quot;balancer&quot;</code> 文档会获取一个 balancer lock，该 balancer lock 不会被释放，是为了保证只有一个 mongos 实例能够在分片集群中执行管理任务</li>
+<li>从 3.6 版本开始，均衡器不再需要 balancer lock</li>
+</ul>
+</li>
+<li><p>均衡器可以动态的开启和关闭，也可以针对指定的集合开启和关闭，还可以手动控制均衡器迁移 chunk 的时间，避免在业务高峰期的时候迁移 chunk 从而影响集群性能</p>
+</li>
+</ul>
+<h3 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h3><ul>
+<li><p>MongoDB 很早就有事务的概念，但是这个事务只能是针对单文档的，即单个文档的操作是有原子性保证的</p>
+</li>
+<li><p>在 4.0 版本之后，MongoDB 开始支持多文档的事务：</p>
+<ul>
+<li>4.0 版本支持副本集范围的多文档事务</li>
+<li>4.2 版本支持跨分片的多文档事务 (基于两阶段提交)</li>
+</ul>
+</li>
+<li><p>在事务的隔离性上，MongoDB 支持快照(snapshot)的隔离级别，可以避免脏读、不可重复读和幻读</p>
+</li>
+<li><p>尽管有了真正意义上的事务功能，但多文档事务对于性能有一定的影响，应用应该在充分评估后再做选用</p>
+</li>
+</ul>
+<h2 id="相关操作-Mongo-shell"><a href="#相关操作-Mongo-shell" class="headerlink" title="相关操作 (Mongo shell)"></a>相关操作 (Mongo shell)</h2><h3 id="添加分片键"><a href="#添加分片键" class="headerlink" title="添加分片键"></a>添加分片键</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mongos&gt;</span><span class="bash"> sh.enableSharding(<span class="string">"test"</span>);</span></span><br><span class="line">&#123;</span><br><span class="line">	"ok" : 1,</span><br><span class="line">	"operationTime" : Timestamp(1556535000, 8),</span><br><span class="line">	"$clusterTime" : &#123;</span><br><span class="line">		"clusterTime" : Timestamp(1556535000, 8),</span><br><span class="line">		"signature" : &#123;</span><br><span class="line">			"hash" : BinData(0,"84KefOzN8tKmsPfr6IrnBUxF9NM="),</span><br><span class="line">			"keyId" : NumberLong("6685242219722440730")</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">mongos&gt;</span><span class="bash"> sh.shardCollection(<span class="string">"test.testcoll"</span>, &#123;<span class="string">"myfield"</span>: 1&#125;);</span></span><br><span class="line">&#123;</span><br><span class="line">	"collectionsharded" : "test.testcoll",</span><br><span class="line">	"collectionUUID" : UUID("68ff9452-40bb-41a2-b35a-405132f90cd3"),</span><br><span class="line">	"ok" : 1,</span><br><span class="line">	"operationTime" : Timestamp(1556535010, 8),</span><br><span class="line">	"$clusterTime" : &#123;</span><br><span class="line">		"clusterTime" : Timestamp(1556535010, 8),</span><br><span class="line">		"signature" : &#123;</span><br><span class="line">			"hash" : BinData(0,"IgVzMa8qE4UBzjc2gOZJX5kZ3T4="),</span><br><span class="line">			"keyId" : NumberLong("6685242219722440730")</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">mongos&gt;</span><span class="bash"> use <span class="built_in">test</span>;</span></span><br><span class="line">switched to db test</span><br><span class="line"></span><br><span class="line"><span class="meta">mongos&gt;</span><span class="bash"> db.testcoll.insert(&#123;<span class="string">"myfield"</span>: <span class="string">"a"</span>, <span class="string">"otherfield"</span>: <span class="string">"b"</span>&#125;);</span></span><br><span class="line">WriteResult(&#123; "nInserted" : 1 &#125;)</span><br><span class="line"></span><br><span class="line"><span class="meta">mongos&gt;</span><span class="bash"> db.testcoll.insert(&#123;<span class="string">"myfield"</span>: <span class="string">"c"</span>, <span class="string">"otherfield"</span>: <span class="string">"d"</span>, <span class="string">"kube"</span> : <span class="string">"db"</span> &#125;);</span></span><br><span class="line">WriteResult(&#123; "nInserted" : 1 &#125;)</span><br><span class="line"></span><br><span class="line"><span class="meta">mongos&gt;</span><span class="bash"> db.testcoll.find();</span></span><br><span class="line">&#123; "_id" : ObjectId("5cc6d6f656a9ddd30be2c12a"), "myfield" : "a", "otherfield" : "b" &#125;</span><br><span class="line">&#123; "_id" : ObjectId("5cc6d71e56a9ddd30be2c12b"), "myfield" : "c", "otherfield" : "d", "kube" : "db" &#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>这里设置 test 数据库的 <code>testcoll</code> 表需要分片，根据 <code>myfield</code> 自动分片</li>
+</ul>
+<h3 id="查看集群状态-sh-status"><a href="#查看集群状态-sh-status" class="headerlink" title="查看集群状态 sh.status()"></a>查看集群状态 <code>sh.status()</code></h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mongos&gt;</span><span class="bash"> sh.status();</span></span><br><span class="line">--- Sharding Status ---</span><br><span class="line">  sharding version: &#123;</span><br><span class="line">  	"_id" : 1,</span><br><span class="line">  	"minCompatibleVersion" : 5,</span><br><span class="line">  	"currentVersion" : 6,</span><br><span class="line">  	"clusterId" : ObjectId("5cc6c061f439d076e04d737b")</span><br><span class="line">  &#125;</span><br><span class="line">  shards:</span><br><span class="line">        &#123;  "_id" : "shard0",  "host" : "shard0/mongo-sh-shard0-0.mongo-sh-shard0-gvr.demo.svc.cluster.local:27017,mongo-sh-shard0-1.mongo-sh-shard0-gvr.demo.svc.cluster.local:27017,mongo-sh-shard0-2.mongo-sh-shard0-gvr.demo.svc.cluster.local:27017",  "state" : 1 &#125;</span><br><span class="line">        &#123;  "_id" : "shard1",  "host" : "shard1/mongo-sh-shard1-0.mongo-sh-shard1-gvr.demo.svc.cluster.local:27017,mongo-sh-shard1-1.mongo-sh-shard1-gvr.demo.svc.cluster.local:27017,mongo-sh-shard1-2.mongo-sh-shard1-gvr.demo.svc.cluster.local:27017",  "state" : 1 &#125;</span><br><span class="line">        &#123;  "_id" : "shard2",  "host" : "shard2/mongo-sh-shard2-0.mongo-sh-shard2-gvr.demo.svc.cluster.local:27017,mongo-sh-shard2-1.mongo-sh-shard2-gvr.demo.svc.cluster.local:27017,mongo-sh-shard2-2.mongo-sh-shard2-gvr.demo.svc.cluster.local:27017",  "state" : 1 &#125;</span><br><span class="line">  active mongoses:</span><br><span class="line">        "3.6.12" : 2</span><br><span class="line">  autosplit:</span><br><span class="line">        Currently enabled: yes</span><br><span class="line">  balancer:</span><br><span class="line">        Currently enabled:  yes</span><br><span class="line">        Currently running:  no</span><br><span class="line">        Failed balancer rounds in last 5 attempts:  0</span><br><span class="line">        Migration Results for the last 24 hours:</span><br><span class="line">                No recent migrations</span><br><span class="line">  databases:</span><br><span class="line">        &#123;  "_id" : "config",  "primary" : "config",  "partitioned" : true &#125;</span><br><span class="line">                config.system.sessions</span><br><span class="line">                        shard key: &#123; "_id" : 1 &#125;</span><br><span class="line">                        unique: false</span><br><span class="line">                        balancing: true</span><br><span class="line">                        chunks:</span><br><span class="line">                                shard0	1</span><br><span class="line">                        &#123; "_id" : &#123; "$minKey" : 1 &#125; &#125; --&gt;&gt; &#123; "_id" : &#123; "$maxKey" : 1 &#125; &#125; on : shard0 Timestamp(1, 0)</span><br><span class="line">        &#123;  "_id" : "test",  "primary" : "shard1",  "partitioned" : true &#125;</span><br><span class="line">                test.testcoll</span><br><span class="line">                        shard key: &#123; "myfield" : 1 &#125;</span><br><span class="line">                        unique: false</span><br><span class="line">                        balancing: true</span><br><span class="line">                        chunks:</span><br><span class="line">                                shard1	1</span><br><span class="line">                        &#123; "myfield" : &#123; "$minKey" : 1 &#125; &#125; --&gt;&gt; &#123; "myfield" : &#123; "$maxKey" : 1 &#125; &#125; on : shard1 Timestamp(1, 0)</span><br></pre></td></tr></table></figure>
+
+<h3 id="删除片键"><a href="#删除片键" class="headerlink" title="删除片键"></a>删除片键</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mongos&gt;</span><span class="bash"> db.collections.remove(&#123;_id:<span class="string">"test.testcoll"</span>&#125;)</span></span><br><span class="line">WriteResult(&#123; "nRemoved" : 1 &#125;)</span><br><span class="line"><span class="meta">mongos&gt;</span><span class="bash"> db.chunks.remove(&#123;ns:<span class="string">"test.testcoll"</span>&#125;)</span></span><br><span class="line">WriteResult(&#123; "nRemoved" : 38 &#125;)</span><br><span class="line"><span class="meta">mongos&gt;</span><span class="bash"> db.locks.remove(&#123;_id:<span class="string">"test.testcoll"</span>&#125;)</span></span><br><span class="line">WriteResult(&#123; "nRemoved" : 1 &#125;)</span><br><span class="line"><span class="meta">mongos&gt;</span><span class="bash"> use admin</span></span><br><span class="line">switched to db admin</span><br><span class="line"><span class="meta">mongos&gt;</span><span class="bash"> db.adminCommand(<span class="string">"flushRouterConfig"</span>)	 <span class="comment">##刷新路由配置</span></span></span><br><span class="line">&#123; "flushed" : true, "ok" : 1 &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="查看-mongo-集群是否开启了-balance"><a href="#查看-mongo-集群是否开启了-balance" class="headerlink" title="查看 mongo 集群是否开启了 balance"></a>查看 mongo 集群是否开启了 balance</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mongos&gt;</span><span class="bash"> sh.getBalancerState()</span></span><br><span class="line">true</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>也可通过执行 sh.status() 查看 balance 状态。</li>
+</ul>
+<h3 id="查看是否正在有数据的迁移"><a href="#查看是否正在有数据的迁移" class="headerlink" title="查看是否正在有数据的迁移"></a>查看是否正在有数据的迁移</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mongos&gt;</span><span class="bash"> sh.isBalancerRunning()</span></span><br><span class="line">false</span><br></pre></td></tr></table></figure>
+
+<h3 id="设置-balance-窗口"><a href="#设置-balance-窗口" class="headerlink" title="设置 balance 窗口"></a>设置 balance 窗口</h3><ul>
+<li><p>将均衡器的迁移 chunk 时间控制在凌晨 02 点至凌晨 06 点：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">use config</span><br><span class="line">db.settings.update(</span><br><span class="line">   &#123; _id: "balancer" &#125;,</span><br><span class="line">   &#123; $set: &#123; activeWindow : &#123; start : "02:00", stop : "06:00" &#125; &#125; &#125;,</span><br><span class="line">   &#123; upsert: true &#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>删除 balance 窗口：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">use config</span><br><span class="line">db.settings.update(&#123; _id : "balancer" &#125;, &#123; $unset : &#123; activeWindow : true &#125; &#125;)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="关闭-balance"><a href="#关闭-balance" class="headerlink" title="关闭 balance"></a>关闭 balance</h3><ul>
+<li><p>默认 balance 的运行可以在任何时间，迁移只需要迁移的 chunk，如需关闭 balance，可执行下列命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sh.stopBalancer()</span><br><span class="line">sh.getBalancerState()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>停止 balace 后，查看是否有迁移进程正在执行，可执行下列命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">use config</span><br><span class="line">while( sh.isBalancerRunning() ) &#123;</span><br><span class="line">      print("waiting...");</span><br><span class="line">      sleep(1000);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="打开-balance"><a href="#打开-balance" class="headerlink" title="打开 balance"></a>打开 balance</h3><ul>
+<li><p>如您需要准备重新打开 balance，可执行下列命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sh.setBalancerState(true)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>当驱动版本不支持 sh.startBalancer() 时，可执行下列命令来重新打开 balance：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">use config</span><br><span class="line">db.settings.update( &#123; _id: "balancer" &#125;, &#123; $set : &#123; stopped: false &#125; &#125; , &#123; upsert: true &#125; )</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="集合的-balance"><a href="#集合的-balance" class="headerlink" title="集合的 balance"></a>集合的 balance</h3><ul>
+<li><p>关闭某个集合的 balance：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sh.disableBalancing("students.grades")</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>打开某个集合的 balance：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sh.enableBalancing("students.grades")</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看某个集合是否开启了 balance：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.getSiblingDB("config").collections.findOne(&#123;_id : "students.grades"&#125;).noBalance</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="相关问题"><a href="#相关问题" class="headerlink" title="相关问题"></a>相关问题</h2><ul>
+<li>分片建的值不允许更新</li>
+<li>在有分片键的存在的集合中,必须根据<strong>分片键</strong>或者是<strong>主键</strong>这种 mongos 可以确定唯一的方式来进行<strong>单条更新</strong></li>
+<li>如果设置 {upsert:true} 在进行<strong>单条更新</strong>的时候, 必须根据<strong>分片键</strong>进行更新<ul>
+<li>因为如果没有 shard key，mongos 既不能在所有 shard 实例上执行这条语句 (可能会导致每个shard都插入数据), 也无法选择在某个 shard 上执行这条语句</li>
+<li>虽然 mongos 知道 _id 是唯一的, 但是 _id 不是分片键, mongos 不清楚 _id 落在哪个分片上</li>
+<li>可以使用<strong>批量更新</strong>操作解决此问题</li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/mongodb/" rel="tag"># mongodb</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/08/14/Java-并发编程实战-笔记/" rel="next" title="Java 并发编程实战 笔记">
+                <i class="fa fa-chevron-left"></i> Java 并发编程实战 笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="Chaosn Chan">
+            
+              <p class="site-author-name" itemprop="name">Chaosn Chan</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/chenchensheng" title="GitHub &rarr; https://github.com/chenchensheng" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:330266801@qq.com" title="E-Mail &rarr; mailto:330266801@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#MongoDB-副本集与分片"><span class="nav-number">1.</span> <span class="nav-text">MongoDB 副本集与分片</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#副本集-Replica-sets"><span class="nav-number">1.1.</span> <span class="nav-text">副本集 (Replica sets)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Primary"><span class="nav-number">1.1.1.</span> <span class="nav-text">Primary</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Secondary"><span class="nav-number">1.1.2.</span> <span class="nav-text">Secondary</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Arbiter"><span class="nav-number">1.1.3.</span> <span class="nav-text">Arbiter</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分片-Sharding"><span class="nav-number">1.2.</span> <span class="nav-text">分片 (Sharding)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#分片机制"><span class="nav-number">1.2.1.</span> <span class="nav-text">分片机制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#分片键-Shared-Key"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">分片键 (Shared Key)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Chunk-块"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">Chunk 块</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Chunk-的拆分"><span class="nav-number">1.2.1.2.1.</span> <span class="nav-text">Chunk 的拆分</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Chunk-的迁移"><span class="nav-number">1.2.1.2.2.</span> <span class="nav-text">Chunk 的迁移</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#迁移的阈值"><span class="nav-number">1.2.1.2.2.1.</span> <span class="nav-text">迁移的阈值</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#修改-Chunk-Size-的注意事项"><span class="nav-number">1.2.1.2.3.</span> <span class="nav-text">修改 Chunk Size 的注意事项</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Balancer-均衡器"><span class="nav-number">1.2.2.</span> <span class="nav-text">Balancer 均衡器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事务"><span class="nav-number">1.2.3.</span> <span class="nav-text">事务</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关操作-Mongo-shell"><span class="nav-number">1.3.</span> <span class="nav-text">相关操作 (Mongo shell)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#添加分片键"><span class="nav-number">1.3.1.</span> <span class="nav-text">添加分片键</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查看集群状态-sh-status"><span class="nav-number">1.3.2.</span> <span class="nav-text">查看集群状态 sh.status()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#删除片键"><span class="nav-number">1.3.3.</span> <span class="nav-text">删除片键</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查看-mongo-集群是否开启了-balance"><span class="nav-number">1.3.4.</span> <span class="nav-text">查看 mongo 集群是否开启了 balance</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查看是否正在有数据的迁移"><span class="nav-number">1.3.5.</span> <span class="nav-text">查看是否正在有数据的迁移</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设置-balance-窗口"><span class="nav-number">1.3.6.</span> <span class="nav-text">设置 balance 窗口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关闭-balance"><span class="nav-number">1.3.7.</span> <span class="nav-text">关闭 balance</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#打开-balance"><span class="nav-number">1.3.8.</span> <span class="nav-text">打开 balance</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#集合的-balance"><span class="nav-number">1.3.9.</span> <span class="nav-text">集合的 balance</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关问题"><span class="nav-number">1.4.</span> <span class="nav-text">相关问题</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Chaosn Chan</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count"> 全站共 87.6k 字</span>
+</div>
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="Total Visitors">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="Total Views">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+  
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.1"></script>
+
+  <script src="/js/motion.js?v=7.1.1"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.1.1"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.1"></script>
+<script src="/js/post-details.js?v=7.1.1"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.1"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    <!-- LOCAL: You can save these files to your site and update links -->
+
+  
+  <script src="https://cdn.jsdelivr.net/gh/theme-next/theme-next-gitment@1/gitmint.browser.js"></script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/theme-next/theme-next-gitment@1/default.css">
+<!-- END LOCAL -->
+
+<script>
+  function renderGitment() {
+    var gitment = new Gitmint({
+      id: window.location.pathname,
+      owner: 'chenchensheng',
+      repo: 'chanson.github.io',
+      
+        lang: '' || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+      
+      oauth: {
+      
+      
+        client_secret: '414f1aaca1a5baf17fb9929bb9e864be3978061f',
+      
+        client_id: '46aed381471ff9cef5d8'
+      }
+    });
+    gitment.render('gitment-container');
+  }
+
+  
+    renderGitment();
+  
+</script>
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    <script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+</body>
+</html>

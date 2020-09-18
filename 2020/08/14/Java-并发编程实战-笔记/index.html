@@ -1,0 +1,1916 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.1" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.1.1',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: true,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="Java 并发编程实战 笔记二. 线程安全2.2 原子性 原子操作指不可分割的操作  竞态条件 (Race Condition)  当某个计算的正确性取决于多个线程交替执行的时序时, 那就会发生竞态条件 最常见的竞态条件类型就是”先检查后执行“ 例如在延迟加载的实现中, 需要先判断对象是否已初始化, 否则需要先进行初始化 两个线程同时进入时可能会造成初始化两次     可以使用 JUC 包中的 A">
+<meta name="keywords" content="java,multithread,concurrency">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 并发编程实战 笔记">
+<meta property="og:url" content="https://chansonchan.cn/2020/08/14/Java-并发编程实战-笔记/index.html">
+<meta property="og:site_name" content="Chanson&#39;s blog">
+<meta property="og:description" content="Java 并发编程实战 笔记二. 线程安全2.2 原子性 原子操作指不可分割的操作  竞态条件 (Race Condition)  当某个计算的正确性取决于多个线程交替执行的时序时, 那就会发生竞态条件 最常见的竞态条件类型就是”先检查后执行“ 例如在延迟加载的实现中, 需要先判断对象是否已初始化, 否则需要先进行初始化 两个线程同时进入时可能会造成初始化两次     可以使用 JUC 包中的 A">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://gitee.com/chansonchan/image/raw/master/uPic/image-20200908202033464.png">
+<meta property="og:image" content="https://gitee.com/chansonchan/image/raw/master/uPic/image-20200908213324666.png">
+<meta property="og:image" content="https://gitee.com/chansonchan/image/raw/master/uPic/image-20200914215649373.png">
+<meta property="og:image" content="https://gitee.com/chansonchan/image/raw/master/uPic/image-20200915222255567.png">
+<meta property="og:updated_time" content="2020-09-17T02:10:26.159Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java 并发编程实战 笔记">
+<meta name="twitter:description" content="Java 并发编程实战 笔记二. 线程安全2.2 原子性 原子操作指不可分割的操作  竞态条件 (Race Condition)  当某个计算的正确性取决于多个线程交替执行的时序时, 那就会发生竞态条件 最常见的竞态条件类型就是”先检查后执行“ 例如在延迟加载的实现中, 需要先判断对象是否已初始化, 否则需要先进行初始化 两个线程同时进入时可能会造成初始化两次     可以使用 JUC 包中的 A">
+<meta name="twitter:image" content="https://gitee.com/chansonchan/image/raw/master/uPic/image-20200908202033464.png">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://chansonchan.cn/2020/08/14/Java-并发编程实战-笔记/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Java 并发编程实战 笔记 | Chanson's blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Chanson's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>Search</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://chansonchan.cn/2020/08/14/Java-并发编程实战-笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Chaosn Chan">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chanson's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Java 并发编程实战 笔记
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-08-14 20:07:48" itemprop="dateCreated datePublished" datetime="2020-08-14T20:07:48+08:00">2020-08-14</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-09-17 10:10:26" itemprop="dateModified" datetime="2020-09-17T10:10:26+08:00">2020-09-17</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/programming/" itemprop="url" rel="index"><span itemprop="name">programming</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">Comments: </span>
+                <a href="/2020/08/14/Java-并发编程实战-笔记/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2020/08/14/Java-并发编程实战-笔记/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             Views:  
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Java-并发编程实战-笔记"><a href="#Java-并发编程实战-笔记" class="headerlink" title="Java 并发编程实战 笔记"></a>Java 并发编程实战 笔记</h1><h2 id="二-线程安全"><a href="#二-线程安全" class="headerlink" title="二. 线程安全"></a>二. 线程安全</h2><h3 id="2-2-原子性"><a href="#2-2-原子性" class="headerlink" title="2.2 原子性"></a>2.2 原子性</h3><ul>
+<li><p>原子操作指不可分割的操作</p>
+</li>
+<li><p>竞态条件 (Race Condition)</p>
+<ul>
+<li>当某个计算的正确性取决于多个线程交替执行的时序时, 那就会发生竞态条件</li>
+<li>最常见的竞态条件类型就是”<strong>先检查后执行</strong>“<ul>
+<li>例如在延迟加载的实现中, 需要先判断对象是否已初始化, 否则需要先进行初始化</li>
+<li>两个线程同时进入时可能会造成初始化两次</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>可以使用 JUC 包中的 Atomic 类保证变量状态的原子性</p>
+</li>
+</ul>
+<h3 id="2-3-加锁机制"><a href="#2-3-加锁机制" class="headerlink" title="2.3 加锁机制"></a>2.3 加锁机制</h3><ul>
+<li><p>Atomic 类并不能保证竞态条件下的线程安全</p>
+</li>
+<li><p>内置锁 synchronized</p>
+<ul>
+<li>可重入<ul>
+<li>获取锁的操作粒度是”线程”, 而不是”调用”</li>
+<li>避免了子类重写父类 synchronized 方法时调用父类方法会死锁的情况</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-4-用锁来保护状态"><a href="#2-4-用锁来保护状态" class="headerlink" title="2.4 用锁来保护状态"></a>2.4 用锁来保护状态</h3><ul>
+<li>对于被多线程访问的变量, 在访问它时都需要持有同一个锁</li>
+</ul>
+<h3 id="2-5-活跃性与性能"><a href="#2-5-活跃性与性能" class="headerlink" title="2.5 活跃性与性能"></a>2.5 活跃性与性能</h3><ul>
+<li>要判断同步代码块的合理大小, 需要在安全性(必须满足), 简单性和性能等需求之间进行权衡</li>
+</ul>
+<h2 id="三-对象的共享"><a href="#三-对象的共享" class="headerlink" title="三. 对象的共享"></a>三. 对象的共享</h2><h3 id="3-1-可见性"><a href="#3-1-可见性" class="headerlink" title="3.1 可见性"></a>3.1 可见性</h3><ul>
+<li>多线程下存在可见性和重排序的情况</li>
+</ul>
+<h4 id="3-1-1-失效数据"><a href="#3-1-1-失效数据" class="headerlink" title="3.1.1 失效数据"></a>3.1.1 失效数据</h4><ul>
+<li>在每次访问变量时都使用同步可以避免失效数据</li>
+</ul>
+<h4 id="3-1-2-非原子的-64-为操作"><a href="#3-1-2-非原子的-64-为操作" class="headerlink" title="3.1.2 非原子的 64 为操作"></a>3.1.2 非原子的 64 为操作</h4><ul>
+<li>在 32 位操作系统下, JVM 允许将 64 位数值 (double, long) 的读写操作分解为两个 32 位的操作</li>
+</ul>
+<h4 id="3-1-3-加锁与可见性"><a href="#3-1-3-加锁与可见性" class="headerlink" title="3.1.3 加锁与可见性"></a>3.1.3 加锁与可见性</h4><ul>
+<li>加锁的含义不仅仅局限于互斥行为, 还包括内存可见性</li>
+</ul>
+<h4 id="3-1-4-volatile-变量"><a href="#3-1-4-volatile-变量" class="headerlink" title="3.1.4 volatile 变量"></a>3.1.4 volatile 变量</h4><ul>
+<li>volatile 可以确保变量的更新通知到其他线程</li>
+<li>并不能保证原子性</li>
+</ul>
+<h3 id="3-2-发布与逸出"><a href="#3-2-发布与逸出" class="headerlink" title="3.2 发布与逸出"></a>3.2 发布与逸出</h3><ul>
+<li><strong>发布</strong>一个对象是指使其能够在当前作用于之外的代码中使用</li>
+<li>某个不该被发布的对象被发布时, 被称为<strong>逸出</strong></li>
+<li>避免在构造函数中将还未完成初始化的对象 this 指针逸出</li>
+</ul>
+<h3 id="3-3-线程封闭"><a href="#3-3-线程封闭" class="headerlink" title="3.3 线程封闭"></a>3.3 线程封闭</h3><ul>
+<li>仅在单线程内访问数据, 被称为线程封闭 (Thread Confinement)</li>
+<li>栈封闭指只能通过局部变量才能访问对象, 因为局部变量位于执行线程的栈中</li>
+<li>ThreadLocal 能使每个使用变量的线程都有一份独立的副本<ul>
+<li>避免了传递执行上下文信息</li>
+<li>但降低了代码的可重用性, 并在类之间引入隐含的耦合</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-4-不变性"><a href="#3-4-不变性" class="headerlink" title="3.4 不变性"></a>3.4 不变性</h3><ul>
+<li>不可变对象一定是线程安全的</li>
+</ul>
+<h3 id="3-5-安全发布"><a href="#3-5-安全发布" class="headerlink" title="3.5 安全发布"></a>3.5 安全发布</h3><ul>
+<li>多线程间共享数据需要同步, 否则因可见性等问题会出现未知现象</li>
+<li>Java 内存模型为不可变对象提供了特殊的初始化安全性保证, 从而不需要同步也能共享该对象</li>
+<li>发布一个静态对象最简单安全的方式是使用静态初始化器</li>
+<li>安全发布只能确保发布时状态的可见性, 后续对该对象的访问修改还是需要使用同步机制</li>
+</ul>
+<h2 id="四-对象的组合"><a href="#四-对象的组合" class="headerlink" title="四. 对象的组合"></a>四. 对象的组合</h2><h3 id="4-1-设计线程安全的类"><a href="#4-1-设计线程安全的类" class="headerlink" title="4.1 设计线程安全的类"></a>4.1 设计线程安全的类</h3><ul>
+<li><p>设计线程安全类的过程需要包含三个基本要素</p>
+<ul>
+<li>找出构成对象状态的所有变量 </li>
+<li>找出约束状态变量的不变性条件</li>
+<li>建立对象状态的并发访问管理策略</li>
+</ul>
+</li>
+<li><p>收集同步的需求, 了解对象在状态变量上的各种约束条件以及依赖状态的操作, 需要借助同步与封装</p>
+</li>
+</ul>
+<h3 id="4-2-实例封闭"><a href="#4-2-实例封闭" class="headerlink" title="4.2 实例封闭"></a>4.2 实例封闭</h3><ul>
+<li>将数据封装在对象内部, 可以将数据的访问限制在对象的方法上, 从而更容易确保持有锁</li>
+</ul>
+<h3 id="4-3-线程安全的委托"><a href="#4-3-线程安全的委托" class="headerlink" title="4.3 线程安全的委托"></a>4.3 线程安全的委托</h3><h3 id="4-4-在现有的线程安全类中添加功能"><a href="#4-4-在现有的线程安全类中添加功能" class="headerlink" title="4.4 在现有的线程安全类中添加功能"></a>4.4 在现有的线程安全类中添加功能</h3><ul>
+<li>使用<strong>组合</strong>而非其他的方式给某个对象添加线程安全的方法</li>
+</ul>
+<h3 id="4-5-将同步策略文档化"><a href="#4-5-将同步策略文档化" class="headerlink" title="4.5 将同步策略文档化"></a>4.5 将同步策略文档化</h3><ul>
+<li>在文档中说明使用者需要了解的线程安全性保证, 以及代码维护人员需要了解的同步策略</li>
+</ul>
+<h2 id="五-基础构建模块"><a href="#五-基础构建模块" class="headerlink" title="五. 基础构建模块"></a>五. 基础构建模块</h2><h3 id="5-1-同步容器类"><a href="#5-1-同步容器类" class="headerlink" title="5.1 同步容器类"></a>5.1 同步容器类</h3><h4 id="5-1-1-同步容器类的问题"><a href="#5-1-1-同步容器类的问题" class="headerlink" title="5.1.1 同步容器类的问题"></a>5.1.1 同步容器类的问题</h4><ul>
+<li>同步容器类是线程安全的, 但还是需要额外加锁来保护复合操作, 如遍历删除</li>
+</ul>
+<h4 id="5-1-2-迭代器与-ConcurrentModificationException"><a href="#5-1-2-迭代器与-ConcurrentModificationException" class="headerlink" title="5.1.2 迭代器与 ConcurrentModificationException"></a>5.1.2 迭代器与 ConcurrentModificationException</h4><ul>
+<li>在设计同步容器类的迭代器时并没有考虑并发修改的问题, 当发现在迭代过程中容器被修改时, 会抛出 <code>ConcurrentModificationException</code></li>
+<li>实现方式为将计数器的变化与容器关联, 在迭代期间计数器被修改, 则 <code>hasNext</code> 或 <code>next</code> 会抛出 <code>ConcurrentModificationException</code></li>
+<li>在单线程中也可能抛出 <code>ConcurrentModificationException</code>, 当对象直接从容器删除而不是通过 <code>Iterator.remove</code> 来删除时</li>
+</ul>
+<h4 id="5-1-3-隐藏迭代器"><a href="#5-1-3-隐藏迭代器" class="headerlink" title="5.1.3 隐藏迭代器"></a>5.1.3 隐藏迭代器</h4><ul>
+<li>在某些情况下, 迭代器会隐藏起来, 比如打印容器时会迭代调用每个元素的 <code>toString</code> 方法</li>
+<li>容器的 <code>hashCode</code> 和 <code>equals</code> 等方法也会间接的执行迭代操作, 所以都可能抛出 <code>ConcurrentModificationException</code></li>
+</ul>
+<h3 id="5-2-并发容器"><a href="#5-2-并发容器" class="headerlink" title="5.2 并发容器"></a>5.2 并发容器</h3><h4 id="5-2-1-ConcurrentHashMap"><a href="#5-2-1-ConcurrentHashMap" class="headerlink" title="5.2.1 ConcurrentHashMap"></a>5.2.1 ConcurrentHashMap</h4><ul>
+<li>同步容器类在执行每个操作期间都持有一个锁</li>
+<li>对于基于散列的容器, 如果 <code>hashCode</code> 不能很均匀的分布, 会影响散列表的性能, 特别是还持有锁的情况</li>
+<li>ConcurrentHashMap 采用分段锁 (Lock Striping) 的机制, 实现了更高的吞吐量, 而在单线程环境只损失较小的性能</li>
+<li>ConcurrentHashMap 和其他并发容器一起增强了同步容器类<ul>
+<li>迭代器不会抛出 <code>ConcurrentModificationException</code>, 因此迭代过程不需要加锁</li>
+<li>ConcurrentHashMap 的迭代器具有弱一致性 (weakly consistent) 而非 “及时失败” (fail-fast)<ul>
+<li>弱一致性的迭代器允许并发的修改, 并可以 (但是不保证) 在迭代器被构造后将修改操作反映给容器</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>对于需要在整个 Map 上进行计算的方法, 如 <code>size</code> 和 <code>isEmpty</code> , 这些方法的语义被略微减弱了以反映容器的并发特性<ul>
+<li>因为在计算的过程中可能已经过期, 实际上只是一个估计值</li>
+<li>事实上在并发环境下的用处很小</li>
+</ul>
+</li>
+<li>ConcurrentHashMap 中没有实现对 Map 加锁以提供独占访问<ul>
+<li>在 HashTable 和 synchronizedMap 中, 获得 Map 的锁能防止其他线程访问这个 Map</li>
+</ul>
+</li>
+<li>ConcurrentHashMap 还实现一些原子的复合操作, 如 <code>putIfAbsent</code></li>
+</ul>
+<h4 id="5-2-3-CopyOnWriteArrayList"><a href="#5-2-3-CopyOnWriteArrayList" class="headerlink" title="5.2.3 CopyOnWriteArrayList"></a>5.2.3 CopyOnWriteArrayList</h4><ul>
+<li><p>Copy-On-Write 容器的线程安全性在于, 只要正确的发布一个不可变的对象, 则在访问的时候就不需要进行同步</p>
+</li>
+<li><p>在每次修改时都会创建并重新发布一个新的容器副本, 从而实现可变性</p>
+</li>
+<li><p>Copy-On-Write 容器的迭代器保留一个指向底层基础数组的引用, 且数组不会被修改</p>
+<ul>
+<li>不会抛出 <code>ConcurrentModificationException</code></li>
+<li>并且返回的元素与迭代器创建时的元素完全一致</li>
+</ul>
+</li>
+<li><p>每次修改都会复制底层数组, 开销很大, 所以当迭代操作大于修改操作时才应该使用</p>
+</li>
+</ul>
+<h3 id="5-3-阻塞队列和生产者-消费者"><a href="#5-3-阻塞队列和生产者-消费者" class="headerlink" title="5.3 阻塞队列和生产者-消费者"></a>5.3 阻塞队列和生产者-消费者</h3><ul>
+<li>阻塞队列提供了可阻塞的 <code>put</code> 和 <code>take</code> 方法, 以及支持定时的 <code>offer</code> 和 <code>poll</code> 方法</li>
+<li>阻塞队列支持生产者-消费者模式, 此模式解耦了生产数据与使用数据的过程</li>
+<li>类库中包含了 BlockingQueue 的多种实现<ul>
+<li>LinkedBlockingQueue 和 ArrayBlockingQueue 是 FIFO 队列<ul>
+<li>两者分别与 LinkedList 和 ArrayList 类似但拥有更好的并发性能</li>
+</ul>
+</li>
+<li>PriorityBlockingQueue 是一个按优先级排序的队列</li>
+<li>SynchronousQueue 是一个不存储元素的阻塞队列, 每个插入操作必须等到另一个线程调用移除操作, 否则插入操作一直处于阻塞状态</li>
+</ul>
+</li>
+<li>Java 6 加入了 Deque 和 BlockingDeque<ul>
+<li>分别对 Queue 和 BlockingQueue 进行扩展</li>
+<li>Deque 是一个双端队列, 可以在队列的头和尾高效的插入和移除<ul>
+<li>具体实现包括 ArrayDeque 和 LinkedBlockingDeque</li>
+</ul>
+</li>
+<li>适用于工作密取 (Work Stealing) 模式<ul>
+<li>每个消费者持有各自的 Deque</li>
+<li>如果一个消费者消费完了自己的 Deque, 它会去其他消费者 Deque 尾部消费</li>
+<li>极大的减少了竞争</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="5-4-阻塞方法与中断方法"><a href="#5-4-阻塞方法与中断方法" class="headerlink" title="5.4 阻塞方法与中断方法"></a>5.4 阻塞方法与中断方法</h3><ul>
+<li><p>线程可能会阻塞或暂停执行, 原因有多种:</p>
+<ul>
+<li>等待 I/O 操作结束</li>
+<li>等待获得锁</li>
+<li>等待从 <code>Thread.sleep</code> 中醒来</li>
+<li>等待另外一个线程的计算结果</li>
+</ul>
+</li>
+<li><p>大多数阻塞的操作被中断时会抛出  <code>InterruptedException</code></p>
+</li>
+<li><p>中断是一种协助机制</p>
+<ul>
+<li>调用一个线程的 <code>interrupt()</code> 方法中断一个线程，并不是强行关闭这个线程，只是通知线程停止，将线程的中断标志位置为 <code>true</code>，线程是否中断，由线程本身决定, 线程可以进行停止前的释放资源, 完成必要的处理任务</li>
+</ul>
+</li>
+<li><p>处理中断的两种选择</p>
+<ol>
+<li><p>传递中断</p>
+<ul>
+<li><p>对于底层的方法, 在方法的签名上标注异常 (<code>throws InterruptedException</code>)</p>
+</li>
+<li><p>抛出异常，而异常的真正处理，应该交给调用它的那个函数</p>
+</li>
+<li><p>因为标注了异常, 调用者必须对 <code>InterruptedException</code> 异常进行处理</p>
+</li>
+</ul>
+</li>
+<li><p>恢复中断</p>
+<ul>
+<li>在底层方法中 <code>catch</code> 处理异常</li>
+<li>处理完成后手动调用 <code>Thread.currentThread().interrupt()</code> 恢复中断</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+<h3 id="5-5-同步工具类"><a href="#5-5-同步工具类" class="headerlink" title="5.5 同步工具类"></a>5.5 同步工具类</h3><h4 id="5-5-1-闭锁"><a href="#5-5-1-闭锁" class="headerlink" title="5.5.1 闭锁"></a>5.5.1 闭锁</h4><ul>
+<li>闭锁可以延迟线程的进度直到其到达终止状态</li>
+<li>CountDownLatch 是一种闭锁的实现<ul>
+<li>有初始计数值</li>
+<li>计数值大于 0 时, 获取锁的线程会被阻塞</li>
+<li>计数值被减到 0 时, 所有被阻塞的线程同时被释放 </li>
+</ul>
+</li>
+</ul>
+<h4 id="5-5-2-FutureTask"><a href="#5-5-2-FutureTask" class="headerlink" title="5.5.2 FutureTask"></a>5.5.2 FutureTask</h4><ul>
+<li>FutureTask 也可以用做闭锁</li>
+<li>实现了 Future 语义, 表示一种抽象的可生成结果的计算</li>
+<li>FutureTask 表示的计算是通过 Callable 实现的, 可以处于以下三种状态<ul>
+<li>等待运行 (Waiting to run)</li>
+<li>正在运行 (Running)</li>
+<li>运行完成 (Completed)</li>
+</ul>
+</li>
+<li><code>Future.get</code> 的行为取决于任务的状态<ul>
+<li>如果任务已完成, 会立即返回结果</li>
+<li>否则将阻塞直到任务完成</li>
+<li>返回结果或者抛出异常</li>
+</ul>
+</li>
+</ul>
+<h4 id="5-5-3-信号量"><a href="#5-5-3-信号量" class="headerlink" title="5.5.3 信号量"></a>5.5.3 信号量</h4><ul>
+<li><p>Semaphore 用来控制同时访问某个资源的操作数量</p>
+<ul>
+<li>信号量 S, 整型变量, 需要初始化值大于0</li>
+<li>P 操作, 原子减少 S, 如果 <code>S &lt; 0</code>, 则阻塞当前线程<ul>
+<li>对应方法 <code>Semaphore.acquire</code></li>
+</ul>
+</li>
+<li>V 操作, 原子增加 S, 如果 <code>S &lt;= 0</code>, 则唤醒一个阻塞的线程<ul>
+<li>对应方法 <code>Semaphore.release</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>可以利用信号量将任何容器变成有界阻塞容器</p>
+</li>
+</ul>
+<h4 id="5-5-4-栅栏"><a href="#5-5-4-栅栏" class="headerlink" title="5.5.4 栅栏"></a>5.5.4 栅栏</h4><ul>
+<li><p>栅栏 (Barrier) 类似于闭锁, 能阻塞一组线程直到某个事件发生</p>
+<ul>
+<li>主要区别在于必须所有线程到达栅栏位置才能继续执行</li>
+<li>闭锁用于等待事件, 栅栏用于等待其他线程</li>
+</ul>
+</li>
+<li><p>CyclicBarrier</p>
+<ul>
+<li><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">CyclicBarrier</span><span class="params">(<span class="keyword">int</span> parties, Runnable barrierAction)</span></span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>parties</code> 表示线程个数</li>
+<li><code>barrierAction</code> 表示线程都达到栅栏后先执行的一个方法</li>
+</ul>
+</li>
+<li><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">dowait</span><span class="params">(<span class="keyword">boolean</span> timed, <span class="keyword">long</span> nanos)</span></span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>timed</code> 表示是否需要超时</li>
+<li><code>nanos</code> 表示超时的具体时间</li>
+<li>超时会抛出 <code>BrokenBarrierException</code></li>
+</ul>
+</li>
+<li><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">reset</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>重置栅栏, 原先在等待的线程会收到 <code>BrokenBarrierException</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="六-任务执行"><a href="#六-任务执行" class="headerlink" title="六. 任务执行"></a>六. 任务执行</h2><h3 id="6-1-在线程中执行任务"><a href="#6-1-在线程中执行任务" class="headerlink" title="6.1 在线程中执行任务"></a>6.1 在线程中执行任务</h3><ul>
+<li>串行处理机制无法提供高吞吐率或快速响应性</li>
+<li>为每个任务分配一个线程会造成很高的开销和资源消耗</li>
+</ul>
+<h3 id="6-2-Executor-框架"><a href="#6-2-Executor-框架" class="headerlink" title="6.2 Executor 框架"></a>6.2 Executor 框架</h3><ul>
+<li>java.util.concurrent 包中提供了一种灵活的线程池实现作为 Executor 框架的一部分</li>
+<li>Executor 基于生产者 - 消费者模式</li>
+</ul>
+<h4 id="6-2-2-执行策略"><a href="#6-2-2-执行策略" class="headerlink" title="6.2.2 执行策略"></a>6.2.2 执行策略</h4><ul>
+<li>在什么线程中执行任务</li>
+<li>任务按照什么顺序执行 (FIFO, LIFO, 优先级)</li>
+<li>有多少个任务能并发执行</li>
+<li>在队列中有多少任务在等待执行</li>
+<li>系统过载时的拒绝策略以及相关通知</li>
+<li>执行任务的前后</li>
+</ul>
+<h4 id="6-2-3-线程池"><a href="#6-2-3-线程池" class="headerlink" title="6.2.3 线程池"></a>6.2.3 线程池</h4><ul>
+<li><p>线程池通过重用现有的线程而不是创建新线程而节省开销和响应性</p>
+</li>
+<li><p>Executors 中创建线程池的静态方法</p>
+<ul>
+<li><p><strong>newFixedThreadPool</strong> 创建一个核心和最大线程数量都固定的线程池, 等待队列的长度不受限制</p>
+</li>
+<li><p><strong>newCachedThreadPool</strong> 创建一个可缓存的线程池, 会回收空闲线程, 最大线程数不受限制</p>
+</li>
+<li><p><strong>newSingleThreadExecutor</strong> 创建一个单线程的 Executor, 等待队列的长度不受限制</p>
+</li>
+<li><p><strong>newScheduledThreadPool</strong> 创建一个核心线程数量固定的线程池, 以延迟或定时的方式执行任务, 最大线程数不受限制</p>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="6-2-4-Executor-的生命周期"><a href="#6-2-4-Executor-的生命周期" class="headerlink" title="6.2.4 Executor 的生命周期"></a>6.2.4 Executor 的生命周期</h4><ul>
+<li>如果无法正确的关闭 Executor , JVM 将无法结束</li>
+<li>Executor 扩展了 ExecutorService 接口用于解决生命周期</li>
+</ul>
+<h3 id="6-3-找出可利用的并行性"><a href="#6-3-找出可利用的并行性" class="headerlink" title="6.3 找出可利用的并行性"></a>6.3 找出可利用的并行性</h3><ul>
+<li><p>Executor 框架使用 Runnable 作为其基本的任务表示形式</p>
+</li>
+<li><p>Runnable 有很大的局限的抽象, 不能返回值或抛出受检查的异常</p>
+</li>
+<li><p>Callable 是一种更好的抽象</p>
+</li>
+<li><p>Future 表示一个任务的生命周期</p>
+</li>
+<li><p>CompletionService 将 Executor 和 BlockingQueue 融合在一起, 可以从阻塞队列里取出完成的 Future</p>
+</li>
+</ul>
+<h2 id="七-取消与关闭"><a href="#七-取消与关闭" class="headerlink" title="七. 取消与关闭"></a>七. 取消与关闭</h2><ul>
+<li><p>通常中断是实现取消最合理的方式</p>
+</li>
+<li><p>最合理的中断策略是某种形式的线程级取消操作或服务级取消操作</p>
+<ul>
+<li>尽快退出, 在必要时进行清理, 通知所有者该线程已退出</li>
+</ul>
+</li>
+<li><p>大多数可阻塞的库函数都是抛出 InterruptException 作为中断响应</p>
+</li>
+<li><p>处理不可中断的阻塞</p>
+<ul>
+<li>Java.io 包中的同步 Socket I/O<ul>
+<li>InputStream 和 OutputStream 中的 read, write 等方法都不会响应中断</li>
+<li>通过关闭底层的套接字, 可以使上述方法抛出 SocketException</li>
+</ul>
+</li>
+<li>Java.io 包中的同步 I/O<ul>
+<li>大多数标准的 Channel 都实现了 InterruptibleChannel</li>
+<li>中断一个正在 InterruptibleChannel 上等待的线程会使所有在这条链路上阻塞的线程抛出 CloseByInterruptException 并关闭链路</li>
+<li>关闭一个 InterruptibleChannel 时会使所有在这条链路上阻塞的线程抛出 AsynchronousCloseException</li>
+</ul>
+</li>
+<li>Selector 的异步 I/O<ul>
+<li>如果一个线程在调用 Selector.select 方法 (在 java.nio. channels 中) 时阻塞了, 调用 close 或 wakeup 方法会使线程抛出 CloseSelectorException</li>
+</ul>
+</li>
+<li>获取某个锁<ul>
+<li>如果一个线程由于等待内置锁而阻塞, 那将无法响应中断</li>
+<li>在 Lock 类中提供了 lockInterruptibly 方法允许线程响应中断</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>避免使用终结器</p>
+</li>
+</ul>
+<h2 id="八-线程池的使用"><a href="#八-线程池的使用" class="headerlink" title="八. 线程池的使用"></a>八. 线程池的使用</h2><h3 id="8-1-在任务与执行策略之间的隐性耦合"><a href="#8-1-在任务与执行策略之间的隐性耦合" class="headerlink" title="8.1 在任务与执行策略之间的隐性耦合"></a>8.1 在任务与执行策略之间的隐性耦合</h3><ul>
+<li>有些任务需要明确的指定执行策略<ul>
+<li>依赖性任务<ul>
+<li>可能产生死锁</li>
+</ul>
+</li>
+<li>使用线程封闭机制的任务<ul>
+<li>如果将 Executor 从单线程环境改为线程池环境, 会失去线程安全性</li>
+</ul>
+</li>
+<li>对响应时间敏感的任务<ul>
+<li>执行时间长的任务会影响时间短的任务</li>
+</ul>
+</li>
+<li>使用 ThreadLocal 的任务</li>
+</ul>
+</li>
+</ul>
+<h3 id="8-2-设置线程池的大小"><a href="#8-2-设置线程池的大小" class="headerlink" title="8.2 设置线程池的大小"></a>8.2 设置线程池的大小</h3><p><img src="https://gitee.com/chansonchan/image/raw/master/uPic/image-20200908202033464.png" alt="image-20200908202033464"></p>
+<h3 id="8-3-配置-ThreadPoolExcutor"><a href="#8-3-配置-ThreadPoolExcutor" class="headerlink" title="8.3 配置 ThreadPoolExcutor"></a>8.3 配置 ThreadPoolExcutor</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ThreadPoolExecutor</span><span class="params">(<span class="keyword">int</span> corePoolSize,</span></span></span><br><span class="line"><span class="function"><span class="params">                          <span class="keyword">int</span> maximumPoolSize,</span></span></span><br><span class="line"><span class="function"><span class="params">                          <span class="keyword">long</span> keepAliveTime,</span></span></span><br><span class="line"><span class="function"><span class="params">                          TimeUnit unit,</span></span></span><br><span class="line"><span class="function"><span class="params">                          BlockingQueue&lt;Runnable&gt; workQueue,</span></span></span><br><span class="line"><span class="function"><span class="params">                          ThreadFactory threadFactory,</span></span></span><br><span class="line"><span class="function"><span class="params">                          RejectedExecutionHandler handler)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  ......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><p><code>corePoolSize</code> 表示线程池的常驻核心线程数</p>
+<ul>
+<li>如果设置为 0, 则表示在没有任何任务时, 销毁线程池</li>
+<li>如果大于 0, 即使没有任务时也会保证线程池的线程数量等于此值</li>
+<li>此值如果设置的比较小, 则会频繁的创建和销毁线程</li>
+<li>如果设置的比较大, 则会浪费系统资源, 所以开发者需要根据自己的实际业务来调整此值</li>
+</ul>
+</li>
+<li><p><code>maximumPoolSize</code> 表示线程池在任务最多时, 最大可以创建的线程数</p>
+<ul>
+<li>此值必须大于 0, 也必须大于等于 <code>corePoolSize</code>, 此值只有在任务比较多, 且不能存放在任务队列时才会用到</li>
+</ul>
+</li>
+<li><p><code>keepAliveTime</code> 表示线程的存活时间</p>
+<ul>
+<li>当线程池空闲时并且超过了此时间, 多余的线程就会销毁, 直到线程池中的线程数量销毁的等于 <code>corePoolSize</code> 为止</li>
+<li>如果 <code>maximumPoolSize</code> 等于 <code>corePoolSize</code>, 那么线程池在空闲的时候也不会销毁任何线程</li>
+</ul>
+</li>
+<li><p><code>unit</code> 表示存活时间的单位, 它是配合 <code>keepAliveTime</code> 参数共同使用的</p>
+</li>
+<li><p><code>workQueue</code> 表示线程池执行的任务队列</p>
+<ul>
+<li>当线程池的所有线程都在处理任务时, 如果来了新任务就会缓存到此任务队列中排队等待执行</li>
+</ul>
+</li>
+<li><p><code>threadFactory</code> 表示线程的创建工厂, 此参数一般用的比较少, 我们通常在创建线程池时不指定此参数, 它会使用默认的线程创建工厂的方法来创建线程: </p>
+<ul>
+<li><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 默认的线程创建工厂, 需要实现 ThreadFactory 接口</span></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">DefaultThreadFactory</span> <span class="keyword">implements</span> <span class="title">ThreadFactory</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> AtomicInteger poolNumber = <span class="keyword">new</span> AtomicInteger(<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ThreadGroup group;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> AtomicInteger threadNumber = <span class="keyword">new</span> AtomicInteger(<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String namePrefix;</span><br><span class="line"></span><br><span class="line">    DefaultThreadFactory() &#123;</span><br><span class="line">        SecurityManager s = System.getSecurityManager();</span><br><span class="line">        group = (s != <span class="keyword">null</span>) ? s.getThreadGroup() :</span><br><span class="line">                              Thread.currentThread().getThreadGroup();</span><br><span class="line">        namePrefix = <span class="string">"pool-"</span> +</span><br><span class="line">                      poolNumber.getAndIncrement() +</span><br><span class="line">                     <span class="string">"-thread-"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 创建线程</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Thread <span class="title">newThread</span><span class="params">(Runnable r)</span> </span>&#123;</span><br><span class="line">        Thread t = <span class="keyword">new</span> Thread(group, r,</span><br><span class="line">                              namePrefix + threadNumber.getAndIncrement(),</span><br><span class="line">                              <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">if</span> (t.isDaemon()) </span><br><span class="line">            t.setDaemon(<span class="keyword">false</span>); <span class="comment">// 创建一个非守护线程</span></span><br><span class="line">        <span class="keyword">if</span> (t.getPriority() != Thread.NORM_PRIORITY)</span><br><span class="line">            t.setPriority(Thread.NORM_PRIORITY); <span class="comment">// 线程优先级设置为默认值</span></span><br><span class="line">        <span class="keyword">return</span> t;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>我们也可以自定义一个线程工厂, 通过实现 <code>ThreadFactory</code> 接口来完成, 这样就可以自定义线程的名称或线程执行的优先级了</p>
+</li>
+</ul>
+</li>
+<li><p><code>RejectedExecutionHandler</code> 表示指定线程池的拒绝策略</p>
+<ul>
+<li>当线程池的任务已经在缓存队列 <code>workQueue</code> 中存储满了之后, 并且不能创建新的线程来执行此任务时, 就会用到此拒绝策略, 它属于一种限流保护的机制</li>
+</ul>
+</li>
+</ol>
+<h3 id="8-4-扩展-ThreadPoolExcutor"><a href="#8-4-扩展-ThreadPoolExcutor" class="headerlink" title="8.4 扩展 ThreadPoolExcutor"></a>8.4 扩展 ThreadPoolExcutor</h3><ul>
+<li>通过重写 <code>beforeExecute()</code> 和 <code>afterExecute()</code> 方法, 我们可以在扩展方法中添加日志或者实现数据统计, 比如统计线程的执行时间</li>
+</ul>
+<h2 id="十-避免活跃性危险"><a href="#十-避免活跃性危险" class="headerlink" title="十. 避免活跃性危险"></a>十. 避免活跃性危险</h2><h3 id="10-1-死锁"><a href="#10-1-死锁" class="headerlink" title="10.1 死锁"></a>10.1 死锁</h3><ul>
+<li><p>抱死 Deadly Embrace</p>
+<ul>
+<li>线程 A 持有锁 L 并想获得锁 R 时, 线程 B 持有锁 R 并尝试获得锁 L</li>
+<li><img src="https://gitee.com/chansonchan/image/raw/master/uPic/image-20200908213324666.png" alt="image-20200908213324666"></li>
+</ul>
+</li>
+<li><p>数据库系统的设计中考虑了监测死锁以及从死锁中恢复</p>
+<ul>
+<li>当检测到一组事务 (Transaction) 发生了死锁时 (通过在表示等待关系的有向图中搜索循环)</li>
+<li>选择一个牺牲者并放弃这个事务, 释放它所持有的资源</li>
+</ul>
+</li>
+<li><p>锁顺序死锁</p>
+<ul>
+<li>如果按照相同循序来请求锁, 就不会出现死锁</li>
+<li>业务中根据一个唯一不可变, 且具备可比性的值 (如数据库中的 id) 来排序加锁</li>
+</ul>
+</li>
+<li><p>在协作对象之间发生的死锁</p>
+<ul>
+<li>如果在持有锁时调用某个外部方法, 将会出现活跃性问题</li>
+<li>在这个外部方法中可能会获取其他锁, 从而产生死锁</li>
+<li>或者阻塞时间过长, 导致其他线程无法及时获得当前被持有的锁</li>
+</ul>
+</li>
+<li><p>在调用某个方法时不需要持有锁, 那这种调用称为开放调用</p>
+</li>
+</ul>
+<h3 id="10-2-死锁的避免和诊断"><a href="#10-2-死锁的避免和诊断" class="headerlink" title="10.2 死锁的避免和诊断"></a>10.2 死锁的避免和诊断</h3><ul>
+<li>使用支持定时的锁</li>
+<li>通过 Thread Dump 分析死锁</li>
+</ul>
+<h3 id="10-3-其他活跃性危险"><a href="#10-3-其他活跃性危险" class="headerlink" title="10.3 其他活跃性危险"></a>10.3 其他活跃性危险</h3><ul>
+<li>饥饿 (Starvation)<ul>
+<li>线程由于不能访问所需要的资源而无法继续执行时, 就发生了饥饿</li>
+<li>引发饥饿的最常见资源就是 CPU 时钟周期</li>
+<li>线程优先级可能会导致低优先级的线程饥饿</li>
+</ul>
+</li>
+<li>糟糕的响应性</li>
+<li>活锁 (Livelock)<ul>
+<li>错误的将不可修复的错误作为可修复的错误, 不断尝试修复导致活锁</li>
+</ul>
+</li>
+</ul>
+<h2 id="十一-性能与可伸缩性"><a href="#十一-性能与可伸缩性" class="headerlink" title="十一. 性能与可伸缩性"></a>十一. 性能与可伸缩性</h2><h3 id="11-1-对性能的思考"><a href="#11-1-对性能的思考" class="headerlink" title="11.1 对性能的思考"></a>11.1 对性能的思考</h3><ul>
+<li>可伸缩性: 当增加计算资源时 (如 cpu, 内存, 存储容量或带宽), 程序的吞吐量或者处理能力能相应地增加</li>
+<li>避免不成熟的优化, 首先正确运行, 然后再考虑提高速度</li>
+</ul>
+<h3 id="11-2-Amdahl-定律"><a href="#11-2-Amdahl-定律" class="headerlink" title="11.2 Amdahl 定律"></a>11.2 Amdahl 定律</h3><ul>
+<li><img src="https://gitee.com/chansonchan/image/raw/master/uPic/image-20200914215649373.png" alt="image-20200914215649373"></li>
+</ul>
+<h3 id="11-3-线程引入的开销"><a href="#11-3-线程引入的开销" class="headerlink" title="11.3 线程引入的开销"></a>11.3 线程引入的开销</h3><ul>
+<li>上下文切换</li>
+<li>内存同步<ul>
+<li>非竞争同步会被 JVM 进行优化, 如锁消除和锁粒度粗化</li>
+</ul>
+</li>
+<li>阻塞</li>
+</ul>
+<h3 id="11-4-减少锁竞争"><a href="#11-4-减少锁竞争" class="headerlink" title="11.4 减少锁竞争"></a>11.4 减少锁竞争</h3><ul>
+<li>降低锁竞争程度的方式<ul>
+<li>减少持有锁的时间<ul>
+<li>缩小锁的范围<ul>
+<li>主要考虑大量计算或阻塞操作的代码</li>
+</ul>
+</li>
+<li>锁分解, 锁分段<ul>
+<li>避免热点域</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>降低请求锁的频率</li>
+<li>使用带有协调机制的独占锁<ul>
+<li>并发容器</li>
+<li>读写锁</li>
+<li>不可变对象</li>
+<li>原子变量</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>对象分配操作比同步的开销低, 对于性能优化来说, 对象池的用途有限</li>
+</ul>
+<h3 id="11-5-比较-Map-的性能"><a href="#11-5-比较-Map-的性能" class="headerlink" title="11.5 比较 Map 的性能"></a>11.5 比较 Map 的性能</h3><ul>
+<li><img src="https://gitee.com/chansonchan/image/raw/master/uPic/image-20200915222255567.png" alt="image-20200915222255567"></li>
+<li>当竞争变的激烈时, 每个操作消耗的时间大部分用于上下文切换和调度延迟, 再加入更多线程也不会提高太多吞吐量</li>
+</ul>
+<h2 id="十二-并发程序的测试"><a href="#十二-并发程序的测试" class="headerlink" title="十二. 并发程序的测试"></a>十二. 并发程序的测试</h2><ul>
+<li><p>并发测试大致分为两类</p>
+<ul>
+<li>安全性测试<ul>
+<li>不发生任何错误的行为</li>
+<li>要找出容易检查的属性, 这些属性在发生错误时极可能失败, 同时检查的代码不会限制并发性</li>
+</ul>
+</li>
+<li>活跃性测试<ul>
+<li>性能测试<ul>
+<li>吞吐量: 一组并发任务中已经完成任务所占的比例</li>
+<li>响应性: 请求从发出到完成之间的时间 (延迟)</li>
+<li>可伸缩性: 在增加更多资源的情况下, 吞吐量提升的情况</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>可用通过 <code>Thread.yield</code> 或 <code>Thread.sleep(0)</code> 产生更多交替操作, 提高出错的概率</p>
+</li>
+</ul>
+<h3 id="12-3-避免性能测试的陷阱"><a href="#12-3-避免性能测试的陷阱" class="headerlink" title="12.3 避免性能测试的陷阱"></a>12.3 避免性能测试的陷阱</h3><ul>
+<li><p>垃圾回收</p>
+<ul>
+<li>确保测试运行期间能执行多次垃圾回收</li>
+</ul>
+</li>
+<li><p>动态编译</p>
+<ul>
+<li>当某个类第一次被加载时, HotSpot JVM 会通过解译字节码的方式来执行它, 当某个方法运行次数足够多, 动态编译器会将其编译为机器码, 后面代码的执行就从解释执行变为直接执行</li>
+<li>代码还可能被反编译已经重新编译</li>
+<li>确保测试运行足够长, 或先预运行一段时间</li>
+</ul>
+</li>
+<li><p>对代码路径的不真实采样</p>
+<ul>
+<li>JVM 可能会基于测试情况下临时有效的假设进行优化 </li>
+<li>测试程序不仅要大致判断典型的使用模式, 还需要尽量覆盖执行的代码路径集合</li>
+</ul>
+</li>
+<li><p>无用代码的消除</p>
+<ul>
+<li>避免测试时的没覆盖到的代码被编译器优化消除</li>
+<li>可以在相关代码中打印空白字符串</li>
+</ul>
+</li>
+</ul>
+<h2 id="十三-显式锁"><a href="#十三-显式锁" class="headerlink" title="十三. 显式锁"></a>十三. 显式锁</h2>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/multithread/" rel="tag"># multithread</a>
+          
+            <a href="/tags/concurrency/" rel="tag"># concurrency</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/08/06/k8s-国内环境集群搭建-通过sealos/" rel="next" title="k8s-国内环境集群搭建-通过sealos">
+                <i class="fa fa-chevron-left"></i> k8s-国内环境集群搭建-通过sealos
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/09/16/MongoDB-副本集与分片/" rel="prev" title="MongoDB 副本集与分片">
+                MongoDB 副本集与分片 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="Chaosn Chan">
+            
+              <p class="site-author-name" itemprop="name">Chaosn Chan</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/chenchensheng" title="GitHub &rarr; https://github.com/chenchensheng" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:330266801@qq.com" title="E-Mail &rarr; mailto:330266801@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Java-并发编程实战-笔记"><span class="nav-number">1.</span> <span class="nav-text">Java 并发编程实战 笔记</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#二-线程安全"><span class="nav-number">1.1.</span> <span class="nav-text">二. 线程安全</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-原子性"><span class="nav-number">1.1.1.</span> <span class="nav-text">2.2 原子性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-加锁机制"><span class="nav-number">1.1.2.</span> <span class="nav-text">2.3 加锁机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-用锁来保护状态"><span class="nav-number">1.1.3.</span> <span class="nav-text">2.4 用锁来保护状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-活跃性与性能"><span class="nav-number">1.1.4.</span> <span class="nav-text">2.5 活跃性与性能</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三-对象的共享"><span class="nav-number">1.2.</span> <span class="nav-text">三. 对象的共享</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-可见性"><span class="nav-number">1.2.1.</span> <span class="nav-text">3.1 可见性</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-1-失效数据"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">3.1.1 失效数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-2-非原子的-64-为操作"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">3.1.2 非原子的 64 为操作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-3-加锁与可见性"><span class="nav-number">1.2.1.3.</span> <span class="nav-text">3.1.3 加锁与可见性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-4-volatile-变量"><span class="nav-number">1.2.1.4.</span> <span class="nav-text">3.1.4 volatile 变量</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-发布与逸出"><span class="nav-number">1.2.2.</span> <span class="nav-text">3.2 发布与逸出</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-线程封闭"><span class="nav-number">1.2.3.</span> <span class="nav-text">3.3 线程封闭</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-不变性"><span class="nav-number">1.2.4.</span> <span class="nav-text">3.4 不变性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-安全发布"><span class="nav-number">1.2.5.</span> <span class="nav-text">3.5 安全发布</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四-对象的组合"><span class="nav-number">1.3.</span> <span class="nav-text">四. 对象的组合</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-设计线程安全的类"><span class="nav-number">1.3.1.</span> <span class="nav-text">4.1 设计线程安全的类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-实例封闭"><span class="nav-number">1.3.2.</span> <span class="nav-text">4.2 实例封闭</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-线程安全的委托"><span class="nav-number">1.3.3.</span> <span class="nav-text">4.3 线程安全的委托</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-在现有的线程安全类中添加功能"><span class="nav-number">1.3.4.</span> <span class="nav-text">4.4 在现有的线程安全类中添加功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-5-将同步策略文档化"><span class="nav-number">1.3.5.</span> <span class="nav-text">4.5 将同步策略文档化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五-基础构建模块"><span class="nav-number">1.4.</span> <span class="nav-text">五. 基础构建模块</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-同步容器类"><span class="nav-number">1.4.1.</span> <span class="nav-text">5.1 同步容器类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#5-1-1-同步容器类的问题"><span class="nav-number">1.4.1.1.</span> <span class="nav-text">5.1.1 同步容器类的问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-1-2-迭代器与-ConcurrentModificationException"><span class="nav-number">1.4.1.2.</span> <span class="nav-text">5.1.2 迭代器与 ConcurrentModificationException</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-1-3-隐藏迭代器"><span class="nav-number">1.4.1.3.</span> <span class="nav-text">5.1.3 隐藏迭代器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-并发容器"><span class="nav-number">1.4.2.</span> <span class="nav-text">5.2 并发容器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-1-ConcurrentHashMap"><span class="nav-number">1.4.2.1.</span> <span class="nav-text">5.2.1 ConcurrentHashMap</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-3-CopyOnWriteArrayList"><span class="nav-number">1.4.2.2.</span> <span class="nav-text">5.2.3 CopyOnWriteArrayList</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-阻塞队列和生产者-消费者"><span class="nav-number">1.4.3.</span> <span class="nav-text">5.3 阻塞队列和生产者-消费者</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-4-阻塞方法与中断方法"><span class="nav-number">1.4.4.</span> <span class="nav-text">5.4 阻塞方法与中断方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-5-同步工具类"><span class="nav-number">1.4.5.</span> <span class="nav-text">5.5 同步工具类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#5-5-1-闭锁"><span class="nav-number">1.4.5.1.</span> <span class="nav-text">5.5.1 闭锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-5-2-FutureTask"><span class="nav-number">1.4.5.2.</span> <span class="nav-text">5.5.2 FutureTask</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-5-3-信号量"><span class="nav-number">1.4.5.3.</span> <span class="nav-text">5.5.3 信号量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-5-4-栅栏"><span class="nav-number">1.4.5.4.</span> <span class="nav-text">5.5.4 栅栏</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#六-任务执行"><span class="nav-number">1.5.</span> <span class="nav-text">六. 任务执行</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-1-在线程中执行任务"><span class="nav-number">1.5.1.</span> <span class="nav-text">6.1 在线程中执行任务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-2-Executor-框架"><span class="nav-number">1.5.2.</span> <span class="nav-text">6.2 Executor 框架</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#6-2-2-执行策略"><span class="nav-number">1.5.2.1.</span> <span class="nav-text">6.2.2 执行策略</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-2-3-线程池"><span class="nav-number">1.5.2.2.</span> <span class="nav-text">6.2.3 线程池</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-2-4-Executor-的生命周期"><span class="nav-number">1.5.2.3.</span> <span class="nav-text">6.2.4 Executor 的生命周期</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-3-找出可利用的并行性"><span class="nav-number">1.5.3.</span> <span class="nav-text">6.3 找出可利用的并行性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#七-取消与关闭"><span class="nav-number">1.6.</span> <span class="nav-text">七. 取消与关闭</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#八-线程池的使用"><span class="nav-number">1.7.</span> <span class="nav-text">八. 线程池的使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#8-1-在任务与执行策略之间的隐性耦合"><span class="nav-number">1.7.1.</span> <span class="nav-text">8.1 在任务与执行策略之间的隐性耦合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-2-设置线程池的大小"><span class="nav-number">1.7.2.</span> <span class="nav-text">8.2 设置线程池的大小</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-3-配置-ThreadPoolExcutor"><span class="nav-number">1.7.3.</span> <span class="nav-text">8.3 配置 ThreadPoolExcutor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-4-扩展-ThreadPoolExcutor"><span class="nav-number">1.7.4.</span> <span class="nav-text">8.4 扩展 ThreadPoolExcutor</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#十-避免活跃性危险"><span class="nav-number">1.8.</span> <span class="nav-text">十. 避免活跃性危险</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#10-1-死锁"><span class="nav-number">1.8.1.</span> <span class="nav-text">10.1 死锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-2-死锁的避免和诊断"><span class="nav-number">1.8.2.</span> <span class="nav-text">10.2 死锁的避免和诊断</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-3-其他活跃性危险"><span class="nav-number">1.8.3.</span> <span class="nav-text">10.3 其他活跃性危险</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#十一-性能与可伸缩性"><span class="nav-number">1.9.</span> <span class="nav-text">十一. 性能与可伸缩性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#11-1-对性能的思考"><span class="nav-number">1.9.1.</span> <span class="nav-text">11.1 对性能的思考</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-2-Amdahl-定律"><span class="nav-number">1.9.2.</span> <span class="nav-text">11.2 Amdahl 定律</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-3-线程引入的开销"><span class="nav-number">1.9.3.</span> <span class="nav-text">11.3 线程引入的开销</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-4-减少锁竞争"><span class="nav-number">1.9.4.</span> <span class="nav-text">11.4 减少锁竞争</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-5-比较-Map-的性能"><span class="nav-number">1.9.5.</span> <span class="nav-text">11.5 比较 Map 的性能</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#十二-并发程序的测试"><span class="nav-number">1.10.</span> <span class="nav-text">十二. 并发程序的测试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#12-3-避免性能测试的陷阱"><span class="nav-number">1.10.1.</span> <span class="nav-text">12.3 避免性能测试的陷阱</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#十三-显式锁"><span class="nav-number">1.11.</span> <span class="nav-text">十三. 显式锁</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Chaosn Chan</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count"> 全站共 87.6k 字</span>
+</div>
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="Total Visitors">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="Total Views">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+  
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.1"></script>
+
+  <script src="/js/motion.js?v=7.1.1"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.1.1"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.1"></script>
+<script src="/js/post-details.js?v=7.1.1"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.1"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    <!-- LOCAL: You can save these files to your site and update links -->
+
+  
+  <script src="https://cdn.jsdelivr.net/gh/theme-next/theme-next-gitment@1/gitmint.browser.js"></script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/theme-next/theme-next-gitment@1/default.css">
+<!-- END LOCAL -->
+
+<script>
+  function renderGitment() {
+    var gitment = new Gitmint({
+      id: window.location.pathname,
+      owner: 'chenchensheng',
+      repo: 'chanson.github.io',
+      
+        lang: '' || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+      
+      oauth: {
+      
+      
+        client_secret: '414f1aaca1a5baf17fb9929bb9e864be3978061f',
+      
+        client_id: '46aed381471ff9cef5d8'
+      }
+    });
+    gitment.render('gitment-container');
+  }
+
+  
+    renderGitment();
+  
+</script>
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    <script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+</body>
+</html>

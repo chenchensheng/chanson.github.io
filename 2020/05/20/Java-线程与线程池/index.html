@@ -115,7 +115,7 @@
 <meta property="og:image" content="https://gitee.com/chansonchan/image/raw/master/uPic/03268b9dc49bd30bb63064421bb036bf90315.png">
 <meta property="og:image" content="https://gitee.com/chansonchan/image/raw/master/uPic/49527b1bb385f0f43529e57b614f59ae145454.png">
 <meta property="og:image" content="https://gitee.com/chansonchan/image/raw/master/uPic/879edb4f06043d76cea27a3ff358cb1d45243.png">
-<meta property="og:updated_time" content="2020-07-24T10:49:24.148Z">
+<meta property="og:updated_time" content="2020-09-08T13:10:28.488Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java 线程与线程池">
 <meta name="twitter:description" content="Java 线程与线程池线程的状态 NEW, 新建状态, 线程被创建出来, 但尚未启动时的线程状态  RUNNABLE, 就绪状态, 表示可以运行的线程状态, 它可能正在运行, 或者是在排队等待操作系统给它分配 CPU 资源  BLOCKED, 阻塞等待锁的线程状态, 表示处于阻塞状态的线程正在等待监视器锁, 比如等待执行 synchronized 代码块或者使用 synchronized 标记的方">
@@ -425,7 +425,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2020-07-24 18:49:24" itemprop="dateModified" datetime="2020-07-24T18:49:24+08:00">2020-07-24</time>
+                <time title="Modified: 2020-09-08 21:10:28" itemprop="dateModified" datetime="2020-09-08T21:10:28+08:00">2020-09-08</time>
               
             
           </span>
@@ -462,7 +462,7 @@
             
                 <span class="post-meta-item-text">Comments: </span>
                 <a href="/2020/05/20/Java-线程与线程池/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2020/05/20/Java-线程与线程池/" itemprop="commentCount"></span>
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2020/05/20/Java-线程与线程池/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -598,7 +598,7 @@
 </li>
 <li><p>实际开发中的两种最佳实践</p>
 <ol>
-<li><p>传递中断</p>
+<li><p>传递中断 </p>
 <ul>
 <li><p>对于底层的方法, 在方法的签名上标注异常 (<code>throws InterruptedException</code>)</p>
 </li>
@@ -757,15 +757,31 @@ hint.</code></p>
 <li><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ThreadPoolExecutor</span><span class="params">(<span class="keyword">int</span> corePoolSize,</span></span></span><br><span class="line"><span class="function"><span class="params">                          <span class="keyword">int</span> maximumPoolSize,</span></span></span><br><span class="line"><span class="function"><span class="params">                          <span class="keyword">long</span> keepAliveTime,</span></span></span><br><span class="line"><span class="function"><span class="params">                          TimeUnit unit,</span></span></span><br><span class="line"><span class="function"><span class="params">                          BlockingQueue&lt;Runnable&gt; workQueue,</span></span></span><br><span class="line"><span class="function"><span class="params">                          ThreadFactory threadFactory,</span></span></span><br><span class="line"><span class="function"><span class="params">                          RejectedExecutionHandler handler)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  ......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <ol>
-<li><p><code>corePoolSize</code> 表示线程池的常驻核心线程数。如果设置为 0, 则表示在没有任何任务时, 销毁线程池；如果大于 0, 即使没有任务时也会保证线程池的线程数量等于此值。但需要注意, 此值如果设置的比较小, 则会频繁的创建和销毁线程；如果设置的比较大, 则会浪费系统资源, 所以开发者需要根据自己的实际业务来调整此值</p>
+<li><p><code>corePoolSize</code> 表示线程池的常驻核心线程数</p>
+<ul>
+<li>如果设置为 0, 则表示在没有任何任务时, 销毁线程池</li>
+<li>如果大于 0, 即使没有任务时也会保证线程池的线程数量等于此值</li>
+<li>此值如果设置的比较小, 则会频繁的创建和销毁线程</li>
+<li>如果设置的比较大, 则会浪费系统资源, 所以开发者需要根据自己的实际业务来调整此值</li>
+</ul>
 </li>
-<li><p><code>maximumPoolSize</code> 表示线程池在任务最多时, 最大可以创建的线程数。官方规定此值必须大于 0, 也必须大于等于 <code>corePoolSize</code>, 此值只有在任务比较多, 且不能存放在任务队列时, 才会用到</p>
+<li><p><code>maximumPoolSize</code> 表示线程池在任务最多时, 最大可以创建的线程数</p>
+<ul>
+<li>此值必须大于 0, 也必须大于等于 <code>corePoolSize</code>, 此值只有在任务比较多, 且不能存放在任务队列时才会用到</li>
+</ul>
 </li>
-<li><p><code>keepAliveTime</code> 表示线程的存活时间, 当线程池空闲时并且超过了此时间, 多余的线程就会销毁, 直到线程池中的线程数量销毁的等于 <code>corePoolSize</code> 为止, 如果 <code>maximumPoolSize</code> 等于 <code>corePoolSize</code>, 那么线程池在空闲的时候也不会销毁任何线程</p>
+<li><p><code>keepAliveTime</code> 表示线程的存活时间</p>
+<ul>
+<li>当线程池空闲时并且超过了此时间, 多余的线程就会销毁, 直到线程池中的线程数量销毁的等于 <code>corePoolSize</code> 为止</li>
+<li>如果 <code>maximumPoolSize</code> 等于 <code>corePoolSize</code>, 那么线程池在空闲的时候也不会销毁任何线程</li>
+</ul>
 </li>
 <li><p><code>unit</code> 表示存活时间的单位, 它是配合 <code>keepAliveTime</code> 参数共同使用的</p>
 </li>
-<li><p><code>workQueue</code> 表示线程池执行的任务队列, 当线程池的所有线程都在处理任务时, 如果来了新任务就会缓存到此任务队列中排队等待执行</p>
+<li><p><code>workQueue</code> 表示线程池执行的任务队列</p>
+<ul>
+<li>当线程池的所有线程都在处理任务时, 如果来了新任务就会缓存到此任务队列中排队等待执行</li>
+</ul>
 </li>
 <li><p><code>threadFactory</code> 表示线程的创建工厂, 此参数一般用的比较少, 我们通常在创建线程池时不指定此参数, 它会使用默认的线程创建工厂的方法来创建线程: </p>
 <ul>
@@ -775,7 +791,10 @@ hint.</code></p>
 </li>
 </ul>
 </li>
-<li><p><code>RejectedExecutionHandler</code> 表示指定线程池的拒绝策略, 当线程池的任务已经在缓存队列 <code>workQueue</code> 中存储满了之后, 并且不能创建新的线程来执行此任务时, 就会用到此拒绝策略, 它属于一种限流保护的机制</p>
+<li><p><code>RejectedExecutionHandler</code> 表示指定线程池的拒绝策略</p>
+<ul>
+<li>当线程池的任务已经在缓存队列 <code>workQueue</code> 中存储满了之后, 并且不能创建新的线程来执行此任务时, 就会用到此拒绝策略, 它属于一种限流保护的机制</li>
+</ul>
 </li>
 </ol>
 </li>
@@ -1089,6 +1108,9 @@ hint.</code></p>
 
   
     <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
     </div>
 
   
@@ -1140,7 +1162,7 @@ hint.</code></p>
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">16</span>
+                    <span class="site-state-item-count">18</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -1161,7 +1183,9 @@ hint.</code></p>
                     
                       
                     
-                    <span class="site-state-item-count">2</span>
+                      
+                    
+                    <span class="site-state-item-count">3</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
                 </div>
@@ -1212,7 +1236,9 @@ hint.</code></p>
                     
                       
                     
-                    <span class="site-state-item-count">17</span>
+                      
+                    
+                    <span class="site-state-item-count">18</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -1328,7 +1354,7 @@ hint.</code></p>
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count"> 全站共 51.6k 字</span>
+  <span class="post-count"> 全站共 87.6k 字</span>
 </div>
         
 <div class="busuanzi-count">
@@ -1463,37 +1489,41 @@ hint.</code></p>
   
 
   
+
+
   
+    <!-- LOCAL: You can save these files to your site and update links -->
 
-<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+  
+  <script src="https://cdn.jsdelivr.net/gh/theme-next/theme-next-gitment@1/gitmint.browser.js"></script>
 
-
-
-<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/theme-next/theme-next-gitment@1/default.css">
+<!-- END LOCAL -->
 
 <script>
-  var GUEST = ['nick', 'mail', 'link'];
-  var guest = 'nick,mail,link';
-  guest = guest.split(',').filter(function(item) {
-    return GUEST.indexOf(item) > -1;
-  });
-  new Valine({
-    el: '#comments',
-    verify: false,
-    notify: true,
-    appId: 'qzpdkcRbrQkmSUskAW5ApGjf-gzGzoHsz',
-    appKey: 'urRmgdtPd2rXBX5cm552mOAr',
-    placeholder: 'Just go go',
-    avatar: 'mm',
-    meta: guest,
-    pageSize: '10' || 10,
-    visitor: false,
-    lang: '' || 'zh-cn'
-  });
+  function renderGitment() {
+    var gitment = new Gitmint({
+      id: window.location.pathname,
+      owner: 'chenchensheng',
+      repo: 'chanson.github.io',
+      
+        lang: '' || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+      
+      oauth: {
+      
+      
+        client_secret: '414f1aaca1a5baf17fb9929bb9e864be3978061f',
+      
+        client_id: '46aed381471ff9cef5d8'
+      }
+    });
+    gitment.render('gitment-container');
+  }
+
+  
+    renderGitment();
+  
 </script>
-
-
-
 
   
 
